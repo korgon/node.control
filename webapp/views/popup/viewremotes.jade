@@ -1,19 +1,15 @@
-h1.popup Create Schedule
-hr(style='margin-bottom: 20px;')
-div(style='position: relative; width: 700px; height: 370px; padding: 2px; background-color: #000;')
-	div(style='position: relative; width: 700px; height: 82px;')
-		div(style='position: relative; width: 75px; hieght: 82px; float: left;')
-		div#actuators.tab(style='position: relative; width: 548px; height: 80px; float: left; border-radius: 6px; z-index: 1;')
-			
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/control.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/box.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/lightbulb.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/burst.png')
-		div(style='position: relative; width: 75px; hieght: 82px; float: left;')
-div(style='padding-top: 20px; margin-bottom: -12px;')
+h1.popup View Remotes
+hr(style='margin-bottom: -5px;')
+div#pop_beehive(style='position: relative; width: auto; height: auto; padding: 2px; background-color: #000;')
+
+div(style='padding-top: 0px; margin-bottom: -12px;')
 	hr
+
 script.
+	// apend pop_beehive with bees and their outputs
+	for (bee in beehive) {
+		$('#pop_beehive').append(beehive[bee].id + '@' + bee + ' | ');
+		for (out in beehive[bee].outputs) {
+			$('#pop_beehive').append(' ' + out + ':' + beehive[bee].outputs[out].pin + ' ');
+		}
+	}

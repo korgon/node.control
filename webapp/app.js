@@ -115,6 +115,7 @@ app.get('/popup/editgroups', restricted_popup, routes.pop_control_editgroups);
 app.get('/popup/power', restricted_popup, routes.pop_control_power);
 app.get('/popup/run', restricted_popup, routes.pop_control_run);
 app.get('/popup/viewremotes', restricted_popup, routes.pop_remotes_view);
+app.get('/popup/runremotes', restricted_popup, routes.pop_remotes_run);
 
 // restricted routes
 app.get('/', restricted, setup, routes.index);
@@ -138,13 +139,17 @@ setTimeout(function() {
 // init xbee module
 setTimeout(function() {
 	controller.xbee.init();
-},3300);
+},5400);
 
 // controller emitter handlers
-controller.on('zoneChange', function(zonesdata) {
+controller.on('zoneChange', function() {
 	console.log(Date() + ' (io) [zones update broadcast]');
-	console.log(zonesdata);
-	app.io.broadcast('zones', zonesdata);
+	app.io.broadcast('zones', controller.zones);
+});
+
+controller.on('beeChange', function() {
+	console.log(Date() + ' (io) [bees update broadcast]');
+	app.io.broadcast('bees', controller.bees);
 });
 
 // Begin socket.io routes....
@@ -180,7 +185,8 @@ app.io.route('control', {
 		console.log(Date() + ' (io) [control zone] ' + req.data.zone + ' => ' + req.data.value);
   },
   xbee: function(req) {
-		console.log(Date() + ' (io) [control] new email for ' + req.data.uname + ': ' + req.data.email);
+		controller.controlBee(req.data.hex_id, req.data.port, req.data.value);
+		console.log(Date() + ' (io) [control xbee] ' + req.data.hex_id + ':' + req.data.port + ' => ' + req.data.value);
   }
 });
 
@@ -248,8 +254,12 @@ app.io.route('get', {
 		});
   },
   zones: function(req) {
-		req.io.emit('zones', controller.getZones());
+		req.io.emit('zones', controller.zones);
 		console.log(Date() + ' (io) [zonedata request] from ' + req.session.uname);
+  },
+  bees: function(req) {
+		req.io.emit('bees', controller.bees);
+		console.log(Date() + ' (io) [beesdata request] from ' + req.session.uname);
   },
   sensordata: function(req) {
 		controller.db.getSensors(function(sensors) {

@@ -12,7 +12,11 @@ exports.pop_schedule_view = function(req, res) {
 };
 
 exports.pop_remotes_view = function(req, res) {
-	res.render('popup/viewremotes', { hostname: controller.getHostname() });
+	res.render('popup/viewremotes');
+};
+
+exports.pop_remotes_run = function(req, res) {
+	res.render('popup/runremotes');
 };
 
 exports.pop_control_power = function(req, res) {
@@ -90,15 +94,23 @@ exports.setitup = function(req, res) {
 	// update username/pass and the system variables
 	controller.db.updateUser(req.body.username, req.body.password);
 	controller.db.updateEmail(req.body.email);
-	controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
 	console.log(wlan0_data);
 	controller.wifi.connect(wlan0_data, function(err) {
-		if (err)
+		if (err == 'Error: kill EPERM') {
+			res.send('Invalid Key!');
+		}
+		else if (err)
 			res.send('ERROR! ' + err);
 		else {
+			controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
 			// successful connection!
 			controller.updateSystemVariables();
-			res.redirect('/');
+			setTimeout(function() {
+				res.send('Good job guy, settings are valid.  rebooting in 3... 2... 1...');
+				setTimeout(function() {
+					controller.reboot();
+				}, 3000);
+			}, 2000);
 		}
 	});
 };

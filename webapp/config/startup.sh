@@ -9,7 +9,7 @@ echo "Running controller initialization." >> controller.log
 echo sprinkler-system > /sys/devices/bone_capemgr.8/slots
 
 # wifi startup
-sleep 6;  # wait for usb drivers...
+sleep 9;  # wait for usb drivers...
 ifconfig wlan0 up;
 
 chown node /dev/ttyO[1-9]
@@ -24,4 +24,4 @@ echo none > /sys/class/leds/beaglebone:green:usr3/trigger
 # eth0 bootup
 #ifconfig eth0 up;
 # Force a NTP update
-/usr/bin/ntpdate -b -s -u pool.ntp.org
+#/usr/bin/ntpdate -b -s -u pool.ntp.org

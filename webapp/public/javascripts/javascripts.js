@@ -36,6 +36,7 @@ function create_buttons(tabid) {
 		newbutton = newbutton + "<img class='buttonImage' src='" + slot_array[button].icon + "'></div>";
 		$('#' + tabid + '_slots').append(newbutton);
 		$('#' + tabid + '_button' + button+1).data('arrayid', button);
+		$('#' + tabid + '_button' + button+1).data('name', slot_array[button].name);
 		top_offset = top_offset + 75;
 	}
 	$("div[id^='" + tabid + "_button']").hover(function () {

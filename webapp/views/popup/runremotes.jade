@@ -1,0 +1,85 @@
+h1.popup Activate Remote Devices
+hr(style='margin-bottom: -5px;')
+div#pop_beehive(style='position: relative; width: 300px; height: auto; padding: 20px;')
+	div
+
+div(style='padding-top: 30px; margin-bottom: -12px; clear: both;')
+	hr
+script.
+
+	$('#popup').dialog('option', 'buttons', { 'Close': function() {check();} }); 
+
+	// populate beehive with bees
+
+	var beeid = 0
+
+	// apend pop_beehive with bees and their outputs
+	for (bee in beehive) {
+		var beehome = "<div id='pop_beehome_" + beeid + "' style='position: relative; width: 110px; ";
+		beehome = beehome + "height: auto; float: left;'></div>";
+		$('#pop_beehive').append(beehome);
+		$('#pop_beehome_' + beeid).append("<div><p class='login'>" + beehive[bee].id + "</p></div>");
+		for (port in beehive[bee].outputs) {
+			var newbutton = "<div id='pop_beeport_" + beeid + "_" + port + "' class='buttonActuate' title='";
+			newbutton = newbutton + port + "'>";
+			newbutton = newbutton + "<img class='buttonImage' src='/images/icons/actuators/box.png'></div>";
+			$('#pop_beehome_' + beeid).append(newbutton);
+			$('#pop_beeport_' + beeid + '_' + port).data('on', beehive[bee].outputs[port].status);
+			$('#pop_beeport_' + beeid + '_' + port).data('hex_id', bee);
+			$('#pop_beeport_' + beeid + '_' + port).data('port', port);
+			if (beehive[bee].outputs[port].status == 1) {
+				$('#pop_beeport_' + beeid + '_' + port).css('box-shadow', '0px 0px 31px 1px #252525 inset, 0px 0px 6px #00B7FF');
+				$('#pop_beeport_' + beeid + '_' + port).unbind('mouseenter mouseleave');
+				$('#pop_beeport_' + beeid + '_' + port).children('.buttonImage').css('opacity', .1);
+			}
+			else if (beehive[bee].outputs[port].status == 0) {
+				$('#pop_beeport_' + beeid + '_' + port).hover(function () {
+					$(this).css('box-shadow', '0px 0px 31px 1px #252525 inset');
+				}, function () {
+					$(this).css('box-shadow', '');
+				});
+			}
+		}
+		beeid++;
+	}
+
+	$("div[id^='pop_beeport_']").click(function() {
+		if($(this).data('on') == 0) {
+			$(this).css('box-shadow', '0px 0px 31px 1px #252525 inset, 0px 0px 6px #00B7FF');
+			$(this).unbind('mouseenter mouseleave');
+			$(this).css('border', '1px solid #00709d');
+			$(this).children('.buttonImage').css('opacity', .1);
+			$(this).data('on', 1);
+			workBee($(this).data('hex_id'), $(this).data('port'), 1);
+		}
+		else if($(this).data('on') == 1) {
+			$(this).css('box-shadow', '0px 0px 55px 1px #666 inset, 0px 0px 6px #000');
+			$(this).css('border', '1px solid #333');
+			$(this).removeClass('actuated');
+			$(this).children('.buttonImage').css('opacity', 1);
+			$(this).data('on', 0);
+			$(this).hover(function () {
+				$(this).css('box-shadow', '0px 0px 31px 1px #252525 inset');
+			}, function () {
+				$(this).css('box-shadow', '');
+			});
+			workBee($(this).data('hex_id'), $(this).data('port'), 0);
+		}
+	});
+
+	function workBee(workerBee, port, value) {
+		nodeio.emit('control:xbee', {hex_id: workerBee, port: port, value: value});
+	}
+
+	function check() {
+		$('#popup').dialog('option', 'buttons', 
+		{
+			"Save": function() {
+				if (check()) $(this).dialog("close");
+			},
+			"Close": function() {
+				$(this).dialog("close");
+			}
+		});
+		$('#popup').dialog("close");
+	}

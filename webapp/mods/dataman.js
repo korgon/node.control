@@ -96,7 +96,7 @@ function init_db() {
 db_management.prototype.addRemote = function(rtype, rhex, rdesc, rinputs, routputs) {
 	db.query('INSERT into remotes VALUES (?, ?, ?, ?)', [rhex, rtype, rdesc, '']);
 	for (output in routputs) {
-		addActuator(output, output, 'output ' + output + ' | ' + rdesc, '/images/icons/actuators/box.png', rhex, routputs[output], 0);
+		addActuator(output, output, 'output ' + output + ' | ' + rdesc, '/images/icons/actuators/box.png', rhex, routputs[output].pin, 0);
 	}
 	for (var input in rinputs) {
 		//addSensor(rtype + var, 'Input Port ' + var + ' | ' + rdesc, '/images/icons/actuators/box.png', rhex, routputs[var]);

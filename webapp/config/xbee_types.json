@@ -1,26 +1,45 @@
 {
-	"workers": [
-		{
-			"name": "12VDC Expansion (x5)",
-			"id": "node:12vdc_x5",
-			"icon": "/images/icons/actuators/",
-			"outputs": {
-				"port1": "DIO0",
-				"port2": "DIO1",
-				"port3": "DIO2",
-				"port4": "DIO3",
-				"port5": "DIO4"
+	"node:12vdc_x5":
+	{
+		"name": "12VDC Expansion (x5)",
+		"id": "node:12vdc_x5",
+		"icon": "/images/icons/actuators/box.png",
+		"outputs": {
+			"port1": {
+				"pin": "DIO0",
+				"status": 0,
+				"icon": "/images/icons/actuators/box.png"
 			},
-			"inputs": {}
+			"port2": {
+				"pin": "DIO1",
+				"status": 0,
+				"icon": "/images/icons/actuators/box.png"
+			},
+			"port3": {
+				"pin": "DIO2",
+				"status": 0,
+				"icon": "/images/icons/actuators/box.png"
+			}
 		},
-		{
-			"name": "120VAC Expansion (x2)",
-			"id": "node:120vac_x2",
-			"icon": "images/icons/actuators/",
-			"outputs": {
-				"port1": "DIO0",
-				"port2": "DIO1"
+		"inputs": {}
+	},
+	"node:120vac_x2":
+	{
+		"name": "120VAC Expansion (x2)",
+		"id": "node:120vac_x2",
+		"icon": "images/icons/actuators/",
+		"outputs": {
+			"port1": {
+				"pin": "DIO0",
+				"status": 0,
+				"icon": "/images/icons/actuators/box.png"
 			},
-			"inputs": {}
-		}]
+			"port2": {
+				"pin": "DIO1",
+				"status": 0,
+				"icon": "/images/icons/actuators/box.png"
+			}
+		},
+		"inputs": {}
+	}
 }

@@ -42,7 +42,7 @@ div#schedule_duration
 	div
 		label.poplabel(style='width: 75px;' for='pop_duration') Duration
 		input#pop_duration.popinput(type='text' name='pop_duration' style='width: 72px;')
-		span(style='color: #333; font-size: 10px; margin: 9px;') (time in minutes)
+		span(style='color: #777; font-size: 10px; margin: 9px;') (time in minutes)
 		span#pop_duration_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 	hr
 
@@ -51,23 +51,60 @@ div#schedule_datetime
 	div
 		label.poplabel(style='width: 75px;' for='pop_date') Date
 		input#pop_date.popinput(type='text' name='pop_date' style='width: 72px;')
-		span(style='color: #333; font-size: 10px; margin: 9px;') (mm/dd/yyyy)
+		span(style='color: #777; font-size: 10px; margin: 9px;') (mm/dd/yyyy)
 		span#pop_date_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 	div
-		label.poplabel(style='width: 75px;' for='pop_time') Time 
+		label.poplabel(style='width: 75px;' for='pop_time') Time
 		input#pop_time.popinput(type='text' name='pop_time' style='width: 72px;')
-		span(style='color: #333; font-size: 10px; margin: 9px;') (hh:mm:ss) 24hr
+		span(style='color: #777; font-size: 10px; margin: 9px;') (hh:mm:ss) 24hr
 		span#pop_time_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 		input#pop_date_alt(type='hidden' name='pop_date' value='')
 		div#pop_time_error
-div(style='padding-top: 20px; margin-bottom: -12px;')
-	hr
+	div
+		input#pop_repeat_days.popinput(type='checkbox' name='pop_repeat_days' style='width: 20px; margin-left: 15px;')
+		label.poplabel(style='width: 70px; text-align: left;' for='pop_repeat_days') Days
+		input#pop_repeat_mins.popinput(type='checkbox' name='pop_repeat_mins' style='width: 20px;')
+		label.poplabel(style='width: 70px; text-align: left;' for='pop_repeat_mins') Mins
+	div#pop_repeat_options_mins(style='display: none;')
+		div
+			label.poplabel(style='width: 75px;' for='pop_repeat_minutes') Minutes
+			input#pop_repeat_minutes.popinput(type='text' name='pop_repeat_minutes' style='width: 30px;')
+	div#pop_repeat_options_days(style='display: none;')
+		div
+			input#pop_repeat_even.popinput(type='radio' name='pop_repeat_type' value='even' style='width: 20px;')
+			label.poplabel(style='width: 35px;' for='pop_repeat_even') Even
+			input#pop_repeat_odd.popinput(type='radio' name='pop_repeat_type' value='odd' style='width: 20px;')
+			label.poplabel(style='width: 35px;' for='pop_repeat_odd') Odd
+			input#pop_repeat_specific.popinput(type='radio' name='pop_repeat_type' value='specific' style='width: 20px;')
+			label.poplabel(style='width: 35px;' for='pop_repeat_specific') Specific
+		div#pop_repeat_specific_options(style='display: none;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_sun') S
+			input#pop_repeat_sun.popinput(type='checkbox' name='pop_repeat_sun' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_mon') M
+			input#pop_repeat_mon.popinput(type='checkbox' name='pop_repeat_mon' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_tue') T
+			input#pop_repeat_tue.popinput(type='checkbox' name='pop_repeat_tue' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_wed') W
+			input#pop_repeat_wed.popinput(type='checkbox' name='pop_repeat_wed' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_thur') T
+			input#pop_repeat_thur.popinput(type='checkbox' name='pop_repeat_thur' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_fri') F
+			input#pop_repeat_fri.popinput(type='checkbox' name='pop_repeat_fri' style='width: 20px;')
+			label.poplabel(style='width: 7px;' for='pop_repeat_sat') S
+			input#pop_repeat_sat.popinput(type='checkbox' name='pop_repeat_sat' style='width: 20px;')
+
+	div(style='padding-top: 20px; margin-bottom: -12px;')
+		hr
 
 script.
 	// arrays for holding sensors and actuators
 	var tab_slots = 4;
 	var sensor_index = 0;
 	var actuator_index = 0;
+	var sch_run, sch_time, sch_duration, sch_repeat
+	var sch_repeat_data = {};
+	var scheduleObj = {};
+
 
 	// do stuff
 	create_buttons('pop_actuators');
@@ -110,6 +147,19 @@ script.
 			}
 		}
 	});
+	
+	// handle checkbox for repeat scheduling
+	$('#pop_repeat_days').click(function() {
+		$('#pop_repeat_options_days').toggle();
+	});
+
+	$('#pop_repeat_mins').click(function() {
+		$('#pop_repeat_options_mins').toggle();
+	});
+
+	$('#pop_repeat_specific').click(function() {
+		$('#pop_repeat_specific_options').toggle();
+	});
 
 	// disable save button till schedule is more built
 	$('#popup_save_button').button('disable');
@@ -125,6 +175,7 @@ script.
 
 	// check input
 	$('#pop_duration').bind('keyup', keyup_checkDuration);
+	$('#pop_repeat_minutes').bind('keyup', keyup_checkDuration);
 
 	$('#pop_time').bind('keyup', keyup_checkTime);
 
@@ -132,7 +183,22 @@ script.
 	$('#pop_start').droppable( {
 		accept: "div[id^='pop_sensors_button']",
 		hoverClass: 'dark',
-		drop: addStart
+		drop: function(event, ui) {
+			var $this = $(this);
+			$("#schedule_datetime").dialog('option', 'buttons', {
+				"Ok": function() {
+					if(check_datetime() ) {
+						addStart($this, event, ui);
+						$(this).dialog("close");
+					}
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				}
+			});
+			ui.draggable.draggable('option', 'revert', false);
+			$("#schedule_datetime").dialog('open');
+		}
 	});
 
 	$('#pop_stop').droppable( {
@@ -148,8 +214,12 @@ script.
 			var $this = $(this);
 			$("#schedule_duration").dialog('option', 'buttons', {
 				"Ok": function() {
-					addRun($this, event, ui);
-					$(this).dialog("close");
+					if($('#pop_duration').val() != '') {
+						sch_run = ui.draggable.data('name');
+						sch_duration = $('#pop_duration').val();
+						addRun($this, event, ui);				
+						$(this).dialog("close");
+					}
 				},
 				"Cancel": function() {
 					$(this).dialog("close");
@@ -160,15 +230,37 @@ script.
 		}
 	});
 
-	function addStart(event, ui) {
-		$(this).addClass('dark').droppable('disable').removeClass('ui-state-disabled').addClass('shade');
-		$(this).css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
-		$(this).css('border', '');
+	function addStart($this, event, ui) {
+		$this.droppable('disable').removeClass('ui-state-disabled').addClass('shade');
+		$this.css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
+		$this.css('border', '');
+		var datetime_text = "<div style='position: absolute; width: 140px; height: 30px; top: 9px; text-align: center;'>";
+		datetime_text = datetime_text + $('#pop_duration').val() + " minutes</div>";
+		//$('#pop_runme').append(datetime_text);
 		ui.draggable.draggable('option', 'revert', false);
-		$('#data').append(' addedstart ');
-		$('#pop_stop').show();
+		//$('#data').append(' addedStart ');
+		disable_tab('pop_sensors');
+		// check repeat options
+		if ($('#pop_repeat_mins').prop('checked', true)) {
+			sch_repeat = 'mins';
+			$('#data').append($('pop_repeat_minutes').val());
+			sch_repeat_data = {'minutes': $('pop_repeat_minutes').val()};
+		}
+		else if ($('#pop_repeat_days').prop('checked', true)) {
+			sch_repeat = 'days';
+			switch ($('input[name=pop_repeat_type]:checked').val()) {
+				case 'odd':
+					sch_repeat_data = {'type': 'odd'};
+					break;
+				case 'even':
+					sch_repeat_data = {'type': 'even'};
+					break;
+				case 'specific':
+					sch_repeat_data = {'type': 'specific'};
+					break;
+			}
+		}
 		$('#popup_save_button').button('enable');
-		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
 	}
 
 	function addStop(event, ui) {
@@ -176,11 +268,11 @@ script.
 		$(this).css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
 		$(this).css('border', '');
 		ui.draggable.draggable('option', 'revert', false);
-		$('#data').append(' addedstop ');
+		//$('#data').append(' addedstop ');
 		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
 		disable_tab('pop_sensors');
 	}
-	
+
 	function addRun($this, event, ui) {
 		$this.droppable('disable').removeClass('ui-state-disabled').addClass('shade');
 		$this.css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
@@ -189,8 +281,62 @@ script.
 		duration_text = duration_text + $('#pop_duration').val() + " minutes</div>";
 		$this.append(duration_text);
 		ui.draggable.draggable('option', 'revert', false);
-		$('#data').append(' addedrun ');
+		//$('#data').append(' addedrun ');
 		disable_tab('pop_actuators');
 		enable_tab('pop_sensors');
 		$('#pop_start').show();
+	}
+
+	function check_datetime() {
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
+
+		var invalid_flag = 0;
+		var message = '';
+
+		if ($('#pop_time').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* time is empty';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_time_alert').addClass('ui-icon ui-icon-alert');
+		}
+		else if ($('#pop_time').val().search(/^(([0-1][0-9]|2[0-3]|[0-9])|([0-1][0-9]|2[0-3]|[0-9])(:)[0-5]?[0-9]?(:?)[0-5]?[0-9]?)$/))
+		{
+			invalid_flag = 1;
+			message = '* time is invalid (hh:mm:ss)';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_time_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if ($('#pop_date').data('picked') != 1)
+		{
+			invalid_flag = 1;
+			message = '* must pick a date';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");		
+			$('#pop_date_alert').addClass('ui-icon ui-icon-alert');	
+		}
+		if (invalid_flag != 1) {
+			message = '* time is valid!';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
+
+			// we've got a match! strip out times and calculate
+			var time_chunks = $('#pop_time').val().split(/:/g)
+			var time_offset = time_chunks[0]*3600000;
+			if (time_chunks[1] != null)
+				time_offset = time_offset + time_chunks[1]*60000;
+			if (time_chunks[2] != null)
+				time_offset = time_offset + time_chunks[2]*1000;
+
+			var newTimeDate = parseInt($('#pop_date_alt').val());
+			var timeobj = new Date(newTimeDate+time_offset);
+			sch_time = timeobj.getTime()
+			return true;
+		}
+	}
+
+	function check() {
+		scheduleObj = {'run': sch_run, 'time': sch_time, 'duration': sch_duration, 'repeat': sch_repeat, 'repeat_data': sch_repeat_data};
+		$('#data').append(JSON.stringify(scheduleObj));
+		return false;
 	}

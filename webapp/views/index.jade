@@ -14,9 +14,10 @@ block jscripts
 		var connectdivs = true;
 
 		// arrays for server data
-		var sensor_array = [{'id': 'time/date', 'icon' : '/images/icons/schedule.png'}];
+		var sensor_array = [{'id': 'time/date', 'alias': 'time/date', 'icon' : '/images/icons/schedule.png'}];
 		var actuator_array = [];
 		var zones = {};
+		var beehive = {};
 
 		// do stuff once document loads
 		$(window).load(function() {
@@ -127,7 +128,7 @@ block jscripts
 					// connect all links to one another and set data.title from html title attribute
 					var $linkarray = $buttonarray.eq(i).children('div.buttonLinks').children('div.linkIcon');
 					var links = $linkarray.size();
-					$('#data').append(' ' + links + ' ');
+					//$('#data').append(' ' + links + ' ');
 					if (links >= 3)
 					{
 						for (var j=0; j<links; j++)
@@ -234,6 +235,7 @@ block jscripts
 			nodeio.emit('get:sensordata');
 			nodeio.emit('get:actuatordata');
 			nodeio.emit('get:zones');
+			nodeio.emit('get:bees');
 		}
 
 		function timeupdate(atime) {
@@ -344,19 +346,29 @@ block jscripts
 		nodeio.on('climate', function (sensordata) {
 			console.info('updating climate');
 			$('#humidity_value').empty();
-			$('#humidity_value').append(sensordata.hum + '%');
+			$('#humidity_value').append(sensordata.hum + "<span style='font-size: 12px;'>%</span>");
 			$('#temperature_value').empty();
 			$('#temperature_value').append(sensordata.temp);
 			if (temperaturedisplay == 'F')
-				$('#temperature_value').append('\u2109');
+				$('#temperature_value').append("<span style='font-size: 12px;'>\u2109</span>");
 			else
-				$('#temperature_value').append('\u2103');
+				$('#temperature_value').append("<span style='font-size: 12px;'>\u2103</span>");
 		});
 
 		nodeio.on('zones', function(zonedata) {
-			zones = zonedata;
-			$('#data').append(' zonechange ');
+			if (zones != zonedata) {
+				zones = zonedata;
+				//$('#data').append(' zonechange ');
+			}
 			//$('#data').append(JSON.stringify(zones));
+		});
+
+		nodeio.on('bees', function(beedata) {
+			if (beehive != beedata) {
+				beehive = beedata;
+				//$('#data').append(' beechange ');
+			}
+			//$('#data').append(JSON.stringify(bees));
 		});
 
 		//********* end socket.io event handlers *********
@@ -402,7 +414,7 @@ block content
 		div#button_humidity.buttonIcon(title='humidity')
 			div#humidity_value(style='position: relative; top: 20px; text-align: center; font-weight: bold; color: #eaeaea;')
 		div.buttonLinks
-			div.linkIcon(style='background-color: #A00000;')
+			div.linkIcon(style='background-color: #00A2BF;')
 				img.linkImage(src='/images/icons/dark_small_delete.png')
 
 
@@ -414,6 +426,8 @@ block content
 		div.buttonLinks
 			div#viewremotes.linkIcon(title='view remotes')
 				img.linkImage(src='/images/icons/small_view.png')
+			div#runremotes.linkIcon(title='run now')
+				img.linkImage(src='/images/icons/small_controls.png')
 
 
 	div#title_schedule.buttonTitle

@@ -98,29 +98,90 @@ wireless.prototype.getConnmanKey = function(ssid,callback){
 			console.log(stdout.match(stdout_regex).toString())
 			callback(stdout.match(stdout_regex).toString())
 		}
-		callback(null);
+		else callback(null);
 	});
 }
 
 wireless.prototype.connect = function(connJSON, callback){
-	this.getConnmanKey(connJSON.ssid,function(wireless_key){
-		console.log('key is ' + wireless_key);
-		if (wireless_key == null) callback('SSID not in range');
-		else{
-			wireless_key = wireless_key.replace(connJSON.ssid,'').replace(/{\s/g,'')
-			var stream = fs.createWriteStream('/var/lib/connman/wifi.config');
-			stream.once('open', function(close){
-				stream.write('[service_home]\n');
-				stream.write('Type = wifi\n');
-				stream.write('Name = ' + connJSON.ssid + '\n');
-				stream.write('Security ='+connJSON.security+'\n');
-				stream.write('Passphrase = ' + connJSON.password + '\n');
-				stream.end();
+	exec('pwd', function(error, stdout, stderr){
+		console.log('pwd: ' + stdout);
+	});
+	exec('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
+		console.log('wlan0 removed');
+	});
+	
+
+	if (connJSON.security.match(/WEP/)){
+		var stream = fs.createWriteStream("/home/node/repository/webapp/config/wpa_supplicant.conf");
+		stream.once('open', function(close){
+			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');			
+			stream.write('ctrl_interface_group=0\n');
+//stream.write('ctrl_interface_group=nodectrl\n');
+			stream.write('update_config=1\n');
+			stream.write('network={\n');
+			stream.write('\tssid="'+connJSON.ssid+'"\n');
+			stream.write('\tkey_mgmt=NONE\n');
+			stream.write('\twep_key0='+connJSON.password+'\n');
+			stream.write('}')
+			stream.end();
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c /home/node/repository/webapp/config/wpa_supplicant.conf',{timeout: 1000}, function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
+				exec('sudo /sbin/udhcpc -i wlan0' ,{timeout: 30000}, function(error, stdout, stderr){
+					console.log(error, stdout, stderr);
+					console.log('Please do not hang :3');
+				});
 			});
-			exec('/usr/lib/connman/test/test-connman connect ' + wireless_key,function(){});
-		}
-	});	
-}	
+		});
+	}
+
+	if (connJSON.security.match(/WPA/)){
+		var connstream = fs.createWriteStream('/var/lib/connman/wifi.config');
+			connstream.once('open', function(close){
+			connstream.write('[service_home]\n');
+			connstream.write('Type = wifi\n');
+			connstream.write('Name = ' + connJSON.ssid + '\n');
+			connstream.write('Security = '+connJSON.security+'\n');
+			connstream.write('Passphrase = ' + connJSON.password + '\n');
+			connstream.end();
+		});
+		console.log('creating stream')
+		stream = fs.createWriteStream('/home/node/repository/webapp/config/wpa_supplicant.conf');
+		stream.once('open', function(close){
+			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
+			stream.write('ctrl_interface_group=0\n');
+			stream.write('update_config=1\n');
+			stream.write('network={\n');
+			stream.write('\tssid="'+connJSON.ssid+'"\n');
+			stream.write('\tkey_mgmt='+connJSON.security+ '\n');
+			if (connJSON.security.match(/EAP/)){
+				stream.write('\teap='+connJSON.special+'\n');
+				stream.write('\tidentity="'+connJSON.username+'"\n');
+				stream.write('\tphase2="autheap='+connJSON.eaptype+'"\n');
+				stream.write('\tpassword="'+connJSON.password+'"\n');
+			}
+			if (connJSON.bssid)
+				stream.write('\tbssid='+connJSON.bssid+'\n');
+			if(connJSON.security.match(/WPA/)){
+				stream.write('\tpsk="'+connJSON.password+'"\n');
+			}
+			if(connJSON.group){
+				stream.write('\tgroup='+connJSON.group+'\n');
+			}
+			stream.write('}');
+			stream.end();
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c /home/node/repository/webapp/config/wpa_supplicant.conf -B',{timeout: 1000}, function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
+				exec('sudo /sbin/udhcpc -i wlan0' ,{timeout: 40000}, function(error, stdout, stderr){
+					console.log(error, stdout, stderr);
+					console.log('Please do not hang :3');
+					callback(error);
+				});
+			});
+		});
+	}
+}
 
 module.exports = wireless;
 /*
