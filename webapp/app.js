@@ -10,7 +10,7 @@ var routes = require('./routes');
 
 // node.controller object creation
 ctrl = require('./mods');
-var controller = new ctrl();
+controller = new ctrl();
 
 // io middleware extension
 require('express.io-middleware')(app);
@@ -34,7 +34,7 @@ app.configure(function() {
 		delete req.session.message;
 		res.locals.message = '';
 		if (msg) res.locals.message = msg;
-		req.controller = controller;  // attach controller object
+		//req.controller = controller;  // attach controller object
 		next();
 	});
 
@@ -43,7 +43,7 @@ app.configure(function() {
 	
 	// catch anything else
 	app.use(function(req, res) {
-		res.send(404, "Page does not exist...");
+		res.render('404', { title: '* Page not found', error: req.url + ' does not exist...' });
 	});
 });
 
@@ -92,7 +92,11 @@ app.get('/', restricted, setup, routes.index);
 app.get('/schedule', restricted, routes.schedule);
 app.get('/control', restricted, routes.control);
 app.get('/nodes', restricted, routes.nodes);
+// settings
+app.post('/settings/edit', restricted, routes.editsettings);
 app.get('/settings', restricted, routes.settings);
+app.get('/settings/:id', restricted, routes.settings);
+// sensors
 app.get('/sensors', restricted, routes.sensors);
 // setup (also restricted)
 app.get('/setup', restricted, routes.setup);

@@ -254,7 +254,6 @@ block jscripts
 				$(".selme").removeClass("setupwifisel");
 				$(this).parent(".selme").addClass("setupwifisel");
 				$('#password_entry').empty();
-
 				$('#password_entry').dialog('option', 'title', 'Credentials for ' + $(this).val())
 				dialog_html = "<br>";
 				if ($(this).data('security_type').match(/eap/i)) {
@@ -286,10 +285,11 @@ block jscripts
 						$('#dialog_password').toggle();
 					}
 				});
-				if (!$(this).data('security_type').match(/none/i))
+
+				if ($(this).data('security_type').match(/wpa|wep/i))
 					$('#password_entry').dialog('open');
 			});
-			// $('#wifis').append(JSON.stringify(scanned_networks, null, 4));
+			$('#wifis').append(JSON.stringify(scanned_networks, null, 4));
 			// show after appending
 			wifiShow();
 		});

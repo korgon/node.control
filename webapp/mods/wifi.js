@@ -2,7 +2,7 @@
 // Manages wifi interface for node.control
 // ---------------------------------------------------
 // Listing of exported methods:
-//	|--- scan(callback)
+//  |--- scan(callback)
 //  |--- connect(json, callback)
 // ---------------------------------------------------
 
@@ -12,11 +12,12 @@ var fs = require('fs')
 var exec = require('child_process').exec
 
 // module variables
-var wireless_interface
+var wireless_interface;
+var wlan0_ip;
 
 //********* Wifi Constructor *********
 function wireless(_interface){
-	wireless_interface = _interface
+	wireless_interface = _interface;
 }
 
 // function for executing command in *NIX terminal. Output is sent to callback
@@ -35,9 +36,9 @@ function getData(callback){
 	});	
 }
 
-function parseData(data, callback){
+function parseScan(data, callback){
 	//Creating the search parameters
-	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g
+	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g;
 	var frequency = /\t[0-9]{4}\t/g;
 	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
 	var siglevel = /\t[0-9]{1,3}\t/g;
@@ -78,7 +79,7 @@ function generateJSON(SSID, security, sigLevelInt, frequencyInt, macAddress, cal
 
 wireless.prototype.scan = function(callback) {
 	getData(function(data) {
-		parseData(data, function(SSID, security, sigLevelInt, frequencyInt, macAddress) {
+		parseScan(data, function(SSID, security, sigLevelInt, frequencyInt, macAddress) {
 			generateJSON(SSID, security, sigLevelInt, frequencyInt, macAddress, function(isDone) {
 				callback(isDone);	
 			});
@@ -86,13 +87,20 @@ wireless.prototype.scan = function(callback) {
 	});
 }
 
+wireless.prototype.getIP = function() {
+	return wlan0_ip;
+}
+
 //********* Wifi Connect Function *********
+
 wireless.prototype.connect = function(connJSON, callback){
 	terminal_output('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
-});
+		console.log('wlan0 removed');
+	});
+	
 
-	if (connJSON.security.match(/WEP/)){
-		var stream = fs.createWriteStream("./wpa_supplicant.conf");
+	if (connJSON.security_type.match(/WEP/)){
+		var stream = fs.createWriteStream("./config/wpa_supplicant.conf");
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			stream.write('ctrl_interface_group=nodectrl\n');
@@ -105,7 +113,8 @@ wireless.prototype.connect = function(connJSON, callback){
 			stream.end();
 			current_date = new Date().getTime();
 			current_time = current_date.getTime();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf', function(error, stdout, stderr){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf', function(error, stdout, stderr){
+				console.log('Is it hanging...?');
 				setInterval(function(){
 					now_date = Date();
 					now_time = now_date.getTime();
@@ -113,30 +122,31 @@ wireless.prototype.connect = function(connJSON, callback){
 						throw 'Cannot connect to network. Check your settings and try again';
 						}
 					}, 2000);
-					terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
+				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
+					console.log('Please do not hang :3')
 				});
 			});
 		});
 	}
 
-	if (connJSON.security.match(/WPA/)){
-		var stream = fs.createWriteStream('./wpa_supplicant.conf');
+	if (connJSON.security_type.match(/WPA/)){
+		var stream = fs.createWriteStream('./config/wpa_supplicant.conf');
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
-			stream.write('ctrl_interface_group=nodectrl\n');
+			stream.write('ctrl_interface_group=0\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
-			stream.write('\tkey_mgmt='+connJSON.security+'\n');
-			if (connJSON.security.match(/EAP/)){
-				stream.write('\teap='+connJSON.special+'\n');
+			stream.write('\tkey_mgmt='+connJSON.security_type.match(/WPA/)[0]+'-'+connJSON.security_type.match(/(PEAP|PSK|EAP)/)[0]+'\n');
+			if (connJSON.security_type.match(/EAP/)){
+				stream.write('\teap=PEAP\n');
 				stream.write('\tidentity="'+connJSON.username+'"\n');
-				stream.write('\tphase2="autheap='+connJSON.eaptype+'"\n');
+				stream.write('\tphase2="autheap=GTC"\n');
 				stream.write('\tpassword="'+connJSON.password+'"\n');
 			}
 			stream.write('\tbssid='+connJSON.bssid+'\n');
-
-			if(connJSON.security.match(/PSK/)){
+			console.log('HERE');
+			if(connJSON.security_type.match(/PSK/)){
 				stream.write('\tpsk="'+connJSON.password+'"\n');
 			}
 			if(connJSON.group){
@@ -144,10 +154,21 @@ wireless.prototype.connect = function(connJSON, callback){
 			}
 			stream.write('}');
 			stream.end();
-
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
+			console.log('Password?\n');
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf -B', function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
+				console.log('Pass Here?');
+				//var i = 0;
 				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-					// dhcp
+//					setInterval(function(){i++;}, 2000);
+//					console.log(i);
+//					if( i == 45){
+//						throw "Cannot connect, check your connection settings";}
+					console.log(error, stdout, stderr);
+//					if(error | stderr) throw error;
+					console.log('Please do not hang :3');
+					callback('Here is your damn callback');
 				});
 			});
 		});
@@ -155,11 +176,10 @@ wireless.prototype.connect = function(connJSON, callback){
 }
 
 module.exports = wireless;
-
 /*
-var JSONin = {"bssid":"00:23:69:46:b2:12","ssid":"traegalia","username":"", "password":"ADAB1C21BD82347205BB3B0156", "security":"[WPA2-PSK-TKIP][ESS]"};
+var JSONin = {"bssid":"00:23:69:46:b2:12","ssid":"traegalia","username":"", "password":"ADAB1C21BD82347205BB3B0156", "security_type":"[WPA2-PSK-TKIP][ESS]"};
 var wifi = new wireless;
 wifi.connect(JSONin, function() {
-	console.log("connecting...");
+	console.log("connected?");
 });
 */

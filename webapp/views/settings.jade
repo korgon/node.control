@@ -1,6 +1,18 @@
-extends layout
+extends layout_minimal
 
 block content
-	h1.heading= title
-	p.
-		Similar to the initial setup here with ability to change network, password, etc...
+	.center
+		.icon#settings(style='position: absolute; top: 180px; left: 285px;')
+				img(src='/images/settings_light.png')
+		.icon#security(style='position: absolute; top: 90px; left: 60px;')
+			a(href='/settings/security')
+				img(src='/images/security_light.png')
+		.icon#eth0(style='position: absolute; top: 180px; left: 600px;')
+			a(href='/settings/eth0')
+				img(src='/images/eth0_light.png')
+		.icon#wlan0(style='position: absolute; top: 180px; left: 0px;')
+			a(href='/settings/wlan0')
+				img(src='/images/wlan0_light.png')
+		.icon#internet(style='position: absolute; top: 180px; left: 0px;')
+			a(href='/settings/internet')
+				img(src='/images/internet_light.png')

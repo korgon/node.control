@@ -275,26 +275,45 @@ h4 {
 }
 
 .imageContainer {
-    text-align: center;
+	text-align: center;
 }
 .imageContainer img {
-    display: block;
+	display: block;
 }
 .imageContainer div {
-    position: relative;
-    display: inline-block;
-    /* if you need ie6/7 support */
-    *display: inline;
-    zoom: 1;
+	position: relative;
+	display: inline-block;
+	/* if you need ie6/7 support */
+	*display: inline;
+	zoom: 1;
 }
 .imageContainer span {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background: #000;
-    background: rgba(0,0,0,.5);
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background: #000;
+	background: rgba(0,0,0,.5);
 }
+
+div.icon img {
+	position: relative;
+	left: 0px;
+	top: 21px;
+}
+div.icon {
+	width: 90px;
+	height: 90px;
+	background-color: #333;
+	color: #eae;
+	border: 1px solid black;
+	border-radius: 999px;
+}
+div.icon:hover {
+	border: 1px solid #000;
+	background-color: #111;
+}
+
 
 .dark {
 	background-color: #333333;

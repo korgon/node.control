@@ -23,11 +23,10 @@ var setup;
 //********* Controller Constructor *********
 function controller() {
 	console.log(" |---[ Instantiating controller object ]---|");
-
 	updateSystemVariables();
 }
 
-// pull system settings from database
+// pull settings from database
 function updateSystemVariables() {
 	db.setupPull(function(data) {
 		hostname = data.hostname;
