@@ -1,0 +1,70 @@
+h1.popup Modify User Profile
+form(id='security' name='setup' onsubmit="return check()")
+	div
+		div
+			label.poplabel(for='email') Email Address
+			input#email.popinput(type='text' name='email' value='#{email}')
+			span#email_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+			div#email_error
+		div
+			label.poplabel(for='username') Username
+			input#username.popinput(type='text' name='username' value='#{username}')
+			span#username_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+			div#username_error
+		div
+			label.poplabel(for='password') Old Password
+			input#oldpassword.popinput(type='password' name='password' value='')
+			span#oldpassword_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div
+			label.poplabel(for='password') New Password
+			input#password.popinput(type='password' name='password' value='')
+			span#password_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div
+			label.poplabel(for='confrim_password') New Password
+			input#confirm_password.popinput(type='password' name='confirm_password' value='')
+			div#password_error
+
+script.
+	function check() {
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
+
+		var invalid_flag = 0;
+		var message = '';
+		if ($('#username').val() == null || $('#username').val() == "") {
+			invalid_flag = 1;
+			message = '* username is empty';
+			$('#username_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#username_alert').addClass('ui-icon ui-icon-alert');
+		} else if ($('#username').val().length < 4) {
+			invalid_flag = 1;
+			message = '* username is too short';
+			$('#username_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#username_alert').addClass('ui-icon ui-icon-alert');			
+		}
+		if ($('#password').val() == null || $('#password').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* password is empty';
+			$('#password_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#password_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if ($('#confirm_password').val() != $('#password').val())
+		{
+			invalid_flag = 1;
+			message = '* passwords do not match';
+			$('#password_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#password_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if ($('#email').val() == null || $('#email').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* email is empty';
+			$('#email_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#email_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if (invalid_flag != 1) {
+			// submit the data
+		}
+	}

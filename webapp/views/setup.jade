@@ -9,7 +9,7 @@ block jscripts
 		var curPage = 1, endPage = 4;
 
 		// do stuff once document loads
-		$(document).ready(function(){ 
+		$(document).ready(function() { 
 			nav(curPage);
 			ipMode('eth0');
 			ipMode('wlan0');
@@ -79,7 +79,7 @@ block jscripts
 							$('#dialog_password').prop('disabled', true);
 							$('#dialog_password_text').prop('disabled', true);
 							$('#show_password').prop('disabled', true);
-							$( this ).dialog( "close" );
+							$(this).dialog('close');
 						}
 					},
 					{
@@ -254,7 +254,7 @@ block jscripts
 				$(".selme").removeClass("setupwifisel");
 				$(this).parent(".selme").addClass("setupwifisel");
 				$('#password_entry').empty();
-				$('#password_entry').dialog('option', 'title', 'Credentials for ' + $(this).val())
+				$('#password_entry').dialog('option', 'title', 'Credentials for ' + $(this).val());
 				dialog_html = "<br>";
 				if ($(this).data('security_type').match(/eap/i)) {
 					dialog_html = dialog_html + "<label class='setupnet' for='dialog_username'><h4 style='margin: 0px;'>Username</h4></label>";
@@ -310,7 +310,7 @@ block content
 			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
 			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
 			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
-		div.subcontent(id='setupview1' style='display: none')
+		div.setupcontent(id='setupview1' style='display: none')
 
 			fieldset
 				legend <a>|</a> node details <a>|</a>
@@ -333,7 +333,7 @@ block content
 				label.setupnet(for='password') Password
 				input.box(type='password', name='password', id='password', size='18' title='Password should be stronger than the force.')
 
-		div.subcontent(id='setupview2' style='display: none')
+		div.setupcontent(id='setupview2' style='display: none')
 			fieldset
 				legend <a>|</a> wired network settings <a>|</a>
 				label.setupnet(for='eth0_mode') Mode
@@ -361,7 +361,7 @@ block content
 					label.setupnet(for='eth0_dns2') DNS2
 					input.ip(type='text', name='eth0_dns2', id='eth0_dns2', value='#{eth0.dns2}')
 
-		div.subcontent(id='setupviewload' style='display: none')
+		div.setupcontent(id='setupviewload' style='display: none')
 			fieldset
 				legend <a>|</a> wireless networks in range <a>|</a>
 					img.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');
@@ -375,7 +375,7 @@ block content
 				br
 
 
-		div.subcontent(id='setupview3' style='display: none')
+		div.setupcontent(id='setupview3' style='display: none')
 			fieldset
 				legend <a>|</a> wireless networks in range <a>|</a>
 					img#refresh.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');
@@ -386,7 +386,7 @@ block content
 				div#wifis
 
 
-		div.subcontent(id='setupview4' style='display: none')
+		div.setupcontent(id='setupview4' style='display: none')
 			fieldset
 				legend <a>|</a> wireless network settings <a>|</a>
 				label.setupnet(for='wlan0_mode') Mode

@@ -3,8 +3,22 @@ exports.test = function(req, res) {
 	res.render('test', { title: 'Testing.....' });
 };
 
+// popups
+exports.pop_settings_security = function(req, res) {
+	controller.db.getUserData(function(uname) {
+		res.render('popup/security', { username: uname.uname, email: uname.email });
+	});
+};
+exports.pop_settings_general = function(req, res) {
+	res.render('popup/general', { title: 'Security Settings' });
+};
+
+exports.proto = function(req, res) {
+  res.render('proto', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname() });
+};
+
 exports.index = function(req, res) {
-  res.render('index', { title: 'Sprinkler Controller' });
+  res.render('index', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname() });
 };
 
 exports.control = function(req, res) {
@@ -31,6 +45,8 @@ exports.settings = function(req, res) {
 	else if (req.params.id == 'security')
 			res.render('settings', { title: 'Controller Settings' });
 	else if (req.params.id == 'accesspoint')
+			res.render('settings', { title: 'Controller Settings' });
+	else if (req.params.id == 'internet')
 			res.render('settings', { title: 'Controller Settings' });
 	else if (req.params.id == '' || req.params.id == null)
 			res.render('settings', { title: 'Controller Settings' });

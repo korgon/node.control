@@ -27,15 +27,16 @@ block jscripts
 
 block content
 	.center
-		.center.dark.circle(style='width: 90px; height: 90px; position:relative; top:180px;')
-			h3 login
+		.center.dark.circle(style='width: 290px; height: 290px; position:relative; top:80px; z-index: -1;')
+			h1.login(style='margin-top: 50px;') :login:
 		form(method='post', action='/login', id='logon')
-			.subcontent
-				fieldset(style='margin-top: 180px;')
-					p.alert= message
+			.login(style='position: relative; top:-56px;')
+				p.alert= message
+				div
 					label.login(for='username') username
-					input(type='text', name='username', id='username', size='12')
-					label.login(for='password', style='margin-left: 20px') password
-					input(type='password', name='password', id='password', size='12')
-				.center(style='position:relative; top:30px;')
-					input(id="login" type="button" value="enter")
+					input#username.popinput(type='text' name='username')
+				div
+					label.login(for='password') password
+					input.popinput(type='password' name='password')
+			.center(style='position: relative; top:-35px;')
+				input(id="login" type="button" value="enter")

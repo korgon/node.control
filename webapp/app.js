@@ -34,7 +34,6 @@ app.configure(function() {
 		delete req.session.message;
 		res.locals.message = '';
 		if (msg) res.locals.message = msg;
-		//req.controller = controller;  // attach controller object
 		next();
 	});
 
@@ -81,11 +80,16 @@ app.io.use(function (req, next) {
 
 // routes
 app.get('/test', routes.test);
+app.get('/proto', routes.proto);
 
 // login / out
 app.get('/login', routes.login);
 app.post('/login', routes.loginto);
 app.get('/logout', routes.logout);
+
+// popups
+app.get('/popup/security', restricted, routes.pop_settings_security);
+app.get('/popup/general', restricted, routes.pop_settings_general);
 
 // restricted routes
 app.get('/', restricted, setup, routes.index);
@@ -125,10 +129,22 @@ app.io.route('wifiscan', function(req) {
 	});
 });
 
+// multi-request route to handle all user modifications
+app.io.route('put', {
+  user: function(req) {
+		controller.db.updateUser(req.body.username, req.body.password, req.body.email);
+		console.log(Date() + ' (io) [updated user] from ' + req.session.uname);
+  },
+  general: function(req) {
+		console.log(Date() + ' (io) [updated general] from ' + req.session.uname);
+  }
+});
+
 // example of multi-request route.  Client usage ('get:sensors')
 app.io.route('get', {
   time: function(req) {
-		req.io.emit('time', Date());
+		now = new Date();
+		req.io.emit('time', now.getTime());
 		console.log(Date() + ' (io) [time request] from ' + req.session.uname);
   },
   sensors: function(req) {

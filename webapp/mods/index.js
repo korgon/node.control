@@ -43,6 +43,7 @@ controller.prototype.getHostname = function() {
 	return hostname;
 }
 
+//********* Exports *********
 controller.prototype.db = db;
 controller.prototype.wifi = wifi;
 controller.prototype.updateSystemVariables = updateSystemVariables;

@@ -2,8 +2,7 @@ extends layout_minimal
 
 block content
 	.center
-		.center.dark.circle(style='width: 90px; height: 90px; position:relative; top:180px;')
-			h3 404
-		.subcontent
-			fieldset(style='margin-top: 180px;')
-				p.alert= error
+		.center.dark.circle(style='width: 290px; height: 290px; position:relative; top:80px; z-index: -1;')
+			h1.login(style='margin-top: 50px;') :404:
+		.login(style='position: relative; top:-56px;')
+			p.error= error

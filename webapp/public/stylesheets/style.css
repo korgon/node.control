@@ -14,31 +14,54 @@ div.wrap {
 }
 
 div.mainmenu { 
+	width: 686px;
 	padding: 7px;
 }
 
 div.content { 
+	position: relative;
 	width: 660px;
 	height: 560px;
 	margin: 0 auto;
 }
 
 div.content_minimal { 
+	position: relative;
 	background-image: url('/images/grid.png');
 	background-repeat:no-repeat;
 	background-position:center;
 	width: 660px;
 	height: 450px;
 	margin: 0 auto; 
+	padding-top: 0px;
 }
 
-div.subcontent { 
+div.setupcontent { 
 	padding-top: 0;
 	margin-top: 0;
 	width: 500px;
 	height: 330px;
 	margin: 0 auto;
 	overflow: auto;
+}
+
+div.login { 
+	background-color: #222;
+	border: 1px solid black;
+	color: #eaeaea;
+	border-radius: 6px;
+	padding-top: 0;
+	margin-top: 0;
+	width: 270px;
+	margin: 0 auto;
+}
+
+div.frame { 
+	position: relative;
+	width: 660px;
+	height: 560px;
+	margin-top: 0;
+	margin: 0 auto;
 }
 
 div.center {
@@ -57,7 +80,19 @@ div.setupwifisel {
 label.login {
 	font-size: 16px;
 	padding: 10px;
+	padding-top: 6px;
+	padding-bottom: 0px;
 	font-weight: bold;
+  display: inline-block;
+}
+
+label.poplabel {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: right;
+  width:135px;
+	margin-right: 5px;
+  display: inline-block;
 }
 
 label.setupnet {
@@ -95,27 +130,71 @@ a {
 	color: #00B7FF;
 }
 
+p.error {
+	font-size: 16px;
+	margin: 0px;
+	padding: 0px;
+	font-weight: bold;
+	color: #800000;
+}
+
 p.alert {
+	margin: 0px;
+	padding: 0px;
+	font-weight: bold;
+	color: #800000;
+}
+
+p.inputerror {
+	text-align: right;
+	margin: 0px;
+	padding: 0px;
+	padding-right: 33px;
 	font-weight: bold;
 	color: #800000;
 }
 
 fieldset {
 	background-color: #fff;
+	border: 1px solid black;
 	border-radius: 6px;
-	-moz-border-radius: 6px;
-	-webkit-border-radius: 6px;
+}
+
+fieldset.login {
+	background-color: #222;
+	border: 1px solid black;
+	color: #eaeaea;
+	border-radius: 6px;
+}
+
+div.heading {	
+	position: relative;
+	color: #000;
+	border: 1px solid black;
+	border-top: 0px;
+	font-size: 2em;
+	padding-left: 9px;
+	padding-right: 9px;
+	margin-bottom: 9px;
+	width: 150px;
+}
+
+div.heading img {
+	float: left;
+	padding-right: 9px;;
 }
 
 legend {
-	background-color: #333333;
+	box-shadow: 0px 0px 6px #555;
+	background-color: #333;
 	color: #eaeaea;
-	border: 1px solid black;
+	border: 1px solid #000;
 	border-radius: 6px;
 	font-size: 2em;
 	padding-left: 9px;
 	padding-right: 9px;
 	margin-bottom: 9px;
+	height: 27px;
 }
 
 input {
@@ -129,8 +208,18 @@ input {
 	border-radius: 3px;
 }
 
-textarea:focus, input.box:focus, input.ip_container:focus, select:focus {
-border: 1px solid #333333;
+textarea:focus, input.box:focus, input.popinput:focus, select:focus {
+	border: 1px solid #cc6600;
+	box-shadow: 0px 0px 6px #ff9900;
+}
+
+input.popinput {
+	margin: 3px;
+	width: 150px;
+	height: 20px;
+	background-color: #333333;
+	color: #eaeaea;
+	border: 1px solid black;
 }
 
 input.box {
@@ -142,6 +231,7 @@ input.boxLong {
 	width: 220px;
 	height: 20px;
 }
+
 
 select option {
 	color: #333333;
@@ -221,7 +311,7 @@ ul.menu {
 
 ul.menu li a {
 	display: inline; 
-	background-color: white;
+	background-color: #fff;
 	color: black;
 	padding: 7px;
 	text-decoration: none;
@@ -230,11 +320,13 @@ ul.menu li a {
 	border-width: 1px;
 	font-weight: bold;
 	font-size: 12px;
+
 }
  
 ul.menu a:hover {
 	/* This rule is only in effect when mouse is hovering */
-	color: black;
+	background-color: #000;
+	color: #fff;
 	zoom: 1;
 	filter: alpha(opacity=80);
 	opacity: .33;
@@ -247,31 +339,40 @@ ul.menu li {
 
 
 
-h1.heading {
-	padding-top: 11px;
-	padding-left: 1px;
+h1.popup {
+	color: #00B7FF;
+	margin: 0px;	
+	margin-bottom: 10px;
+	padding: 0px;
 	border-bottom: 1px solid #333333;
 	font-size: 3em;
 }
 
-h1 {
-    font-size: 36px;
-    line-height: 40px;
+h1.node {
+	color: #00B7FF;
+	margin: 0px;
+	margin-top: 48px;
+	padding: 0px;
+	font-size: 30px;
 }
- 
-h2 {
-    font-size: 30px;
-    line-height: 40px;
+
+h1.login {
+	color: #00B7FF;
+	padding: 0px;
+	font-size: 60px;
 }
- 
-h3 {
-    font-size: 24px;
-    line-height: 40px;
+
+h4.time {
+	font-size: 18px;
+	margin: 0px;
+	padding: 0px;
 }
- 
-h4 {
-    font-size: 18px;
-    line-height: 20px;
+
+h5.date {
+	margin: 0px;
+	margin-bottom: 6px;
+	margin-top: 2px;
+	padding: 0px;
 }
 
 .imageContainer {
@@ -283,9 +384,6 @@ h4 {
 .imageContainer div {
 	position: relative;
 	display: inline-block;
-	/* if you need ie6/7 support */
-	*display: inline;
-	zoom: 1;
 }
 .imageContainer span {
 	position: absolute;
@@ -297,21 +395,21 @@ h4 {
 }
 
 div.icon img {
-	position: relative;
-	left: 0px;
-	top: 21px;
+	position: absolute;
+	left: 14px;
+	top: 14px;
 }
 div.icon {
-	width: 90px;
-	height: 90px;
+	width: 60px;
+	height: 60px;
 	background-color: #333;
 	color: #eae;
 	border: 1px solid black;
 	border-radius: 999px;
+	position: relative;
 }
 div.icon:hover {
-	border: 1px solid #000;
-	background-color: #111;
+	background-color: #555;
 }
 
 
@@ -327,8 +425,13 @@ div.icon:hover {
 }
 
 .circle {
+	box-shadow: 0px 0px 6px #333;
 	border-radius: 999px;
 	margin-bottom: 9px;
+}
+
+.dlg-no-title .ui-dialog-titlebar {
+	display: none;
 }
 
 /* waiting blocks css */
