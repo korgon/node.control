@@ -18,10 +18,10 @@ function terminal_output(command, callback){
 
 
 wireless_scan.prototype.getData = function(callback){
-	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(info){
-		//console.log('scanned');
-		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(output){
-			//console.log('getting results');
+	terminal_output('wpa_cli scan ' + wireless_interface, function(info){
+		console.log('scanned');
+		terminal_output('wpa_cli scan_results', function(output){
+			console.log('getting results');
 			callback(output);
 		});
 		});
@@ -34,10 +34,10 @@ wireless_scan.prototype.parseData = function(data, callback){
 	var frequency = /\t[0-9]{4}\t/g;
 	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
 	var siglevel = /\t[0-9]{1,3}\t/g;
-	var ssid = /\]\s+[\s\w<>\-\(\)]+(?=\s+)/g
+	var ssid = /\]\s+[\s<>\w\-\(\)]+(?=\s+)/g
 
-	//console.log('processing data')
-	//console.log(data);
+	console.log('processing data')
+	console.log(data);
 	
 	macAddress = data.match(bssid);
 	frequencyInt = data.match(frequency);
@@ -61,16 +61,16 @@ wireless_scan.prototype.parseData = function(data, callback){
 		security[sec] = security[sec].replace(/\t/g, '');
 	}
 	
-	//console.log(security);
+	console.log(security);
 	callback(SSID, security, sigLevelInt, frequencyInt, macAddress);
 	}
 
 wireless_scan.prototype.generateJSON = function(SSID, security, sigLevelInt, frequencyInt, macAddress, callback){
 	var jsonarr = [];
 	for (stuff in SSID){
-		jsonarr.push({"ssid": SSID[stuff], "security_type": security[stuff], "sig_strength": sigLevelInt[stuff], "frequency": frequencyInt[stuff], "mac_address": macAddress[stuff]});
+		jsonarr.push({"SSID": SSID[stuff], "Security_type": security[stuff], "Sig_Strength": sigLevelInt[stuff], "Frequency": frequencyInt[stuff], "Mac_address": macAddress[stuff]});
 		}
-	callback({networks:jsonarr});
+	callback({Networks: jsonarr});
 	};
 
 wireless_scan.prototype.scan = function(callback){
@@ -87,3 +87,11 @@ wireless_scan.prototype.scan = function(callback){
 	
 
 module.exports = wireless_scan
+
+var wire = new wireless_scan('wlan0');
+
+wire.scan(function(json_output){
+	console.log(json_output);
+});
+
+

@@ -7,6 +7,8 @@ var routes = require('./routes');
 // node.control dependencies.
 var mods = require('./mods');
 var db = new mods.dman();
+var wscan = new mods.wiscan('wlan0');
+
 
 // io middleware extension
 require('express.io-middleware')(app);
@@ -110,11 +112,9 @@ console.log('Server listening... on port ' + port);
 // wifiscan io request
 app.io.route('wifiscan', function(req) {
 	console.log('(io) [wifiscan request] from ' + req.session.uname);
-	var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jesus Loves Internets", security: "none", signal: 220} ];
-	// simulate some delay here ;)
-	setTimeout(function() {
-		req.io.emit('scanned', wifis);
-	}, 2000);
+	wscan.scan(function(json_output){
+		req.io.emit('scanned', json_output);
+	});
 });
 
 // example of multi-request route.  Client usage ('get:sensors')

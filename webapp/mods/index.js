@@ -13,5 +13,7 @@
 // data management
 module.exports.dman = require("./dataman.js");
 
+module.exports.wiscan = require("./wiscan.js");
+
 
 

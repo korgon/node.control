@@ -5,6 +5,7 @@ block jscripts
 	script(src="/socket.io/socket.io.js")
 	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script.
+		var firstload = 1;
 		var curPage = 1, endPage = 4;
 
 		// do stuff once document loads
@@ -15,6 +16,11 @@ block jscripts
 
 			// all items with a title attribute get tooltips :)
 			$( document ).tooltip({track: true , opacity: 0.5});
+
+			// refresh click
+			$('#refresh').click(function() {
+				wifiHide();
+			});
 
 			// image navigation clicks
 			$('#setupimg1').click(function() {
@@ -92,43 +98,46 @@ block jscripts
 			switch (page) {
 				case 1:
 					$('#setupB1').hide();
-					$('#setupB2').val(" Next ");
+					$('#setupB2').val("Next");
 					for (i=1; i<=endPage; i++) {
 						if (i==page) {
 							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '.5');
+							$('#setupimg' + i).css('opacity', '1');
 						}	else {
 							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '1');
+							$('#setupimg' + i).css('opacity', '.33');
 						}
 					}
 					break;
 				case 2:
 					$('#setupB1').show();
-					$('#setupB2').val(" Next ");
+					$('#setupB2').val("Next");
 					for (i=1; i<=endPage; i++) {
 						if (i==page) {
 							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '.5');
+							$('#setupimg' + i).css('opacity', '1');
 						}	else {
 							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '1');
+							$('#setupimg' + i).css('opacity', '.33');
 						}
 					}
 					break;
 				case 3:
 					$('#setupB1').show();
-					$('#setupB2').val(" Next ");
+					$('#setupB2').val("Next");
 					for (i=1; i<=endPage; i++) {
 						if (i==page) {
 							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '.5');
-							wifiHide(); // do fancy socket.io wifi scanning here
+							$('#setupimg' + i).css('opacity', '1');
+							if (firstload == 1)
+								wifiHide(); // do fancy socket.io wifi scanning here
 						}	else {
 							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '1');
+							$('#setupimg' + i).css('opacity', '.33');
 						}
 					}
+					if (firstload == 1)
+						firstload = 0;
 					break;
 				case 4:
 					$('#setupB1').show();
@@ -136,10 +145,10 @@ block jscripts
 					for (i=1; i<=endPage; i++) {
 						if (i==page) {
 							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '.5');
+							$('#setupimg' + i).css('opacity', '1');
 						}	else {
 							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '1');
+							$('#setupimg' + i).css('opacity', '.33');
 						}
 					}
 					break;
@@ -169,10 +178,42 @@ block jscripts
 		// socketio stuff
 		scanio = io.connect();
 
-		scanio.on('scanned', function(data) {
+		scanio.on('scanned', function(scanned_networks) {
 			// empty the div so no duplication exists
 			$('#wifis').empty();
-			$('#wifis').append(JSON.stringify(data, null, 4));
+			$.each(scanned_networks.networks, function(index, wifiobj){
+				// check if ssid is null
+				if (wifiobj.ssid == "")
+					return true;
+
+				// determine security type
+				if (wifiobj.security_type.match(/wpa2/i))
+					security_min = "WPA2"
+				else if (wifiobj.security_type.match(/wpa/i))
+					security_min = "WPA"
+				else if (wifiobj.security_type.match(/wep/i))
+					security_min = "WEP"
+				else
+					security_min = "NONE"
+
+				// build divs for access points
+				html = "<div id='w" + index + "'>";
+				html = html + "<input type='radio' name='wlan0_ssid' value='" + wifiobj.ssid + "' id='wlan0_" + index + "'";
+				html = html + " style='visibility: hidden;'>";
+				html = html + "<input type='hidden' name='wlan0_security' value='" + wifiobj.security_type + "'>";
+				html = html + "<label class='setupwifi' for='wlan0_" + index + "'>";
+				html = html + "<span class='setupwifissid'>" + wifiobj.ssid + "</span>";
+				html = html + "<span class='setupwifisec'><img src='/images/locked.png'>&nbsp;" + security_min + "</span>";
+				html = html + "<span class='setupwifisig'>Signal&nbsp;";
+				if (wifiobj.sig_strength <= 33)
+					html = html + "<img src='/images/signal_low.png'>";
+				else if (wifiobj.sig_strength > 33 && wifiobj.sig_strength < 66)
+					html = html + "<img src='/images/signal_med.png'>";
+				else if (wifiobj.sig_strength >= 66)
+					html = html + "<img src='/images/signal_high.png'>";
+				$('#wifis').append(html);
+			});
+			$('#wifis').append(JSON.stringify(scanned_networks, null, 4));
 			// show after appending
 			wifiShow();
 		});
@@ -187,7 +228,7 @@ block content
 	form(method='post' id='setupForm' name='setup' action='/setup' onsubmit="return validateForm()")
 		div.subcontent(id='setup1' style='display: none')
 			fieldset
-				legend <a>[ node details ]</a>
+				legend <a>|</a> node details <a>|</a>
 				label.setupnet(for='hostname') Hostname
 				input.box(type='text', name='hostname', id='hostname', size='12' value='#{hostname}')
 				br
@@ -197,7 +238,7 @@ block content
 			br
 			br
 			fieldset
-				legend <a>[ login credentials ]</a>
+				legend <a>|</a> login credentials <a>|</a>
 				label.setupnet(for='email') Email
 				input.boxLong(type='text', name='email', id='email', size='18' value='#{email}')
 				br
@@ -209,7 +250,7 @@ block content
 
 		div.subcontent(id='setup2' style='display: none')
 			fieldset
-				legend <a>[ wired network settings ]</a>
+				legend <a>|</a> wired network settings <a>|</a>
 				label.setupnet(for='eth0_mode') Mode
 				select(name='eth0_mode', id='eth0_mode' onchange="ipMode('eth0')")
 					if eth0.mode == "dynamic"
@@ -237,7 +278,8 @@ block content
 
 		div.subcontent(id='load' style='display: none')
 			fieldset
-				legend <a>[ wireless networks in range ]</a>
+				legend <a>|</a> wireless networks in range <a>|</a>
+					img.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');
 				br
 				br
 				br
@@ -250,13 +292,14 @@ block content
 
 		div.subcontent(id='setup3' style='display: none')
 			fieldset
-				legend <a>[ wireless networks in range ]</a>
+				legend <a>|</a> wireless networks in range <a>|</a>
+					img#refresh.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');
 				div#wifis
 
 
 		div.subcontent(id='setup4' style='display: none')
 			fieldset
-				legend <a>[ wireless network settings ]</a>
+				legend <a>|</a> wireless network settings <a>|</a>
 				label.setupnet(for='wlan0_mode') Mode
 				select(name='wlan0_mode', id='wlan0_mode' onchange="ipMode('wlan0')")
 					if wlan0.mode == "dynamic"
@@ -284,13 +327,10 @@ block content
 
 		div.center
 			input(id="setupB1" type="button" value="Previous")
-			input(id="setupB2" type="button" value=" Next ")
+			input(id="setupB2" type="button" value="Next ")
 		div#imagebar.center
 			br
-			img.clicky(src="/images/security.png" id="setupimg1" title="Login Credentials" style="padding: 3px")
-			img(src="/images/dash.png" style="padding: 10px")
-			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px")
-			img(src="/images/dash.png" style="padding: 10px")
-			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px")
-			img(src="/images/dash.png" style="padding: 10px")
-			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px")
+			img.clicky(src="/images/security.png" id="setupimg1" title="Login Credentials" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")

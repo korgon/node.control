@@ -25,16 +25,16 @@ block jscripts
 		});
 
 block content
-	div.center
+	.center
+		.center.dark.circle(style='width: 90px; height: 90px; position:relative; top:180px;')
+			h3 login
 		form(method='post', action='/login', id='logon')
-			div.subcontent
-				fieldset(style='margin-top: 180px')
-					legend <a>[ login ]</a>
+			.subcontent
+				fieldset(style='margin-top: 180px;')
 					p.alert= message
 					label.login(for='username') username
 					input(type='text', name='username', id='username', size='12')
 					label.login(for='password', style='margin-left: 20px') password
 					input(type='password', name='password', id='password', size='12')
-
-	div.center
-		input(id="login" type="button" value="enter")
+				.center(style='position:relative; top:30px;')
+					input(id="login" type="button" value="enter")
