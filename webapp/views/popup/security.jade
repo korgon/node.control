@@ -1,4 +1,5 @@
 h1.popup Modify User Profile
+hr(style='margin-bottom: 20px;')
 div
 	div
 		label.poplabel(for='pop_username') Username
@@ -18,7 +19,8 @@ div
 		input#pop_confirm_password.popinput(type='password' name='pop_confirm_password' value='')
 		span#pop_confirm_password_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 		div#pop_password_error
-
+	div(style='padding-top: 20px;')
+		hr
 script.
 	function check() {
 		// clear all the error boxes and alerts

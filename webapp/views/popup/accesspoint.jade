@@ -1,10 +1,13 @@
 h1.popup Access Point Configuration
+hr(style='margin-bottom: 20px;')
 div
 	div
 		label.poplabel(for='pop_hostname') Hostname
 		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
 		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 		div#pop_hostname_error
+	div(style='padding-top: 20px;')
+		hr
 
 script.
 	function check() {

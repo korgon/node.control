@@ -75,8 +75,8 @@ function restricted_popup(req, res, next) {
 		// need to authenticate...
 		authmesg = "<script>$('#popup').dialog('option', 'buttons', { 'ok': function () " 
 		+ "{window.location.replace('/login');} })" 
-		+ "</script><h1 class='popup'>Session Timeout</h1><p class='alert'>" 
-		+ "*** your session has timed out ***</p>";
+		+ "</script><h1 class='popup'>Session Timeout</h1><hr><p class='alert'>" 
+		+ "*** your session has timed out ***</p><hr>";
     res.send(authmesg);
   }
 }

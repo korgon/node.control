@@ -1,4 +1,5 @@
 h1.popup General Settings
+hr(style='margin-bottom: 20px;')
 div
 	div
 		label.poplabel(for='pop_hostname') Hostname
@@ -40,7 +41,8 @@ div
 			else
 				input#pop_tempdisplay_f(type='radio' name='pop_tempdisplay' value='F' checked=false)
 			label.poplabel(for='pop_tempdisplay_f' style='width: 10px;') &#x2109
-
+	div(style='padding-top: 20px;')
+		hr
 script.
 	function check() {
 		// clear all the error boxes and alerts

@@ -48,9 +48,23 @@ function terminal_output(/*command,options,callback*/){
 }
 
 //********* Wifi Scanning Functions *********
-function getData(callback){
-	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(error, info, stderr){
-		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error, output, stderr){
+function getData(callback, useEmp){	
+	terminal_output('pgrep wpa', function(error, stdout, stderr){
+		console.log(error, stdout, stderr);				
+		if((stdout == '') || (useEmp == 1)){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/empty_wpa_supplicant.conf', function(error, stdout, stderr){
+				console.log(error, stdout, stderr);				
+				console.log('reinitializing wpa_supplicant');
+			});
+		}
+	});			
+	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(info){
+		terminal_output('pwd', function(error,output,stderr){
+			console.log(output);
+		});
+		console.log('scanned');
+		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error,output,stderr){
+			console.log('getting results');
 			callback(output);
 		});
 	});	
@@ -123,18 +137,19 @@ wireless.prototype.getIP = function() {
 }
 
 //********* Wifi Connect Function *********
-
 wireless.prototype.connect = function(connJSON, callback){
 	terminal_output('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
 		console.log('wlan0 removed');
 	});
 	
 
-	if (connJSON.security_type.match(/WEP/)){
-		var stream = fs.createWriteStream("./config/wpa_supplicant.conf");
+	if (connJSON.security.match(/WEP/)){
+		var stream = fs.createWriteStream("./mods/wpa_supplicant.conf");
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
-			stream.write('ctrl_interface_group=nodectrl\n');
+			
+stream.write('ctrl_interface_group=0\n');
+//stream.write('ctrl_interface_group=nodectrl\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
@@ -142,42 +157,35 @@ wireless.prototype.connect = function(connJSON, callback){
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-			current_date = new Date().getTime();
-			current_time = current_date.getTime();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf -B', function(error, stdout, stderr){
-				console.log('Is it hanging...?');
-				setInterval(function(){
-					now_date = Date();
-					now_time = now_date.getTime();
-					if(now_time - current_time > 45000){
-						throw 'Cannot connect to network. Check your settings and try again';
-						}
-					}, 2000);
-				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-					console.log('Please do not hang :3')
+						terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/wpa_supplicant.conf',{ encoding: 'utf8',timeout: 40000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				console.log(error, stdout, stderr);
+				if(error | stderr) throw error;
+				terminal_output('sudo /sbin/udhcpc -i wlan0' ,{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+					console.log(error, stdout, stderr);
+					console.log('Please do not hang :3');
 				});
 			});
 		});
 	}
 
-	if (connJSON.security_type.match(/WPA/)){
-		var stream = fs.createWriteStream('./config/wpa_supplicant.conf');
+	if (connJSON.security.match(/WPA/)){
+		var stream = fs.createWriteStream('./mods/wpa_supplicant.conf');
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			stream.write('ctrl_interface_group=0\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
-			stream.write('\tkey_mgmt='+connJSON.security_type.match(/WPA/)[0]+'-'+connJSON.security_type.match(/(PEAP|PSK|EAP)/)[0]+'\n');
-			if (connJSON.security_type.match(/EAP/)){
-				stream.write('\teap=PEAP\n');
+			stream.write('\tkey_mgmt='+connJSON.security+'\n');
+			if (connJSON.security.match(/EAP/)){
+				stream.write('\teap='+connJSON.special+'\n');
 				stream.write('\tidentity="'+connJSON.username+'"\n');
-				stream.write('\tphase2="autheap=GTC"\n');
+				stream.write('\tphase2="autheap='+connJSON.eaptype+'"\n');
 				stream.write('\tpassword="'+connJSON.password+'"\n');
 			}
-			stream.write('\tbssid='+connJSON.bssid+'\n');
-			console.log('HERE');
-			if(connJSON.security_type.match(/PSK/)){
+			if (connJSON.bssid)
+				stream.write('\tbssid='+connJSON.bssid+'\n');
+			if(connJSON.security.match(/PSK/)){
 				stream.write('\tpsk="'+connJSON.password+'"\n');
 			}
 			if(connJSON.group){
@@ -185,26 +193,18 @@ wireless.prototype.connect = function(connJSON, callback){
 			}
 			stream.write('}');
 			stream.end();
-			console.log('Password?\n');
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf -B', function(error, stdout, stderr){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/wpa_supplicant.conf -B',{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
-				console.log('Pass Here?');
-				//var i = 0;
-				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-//					setInterval(function(){i++;}, 2000);
-//					console.log(i);
-//					if( i == 45){
-//						throw "Cannot connect, check your connection settings";}
+				terminal_output('sudo /sbin/udhcpc -t 3 -i wlan0' ,{ encoding: 'utf8',timeout: 20,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
 					console.log(error, stdout, stderr);
-//					if(error | stderr) throw error;
 					console.log('Please do not hang :3');
-					callback('Here is your damn callback');
 				});
 			});
 		});
 	}
 }
+
 
 module.exports = wireless;
 /*

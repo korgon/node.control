@@ -1,4 +1,5 @@
 h1.popup Set Time Manually
+hr(style='margin-bottom: 20px;')
 div
 	div
 		label.poplabel(style='width: 75px;' for='pop_date') Date
@@ -12,6 +13,8 @@ div
 		span#pop_time_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 		input#pop_date_alt(type='hidden' name='pop_date' value='')
 		div#pop_time_error
+div(style='padding-top: 20px; margin-bottom: -12px;')
+	hr
 
 script.
 	$("#pop_date").data('picked', 0).datepicker( {
@@ -22,65 +25,7 @@ script.
 		setDate: new Date()
 	});
 
-	$('#pop_time').keyup(function(event) {
-		var value = $(this).val();
-		if(value.length == 1) {
-			char = value.substring(value.length - 1);
-			if(isNaN(char)) {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length == 2) {
-			char = value.substring(value.length - 1);
-			if(isNaN(char)) {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			} else {
-				$(this).val(value + ':');
-			}
-		}
-		if(value.length == 3) {
-			char = value.substring(value.length - 1);
-			if(char != ':') {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length == 4) {
-			char = value.substring(value.length - 1);
-			if(isNaN(char)) {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length == 5) {
-			char = value.substring(value.length - 1);
-			if(isNaN(char)) {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length == 6) {
-			char = value.substring(value.length - 1);
-			if(char != ':') {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length > 6) {
-			char = value.substring(value.length - 1);
-			if(isNaN(char)) {
-				var newval = value.substring(0, value.length - 1);
-				$(this).val(newval);
-			}
-		}
-		if(value.length > 8) {
-			char = value.substring(value.length - 1);
-			var newval = value.substring(0, value.length - 1);
-			$(this).val(newval);
-		}
-	});
+	$('#pop_time').bind('keyup', keyup_checkTime);
 
 	function check() {
 		// clear all the error boxes and alerts
@@ -125,25 +70,7 @@ script.
 			data = {
 				timedate: timeobj.getTime()
 			}
-			var year = timeobj.getFullYear();
-			var month = timeobj.getMonth();
-			var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-			var d = timeobj.getDate();
-			var day = timeobj.getDay();
-			var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-			h = timeobj.getHours();
-			if (h<10) h = "0"+h;
-			m = timeobj.getMinutes();
-			if (m<10) m = "0"+m;
-			s = timeobj.getSeconds();
-			if (s<10) s = "0"+s;
-
-			var textydate = days[day] + ' ' + months[month] + ' ' + d + ' ' + year + ' ' + h + ':' + m + ':' + s;
-			$('#pop_time_error').append('pop_date: ' + $('#pop_date_alt').val() + '<br>');			
-			$('#pop_time_error').append('fromdp: ' + newTimeDate + '<br>');
-			$('#pop_time_error').append('timeobj: ' + timeobj.getTime() + '<br>');
-			$('#pop_time_error').append('  ' + textydate);
 			nodeio.emit('put:time', data);
-			//return true;
+			return true;
 		}
 	}

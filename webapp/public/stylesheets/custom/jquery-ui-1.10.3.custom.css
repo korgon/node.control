@@ -467,17 +467,18 @@ button.ui-button::-moz-focus-inner {
 	overflow: auto;
 }
 .ui-dialog .ui-dialog-buttonpane {
-	text-align: left;
-	border-width: 1px 0 0 0;
+	text-align: center;
+	border-width: 0px 0 0 0;
 	background-image: none;
+	background-color: transparent;
 	margin-top: .5em;
-	padding: .3em 1em .5em .4em;
+	padding: .3em 1em .5em 1em;
 }
 .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
-	float: right;
+	float: none;
 }
 .ui-dialog .ui-dialog-buttonpane button {
-	margin: .5em .4em .5em 0;
+	margin: .5em .4em .5em .4em;
 	cursor: pointer;
 }
 .ui-dialog .ui-resizable-se {
@@ -707,7 +708,7 @@ body .ui-tooltip {
 }
 .ui-widget-content {
 	border: 1px solid #666666;
-	background: #000000 url(images/ui-bg_inset-soft_25_000000_1x100.png) 50% bottom repeat-x;
+	background: #000000;
 	color: #ffffff;
 }
 .ui-widget-content a {
@@ -728,7 +729,7 @@ body .ui-tooltip {
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-	border: 1px solid #666666;
+	border: 1px solid #222;
 	background: #0f0f0f url(images/ui-bg_highlight-hard_20_0f0f0f_1x100.png) 50% 50% repeat-x;
 	font-weight: bold;
 	color: #eeeeee;

@@ -26,11 +26,11 @@ block jscripts
 		});
 
 block content
-	.content
+	.bigcirc(style='width: 420px; height: 420px;')
 		.logincirc
-			h1.login(style='margin-top: 50px;') [ login ]
+			h1.login(style='margin-top: 90px;') [ login ]
 		form(method='post', action='/login', id='logon' autocomplete = "off")
-			.login(style='position: relative; top: 0px;')
+			.login(style='position: relative; top: -170px;')
 				div
 					label.login(for='username') username
 					input#username.popinput(type='text' name='username')
@@ -41,5 +41,5 @@ block content
 					p.alert= message
 				else
 					p.alert &nbsp;
-			.center(style='position: relative; top: 5px;')
+			.center(style='position: relative; top: -160px;')
 				input(id="login" type="button" value="enter")

@@ -1,4 +1,5 @@
 h1.popup Log Out
+hr(style='margin-bottom: 20px;')
 div
 	div(style='position: relative; width: 150px; height: 45px;')
 		div#pop_power.linkIcon(title='power' style='background-color: #9A0000; border: 1px solid #9A0000; display: inline-block;')
@@ -15,7 +16,8 @@ div
 			img.linkImage(src='/images/icons/dark_small_logout.png')
 		div(style='position: absolute; left: 45px; top: -4px;')
 				h3 Log Out
-
+	div(style='padding-top: 20px;')
+		hr
 script.
 	$('#popup').dialog('option', 'buttons', { 'Cancel': function() {check();} }); 
 	$("div[id^='pop_']").hover( function(){

@@ -49,8 +49,8 @@ div.bigcirc {
 
 div.logincirc {
 	position: relative;
-	width: 290px;
-	height: 290px;
+	width: 360px;
+	height: 360px;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);    
@@ -112,10 +112,7 @@ div.setupcontent {
 }
 
 div.login { 
-	background-color: #000;
-	border: 1px solid black;
 	color: #eaeaea;
-	border-radius: 6px;
 	padding-top: 9px;
 	margin-top: 0;
 	width: 270px;
@@ -203,7 +200,7 @@ div.buttonDrag {
 	cursor: move;
 	border: 1px solid #000;
 	background-color: #333;
-	box-shadow: 0px 0px 31px 1px #252525 inset, 0px 0px 6px #000;
+	box-shadow: 0px 0px 55px 1px #666 inset, 0px 0px 6px #000;
 	z-index: 5;
 }
 
@@ -240,6 +237,7 @@ div.setupwifisel {
 }
 
 label.login {
+	color: #999;
 	font-size: 16px;
 	padding: 10px;
 	padding-top: 6px;
@@ -249,6 +247,7 @@ label.login {
 }
 
 label.poplabel {
+	color: #999;
 	font-size: 16px;
 	font-weight: bold;
 	text-align: right;
@@ -354,12 +353,13 @@ textarea:focus, textarea.poptext:focus, input.box:focus, input.popinput:focus, s
 }
 
 input.popinput {
+	font: 14px Segoe UI, Arial, sans-serif;
 	margin: 3px;
 	width: 150px;
 	height: 20px;
-	background-color: #333333;
+	background-color: #222;
 	color: #eaeaea;
-	border: 1px solid black;
+	border: 1px solid #00709d;
 	autocomplete: "off"
 }
 
@@ -367,9 +367,9 @@ textarea.poptext {
 	font: 14px Segoe UI, Arial, sans-serif;
 	width: 148px;
 	height: 50px;
-	background-color: #333333;
+	background-color: #222;
 	color: #eaeaea;
-	border: 1px solid black;
+	border: 1px solid #00709d;
 	text-align: left;
 	margin: 3px;
 	resize: none; 
@@ -494,9 +494,7 @@ hr {
 h1.popup {
 	color: #00B7FF;
 	margin: 0px;	
-	margin-bottom: 10px;
 	padding: 0px;
-	border-bottom: 1px solid #333333;
 	font-size: 3em;
 }
 
@@ -548,8 +546,6 @@ h5.date {
 
 /* jqueryui overwrites */
 .dlg-no-title .ui-dialog-titlebar {	display: none; }
-.ui-dialog .ui-dialog-buttonpane { text-align: center; }
-.ui-dialog .ui-dialog-buttonpane button { float: none; }
 .ui-state-disabled { opacity: 1; }
 
 /* waiting blocks css */
