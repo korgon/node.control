@@ -117,8 +117,22 @@ db_management.prototype.putSensorData = function(sid, rawdata) {
 	db.query('INSERT into ' + sid + ' VALUES (?, ?)', [now.getTime(), rawdata]);
 }
 
+
+db_management.prototype.getSensorData = function(sid, fn) {
+	db.query('SELECT * FROM ' + sid, {time: Number, value: Number}, function(rows) {
+		fn(rows);
+	});
+}
+
+// retrieve sensor data with timestamp
+db_management.prototype.putSensorData = function(sid, rawdata) {
+	var now = new Date();
+	db.query('INSERT into ' + sid + ' VALUES (?, ?)', [now.getTime(), rawdata]);
+}
+
 db_management.prototype.getSensorData = function(fn) {
 }
+
 
 //********* SETUP METHODS *********
 // check for initial setup

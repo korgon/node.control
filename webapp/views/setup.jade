@@ -4,13 +4,32 @@ block jscripts
 	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script(src="/javascripts/jquery.caret.js")
 	script(src="/javascripts/jquery.ipaddress.js")
-	script(src="/javascripts/setup_scripts.js")
 	script.
 		var curPage = 1, endPage = 4;
+
+		// do stuff once document loads
 		$(document).ready(function(){ 
 			nav(curPage);
 			ipMode('eth0');
 			ipMode('wlan0');
+
+			// image clicks
+			$('#setupimg1').click(function() {
+				curPage = 1;
+				nav(curPage);
+			});
+			$('#setupimg2').click(function() {
+				curPage = 2;
+				nav(curPage);
+			});
+			$('#setupimg3').click(function() {
+				curPage = 3;
+				nav(curPage);
+			});
+			$('#setupimg4').click(function() {
+				curPage = 4;
+				nav(curPage);
+			});
 
 			$('#setupB1').button().click(function() {
 				if (curPage > 1) {
@@ -30,7 +49,7 @@ block jscripts
 			});
 
 			// Make ip address inputs
-			$('.ip').ipaddress();
+			//$('.ip').ipaddress();
 		});
 
 		function validateForm() {
@@ -70,40 +89,52 @@ block jscripts
 					$('#setupB1').hide();
 					$('#setupB2').val(" Next ");
 					for (i=1; i<=endPage; i++) {
-						if (i==page)
+						if (i==page) {
 							$('#setup' + i).show();
-						else
+							$('#setupimg' + i).css('opacity', '.5');
+						}	else {
 							$('#setup' + i).hide();
+							$('#setupimg' + i).css('opacity', '1');
+						}
 					}
 					break;
 				case 2:
 					$('#setupB1').show();
 					$('#setupB2').val(" Next ");
 					for (i=1; i<=endPage; i++) {
-						if (i==page)
+						if (i==page) {
 							$('#setup' + i).show();
-						else
+							$('#setupimg' + i).css('opacity', '.5');
+						}	else {
 							$('#setup' + i).hide();
+							$('#setupimg' + i).css('opacity', '1');
+						}
 					}
 					break;
 				case 3:
 					$('#setupB1').show();
 					$('#setupB2').val(" Next ");
 					for (i=1; i<=endPage; i++) {
-						if (i==page)
+						if (i==page) {
 							$('#setup' + i).show();
-						else
+							$('#setupimg' + i).css('opacity', '.5');
+						}	else {
 							$('#setup' + i).hide();
+							$('#setupimg' + i).css('opacity', '1');
+						}
 					}
 					break;
 				case 4:
 					$('#setupB1').show();
 					$('#setupB2').val("Submit");
 					for (i=1; i<=endPage; i++) {
-						if (i==page)
+						if (i==page) {
 							$('#setup' + i).show();
-						else
+							$('#setupimg' + i).css('opacity', '.5');
+						}	else {
 							$('#setup' + i).hide();
+							$('#setupimg' + i).css('opacity', '1');
+						}
 					}
 					break;
 			}
@@ -112,7 +143,7 @@ block jscripts
 block content
 	div.center
 		br
-		img.clicky(src="/images/security.png" id="setupimg1" style="opacity: .5;")
+		img.clicky(src="/images/security.png" id="setupimg1")
 		img(src="/images/dash.png")
 		img.clicky(src="/images/network.png" id="setupimg2")
 		img(src="/images/dash.png")
@@ -159,7 +190,7 @@ block content
 				div#eth0config
 					br
 					label.setupnet(for='eth0_ip') IP Address
-					input.ip.eth0(type='text', name='eth0_ip', id='eth0_ip', value='#{eth0.ip}')
+					input.ip(type='text', name='eth0_ip', id='eth0_ip', value='#{eth0.ip}')
 					br
 					label.setupnet(for='eth0_subnet') Subnet Mask
 					input.ip(type='text', name='eth0_subnet', id='eth0_subnet', value='#{eth0.subnet}')
