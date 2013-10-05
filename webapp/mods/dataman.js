@@ -141,6 +141,7 @@ db_management.prototype.setupPull = function(fn) {
 		eth0_data: JSON.parse, 
 		wlan0_data: JSON.parse
 	}, function(rows) {
+		// create json ?
 		fn(rows[0]);
 	});
 }
