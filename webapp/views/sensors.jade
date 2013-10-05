@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	h1.heading= title
+	p.
+		Would like to list all input sensors here.
+		<br>Should be able to view data in a graph...
+		<br>This same route should handle all these should be able to be returned in json:
+	ul
+		li /sensors/sid  e.g. /sensors/temp0
+		li /sensors/sid?p (p being some kind of search params)
+
+
+	div
+		p <br>Current sensors in DB:
+		ul
+		each sensor, i in senzors
+			li #{sensor.id}, #{sensor.desc}, #{sensor.loc}
+

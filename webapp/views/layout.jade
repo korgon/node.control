@@ -1,0 +1,41 @@
+doctype 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		div.wrap
+			div.header
+				img(src='/images/header.png')
+			ul
+				li.menu
+					a(href="/")
+						img(src="/images/home.png")
+						| &nbsp; Home
+				li.menu
+					a(href="/control")
+						img(src="/images/control.png")
+						| &nbsp; Control
+				li.menu
+					a(href="/nodes")
+						img(src="/images/nodes.png")
+						| &nbsp; Nodes
+				li.menu
+					a(href="/schedule")
+						img(src="/images/schedule.png")
+						| &nbsp; Schedule
+				li.menu
+					a(href="/sensors")
+						img(src="/images/data.png")
+						| &nbsp; Data
+				li.menu
+					a(href="/settings")
+						img(src="/images/settings.png")
+						| &nbsp; Settings
+				li.menu
+					a(href="/logout")
+						img(src="/images/logout.png")
+						| &nbsp; Logout
+			div.content
+				block content
+			//- page content here

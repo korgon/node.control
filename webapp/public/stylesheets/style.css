@@ -1,0 +1,129 @@
+body {
+	padding: 50px;
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	background-color: white;
+}
+
+div.wrap { 
+	width: 760px; 
+	margin: 0 auto; 
+}
+
+div.content { 
+	width: 620px; 
+	margin: 0 auto; 
+}
+
+div.subcontent { 
+	width: 600px; 
+	height: 300px;
+	margin: 0 auto; 
+	overflow: auto;
+}
+
+div.center {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+label.login {
+	font-size: 16px;
+	padding: 10px;
+	font-weight: bold;
+}
+
+label.setupnet {
+  width:111px;
+  display: inline-block;
+}
+
+label.setupwifisel {
+	background-color: #999999;
+}
+
+label.setupwifi {
+	padding-top: 10px;
+	padding-bottom: 1px;
+}
+
+span.setupwifissid {
+	font-size: 18px;
+	display: inline-block;
+	width: 275px;
+}
+
+span.setupwifisec {
+	font-size: 18px;
+	display: inline-block;
+	width: 150px;
+}
+
+span.setupwifisig {
+	font-size: 18px;
+	display: inline-block;
+	width: 150px;
+}
+
+a {
+	color: #00B7FF;
+}
+
+p.alert {
+	font-weight: bold;
+	color: #800000;
+}
+
+li.menu {
+	display: inline;
+	list-style-type: none;
+}
+
+input {
+	background-color: transparent;
+	padding: 3px;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+}
+
+button {
+	border-style: solid;
+}
+
+input[type="text"]:disabled
+{
+	background:#999999;
+}
+
+img.clicky {
+	style="cursor:pointer"
+}
+
+li.menu a {
+	background-color: white;
+	color: black;
+	padding: 10px;
+	text-decoration: none;
+	border-style: solid;
+	border-top: 0;
+	border-width: 1px;
+	font-weight: bold;
+	font-size: 12px;
+}
+ 
+li.menu a:hover {
+	/* This rule is only in effect when mouse is hovering */
+	color: black;
+	zoom: 1;
+	filter: alpha(opacity=80);
+	opacity: .8;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+h1.heading {
+	padding-top: 11px;
+	padding-left: 1px;
+	border-bottom: 3px solid #333333;
+}

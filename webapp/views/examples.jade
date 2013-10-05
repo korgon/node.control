@@ -1,0 +1,47 @@
+h1 Jade isn't so bad!
+h2= title
+
+
+- var four = 'quatro';
+- var five = "<b>Cinco</b>";
+- var funk = function() { return "Funcktions?"; }
+- var followerCount = 2;
+- var users = [ {name: "kevin", email: "khogg@uccs.edu"}, {name: "royce", email: "rskelton@uccs.edu"}, {name: "andrew", email: "amiller5000@uccs.edu"}, {name: "shaun", email: "sraj2@uccs.edu"} ];
+
+
+ul#nav
+	li.current Uno
+	li Dos
+	li Tres
+	li #{ four }
+	li #{ five }
+	li= funk()
+	li Schtuff
+		a(href="/other", rel="no follow") What?
+
+p I want tons of text here on more than one line...
+
+p
+	| I want
+	| tons of text
+	| here on more than one line
+
+p.
+	I want
+	tons of text
+	here on more than one line
+
+p
+	if followerCount === 0
+		| You have no followers...
+	else if followerCount === 1
+		| You have a follower.
+	else
+		| You have #{followerCount} followers.
+
+mixin userLi(user)
+	li #{user.name}: &lt; #{user.email}
+
+ul
+	each user, i in users
+		li #{user.name} #{user.email}
