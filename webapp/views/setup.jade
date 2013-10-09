@@ -1,5 +1,18 @@
 extends layout_minimal
 
+block jscripts
+	script(src="/javascripts/jquery.caret.js")
+	script(src="/javascripts/jquery.ipaddress.js")
+	script(src="/javascripts/scripts.js")
+	script.
+		$(document).ready(function(){ 
+			ipMode('eth0');
+			ipMode('wlan0');
+		});
+		$(function(){
+			$('.ip').ipaddress();
+		});
+
 block content
 	div.center
 		br
@@ -50,39 +63,41 @@ block content
 						option(value="static" selected) Static
 				br
 				label.setupnet(for='eth0_ip') IP Address
-				input(type='text', name='eth0_ip', id='eth0_ip', size='12' value='#{eth0.ip}' disabled='#{eth0_dis}')
+				input.ip.eth0(type='text', name='eth0_ip', id='eth0_ip', size='12' value='#{eth0.ip}' disabled='#{eth0_dis}')
 				br
 				label.setupnet(for='eth0_subnet') Subnet Mask
-				input(type='text', name='eth0_subnet', id='eth0_subnet', size='12' value='#{eth0.subnet}' disabled='#{eth0_dis}')
+				input.ip(type='text', name='eth0_subnet', id='eth0_subnet', size='12' value='#{eth0.subnet}' disabled='#{eth0_dis}')
 				br
 				label.setupnet(for='eth0_gw') Gateway
-				input(type='text', name='eth0_gw', id='eth0_gw', size='12' value='#{eth0.gw}' disabled='#{eth0_dis}')
+				input.ip(type='text', name='eth0_gw', id='eth0_gw', size='12' value='#{eth0.gw}' disabled='#{eth0_dis}')
 				br
 				label.setupnet(for='eth0_dns1') DNS1
-				input(type='text', name='eth0_dns1', id='eth0_dns1', size='12' value='#{eth0.dns1}' disabled='#{eth0_dis}')
+				input.ip(type='text', name='eth0_dns1', id='eth0_dns1', size='12' value='#{eth0.dns1}' disabled='#{eth0_dis}')
 				br
 				label.setupnet(for='eth0_dns2') DNS2
-				input(type='text', name='eth0_dns2', id='eth0_dns2', size='12' value='#{eth0.dns2}' disabled='#{eth0_dis}')
+				input.ip(type='text', name='eth0_dns2', id='eth0_dns2', size='12' value='#{eth0.dns2}' disabled='#{eth0_dis}')
 
 		div.subcontent(id='setup3' style='display: none')
 			h2 Wireless Network Selection
-			each wifi, i in wifis
-				input(type='radio' name='wlan0_ssid' value='#{wifi.ssid}' id='wlan0_#{i}' onchange="wifiselect('w#{i}', #{wifis.length})" style='visibility: hidden')
-				label.setupwifi(id='w#{i}' for='wlan0_#{i}')
-					span.setupwifissid
-						| #{wifi.ssid}
-					span.setupwifisec
-						img(src='/images/locked.png')
-						| &nbsp; #{wifi.security}
-					span.setupwifisig
-						| Signal &nbsp; 
-						if wifi.signal < 150
-							img(src='/images/signal_low.png')
-						else if wifi.signal >= 150 && wifi.signal < 200
-							img(src='/images/signal_med.png')
-						else if wifi.signal > 200
-							img(src='/images/signal_high.png')
-				br
+			fieldset
+				legend Networks in range
+				each wifi, i in wifis
+					input(type='radio' name='wlan0_ssid' value='#{wifi.ssid}' id='wlan0_#{i}' onchange="wifiselect('w#{i}', #{wifis.length})" style='visibility: hidden')
+					label.setupwifi(id='w#{i}' for='wlan0_#{i}')
+						span.setupwifissid
+							| #{wifi.ssid}
+						span.setupwifisec
+							img(src='/images/locked.png')
+							| &nbsp; #{wifi.security}
+						span.setupwifisig
+							| Signal &nbsp; 
+							if wifi.signal < 150
+								img(src='/images/signal_low.png')
+							else if wifi.signal >= 150 && wifi.signal < 200
+								img(src='/images/signal_med.png')
+							else if wifi.signal > 200
+								img(src='/images/signal_high.png')
+					br
 
 		div.subcontent(id='setup4' style='display: none')
 			h2 Wireless Network Settings
@@ -100,19 +115,19 @@ block content
 						option(value="static" selected) Static
 				br
 				label.setupnet(for='wlan0_ip') IP Address
-				input(type='text', name='wlan0_ip', id='wlan0_ip', size='12' value='#{wlan0.ip}' disabled='#{wlan0_dis}')
+				input.ip(type='text', name='wlan0_ip', id='wlan0_ip', size='12' value='#{wlan0.ip}' disabled='#{wlan0_dis}')
 				br
 				label.setupnet(for='wlan0_subnet') Subnet Mask
-				input(type='text', name='wlan0_subnet', id='wlan0_subnet', size='12' value='#{wlan0.subnet}' disabled='#{wlan0_dis}')
+				input.ip(type='text', name='wlan0_subnet', id='wlan0_subnet', size='12' value='#{wlan0.subnet}' disabled='#{wlan0_dis}')
 				br
 				label.setupnet(for='wlan0_gw') Gateway
-				input(type='text', name='wlan0_gw', id='wlan0_gw', size='12' value='#{wlan0.gw}' disabled='#{wlan0_dis}')
+				input.ip(type='text', name='wlan0_gw', id='wlan0_gw', size='12' value='#{wlan0.gw}' disabled='#{wlan0_dis}')
 				br
 				label.setupnet(for='wlan0_dns1') DNS1
-				input(type='text', name='wlan0_dns1', id='wlan0_dns1', size='12' value='#{wlan0.dns1}' disabled='#{wlan0_dis}')
+				input.ip(type='text', name='wlan0_dns1', id='wlan0_dns1', size='12' value='#{wlan0.dns1}' disabled='#{wlan0_dis}')
 				br
 				label.setupnet(for='wlan0_dns2') DNS2
-				input(type='text', name='wlan0_dns2', id='wlan0_dns2', size='12' value='#{wlan0.dns2}' disabled='#{wlan0_dis}')
+				input.ip(type='text', name='wlan0_dns2', id='wlan0_dns2', size='12' value='#{wlan0.dns2}' disabled='#{wlan0_dis}')
 
 		h1.heading= ""
 		div

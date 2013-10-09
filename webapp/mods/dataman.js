@@ -1,5 +1,5 @@
 // Data management, utilizing dblite
-// for node.control
+// for node.control outputs should be json
 // also includes encryption algos
 // ---------------------------------------------------
 // Listing of exported methods:
@@ -50,18 +50,18 @@ function init_db() {
 	db.query('CREATE TABLE IF NOT EXISTS actuators (name TEXT PRIMARY KEY, description TEXT, location)');
 	console.log("  |--- Table actuators added");
 
-	// insert default user, first create password (BBB) and salt
+	// insert default user admin, first create password ('') and salt
 	hash('', function(err, salties, hashies) {
 		db.query('INSERT INTO users VALUES (?, ?, ?, ?, ?)', [null, 'admin', hashies, salties, null]);
 		console.log("  |--- Added user admin");
 	});
 
-	// insert controller module data into system table generate salt for cookies (YUM!!!)
+	// insert default controller module data into system table
 	// ***** MAKE MORE DYNAMIC LATERS ******
 	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?)', [
 		null, 'node', 'sprinkler controller', 0, 
-		{mode: 'dynamic', ip: '0.0.0.0', subnet: '255.255.255.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
-		{ssid: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '255.255.255.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
+		{mode: 'static', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
+		{ssid: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{mode: 'coordinator', serial: '0013a20040790728', pan: 'green eggs and ham'}]);
 		console.log("  |--- Added default system settings");
 
@@ -85,7 +85,7 @@ db_management.prototype.addRemote = function(rname, rserial, rinputs, routputs) 
 // add an output to actuator table for user interface
 function addActuator(aname, desc, location) {
 	db.query('INSERT into actuators VALUES (?, ?, ?)', [aname, desc, location]);
-	console.log("  |--- Added sensor " + aname);
+	console.log("  |--- Added actuator " + aname);
 }
 
 // retrieve list of all actuators (outputs)

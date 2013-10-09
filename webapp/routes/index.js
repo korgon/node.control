@@ -26,7 +26,7 @@ exports.settings = function(req, res) {
 // setup controller
 exports.setup = function(req, res) {
 	req.db.setupCheck(function(chk) {
-		var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jusus Loves Internets", security: "none", signal: 220} ];
+		var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jesus Loves Internets", security: "none", signal: 220} ];
 		if (chk == 0) {
 			req.db.getUsername(function(uname) {
 				req.db.setupPull(function(settings) {
