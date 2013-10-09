@@ -3,7 +3,7 @@ extends layout_minimal
 block jscripts
 	script(src="/javascripts/jquery.caret.js")
 	script(src="/javascripts/jquery.ipaddress.js")
-	script(src="/javascripts/scripts.js")
+	script(src="/javascripts/setup_scripts.js")
 	script.
 		$(document).ready(function(){ 
 			ipMode('eth0');
@@ -24,7 +24,7 @@ block content
 		img(src="/images/dash.png")
 		img(src="/images/wifi.png" id="setupimg4")
 
-	h1.heading= wtf
+	h1.heading= ""
 
 	form(method='post' name='setup' action='/setup' onsubmit="return validateForm()")
 		div.subcontent(id='setup1')
@@ -34,7 +34,7 @@ block content
 				label.setupnet(for='hostname') Hostname
 				input(type='text', name='hostname', id='hostname', size='12' value='#{hostname}')
 				br
-				label.setupnet(for='description') Description
+				label.setupnet(for='description' style='bottom-padding:10px;') Description
 				textarea(type='text' name='description' id='description' rows='2' cols='50')
 					| #{description}
 			br

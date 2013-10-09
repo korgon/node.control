@@ -63,13 +63,14 @@ exports.login = function(req, res) {
 };
 
 exports.loginto = function(req, res) {
-	req.db.authenticate(req.body.username, req.body.password, req.ip, function(err) {
+	req.db.authenticate(req.body.username, req.body.password, req.ip, function(err, umail) {
 		if (err != 'pass') {
 			req.session.message = "*** Invalid Username / Password ***";
 			res.redirect('/login');
 		}
 		else {
 			req.session.verified = true;
+			req.session.email = umail;
 			if (req.session.forward) res.redirect(req.session.forward);
 			else res.redirect('/');
 		}

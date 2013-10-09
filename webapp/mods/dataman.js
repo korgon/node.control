@@ -1,5 +1,5 @@
 // Data management, utilizing dblite
-// for node.control outputs should be json
+// for node.control returns should be json
 // also includes encryption algos
 // ---------------------------------------------------
 // Listing of exported methods:
@@ -185,7 +185,7 @@ db_management.prototype.authenticate = function(username, password, ip, fn) {
 		hash(password, user.salt, function(err, hashies) {
 			if (user.pass == hashies) {
 				console.log(Date() + ' *** Login success: ' + user.name + " @ " + ip);					
-				fn('pass');
+				fn('pass', user.email);
 			} else {
 				console.log(Date() + ' *** Login Fail: ' + user.name + " @ " + ip);
 				fn('invalid password');

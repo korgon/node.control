@@ -16,6 +16,7 @@ app.configure(function() {
 	app.set('port', process.env.PORT || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
+	app.locals.pretty = true;  // gives pretty html output from jade
 
 	// middleware (order matters!)
 	app.use(express.bodyParser());
