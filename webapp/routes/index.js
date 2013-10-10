@@ -43,7 +43,7 @@ exports.setitup = function(req, res) {
 	var eth0_data = {mode: req.body.eth0_mode, ip: req.body.eth0_ip, subnet: req.body.eth0_subnet, gw: req.body.eth0_gw, dns1: req.body.eth0_dns1, dns2: req.body.eth0_dns2};
 	var wlan0_data = {ssid: req.body.wlan0_ssid, password: req.body.wlan0_password, mode: req.body.wlan0_mode, ip: req.body.wlan0_ip, subnet: req.body.wlan0_subnet, gw: req.body.wlan0_gw, dns1: req.body.wlan0_dns1, dns2: req.body.wlan0_dns2};
 	//update username/pass
-	req.db.updateUser(req.body.username, req.body.password);
+	req.db.updateUser(req.body.username, req.body.password, req.body.email);
 	req.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
 	res.redirect('/');
 };

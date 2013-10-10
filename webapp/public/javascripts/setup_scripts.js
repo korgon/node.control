@@ -28,13 +28,13 @@ function wizard(page, wmax, dir) {
 	if (wizPage > 1) {
 		document.getElementById(page + "Prev").style.visibility = "visible";
 	} else {
-		document.getElementById(page + "Prev").style.visibility = "hidden";
+		document.getElementById(page + "Prev").style.visibility = "display";
 	}
 
 	if (wizPage <= wmax) {
 		document.getElementById(page + "Next").style.visibility = "visible";
 	} else {
-		document.getElementById(page + "Next").style.visibility = "hidden";
+		document.getElementById(page + "Next").style.visibility = "display";
 		document.getElementById(page + "Submit").style.visibility = "visible";
 	}
 }
@@ -63,23 +63,9 @@ function validateForm() {
 }
 
 function ipMode(iface) {
-	var mode = document.getElementById(iface + '_mode').value;
-	var ip = document.getElementById(iface + '_ip');
-	var subnet = document.getElementById(iface + '_subnet');
-	var gw = document.getElementById(iface + '_gw');
-	var dns1 = document.getElementById(iface + '_dns1');
-	var dns2 = document.getElementById(iface + '_dns2');
-	if (mode == 'dynamic') {
-		ip.disabled = true;
-		subnet.disabled = true;
-		gw.disabled = true;
-		dns1.disabled = true;
-		dns2.disabled = true;
-	} else if (mode == 'static') {
-		ip.disabled = false;
-		subnet.disabled = false;
-		gw.disabled = false;
-		dns1.disabled = false;
-		dns2.disabled = false;
+	if ($("#" + iface + "_mode").val() == 'dynamic') {
+		$("#" + iface + "config").hide();
+	} else if ($("#" + iface + "_mode").val() == 'static') {
+		$("#" + iface + "config").show();
 	}
 }

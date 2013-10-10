@@ -1,17 +1,82 @@
 extends layout_minimal
 
 block jscripts
+	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script(src="/javascripts/jquery.caret.js")
 	script(src="/javascripts/jquery.ipaddress.js")
 	script(src="/javascripts/setup_scripts.js")
 	script.
+		var curPage = 1, endPage = 4;
 		$(document).ready(function(){ 
+			nav(curPage);
 			ipMode('eth0');
 			ipMode('wlan0');
-		});
-		$(function(){
+
+			$('#setupB1').button().click(function() {
+				if (curPage > 1) {
+					curPage--;
+					nav(curPage)
+				}
+			});
+			$('#setupB2').button().click(function() {
+				if (curPage == endPage) {
+					// submit form
+					$('#setupForm').submit();
+				}
+				else if (curPage < endPage) {
+					curPage++;
+					nav(curPage);
+				}
+			});
+
+			// Make ip address inputs
 			$('.ip').ipaddress();
 		});
+
+		function nav(page) {
+			switch (page) {
+				case 1:
+					$('#setupB1').hide();
+					$('#setupB2').val(" Next ");
+					for (i=1; i<=endPage; i++) {
+						if (i==page)
+							$('#setup' + i).show();
+						else
+							$('#setup' + i).hide();
+					}
+					break;
+				case 2:
+					$('#setupB1').show();
+					$('#setupB2').val(" Next ");
+					for (i=1; i<=endPage; i++) {
+						if (i==page)
+							$('#setup' + i).show();
+						else
+							$('#setup' + i).hide();
+					}
+					break;
+				case 3:
+					$('#setupB1').show();
+					$('#setupB2').val(" Next ");
+					for (i=1; i<=endPage; i++) {
+						if (i==page)
+							$('#setup' + i).show();
+						else
+							$('#setup' + i).hide();
+					}
+					break;
+				case 4:
+					$('#setupB1').show();
+					$('#setupB2').val("Submit");
+					for (i=1; i<=endPage; i++) {
+						if (i==page)
+							$('#setup' + i).show();
+						else
+							$('#setup' + i).hide();
+					}
+					break;
+			}
+		}
 
 block content
 	div.center
@@ -24,17 +89,17 @@ block content
 		img(src="/images/dash.png")
 		img(src="/images/wifi.png" id="setupimg4")
 
-	h1.heading= ""
+	hr
 
-	form(method='post' name='setup' action='/setup' onsubmit="return validateForm()")
-		div.subcontent(id='setup1')
+	form(method='post' id='setupForm' name='setup' action='/setup' onsubmit="return validateForm()")
+		div.subcontent(id='setup1' style='display: none')
 			h2 System Settings
 			fieldset
 				legend Node Details
 				label.setupnet(for='hostname') Hostname
 				input(type='text', name='hostname', id='hostname', size='12' value='#{hostname}')
 				br
-				label.setupnet(for='description' style='bottom-padding:10px;') Description
+				label.setupnet(for='description' style='vertical-align: top;') Description
 				textarea(type='text' name='description' id='description' rows='2' cols='50')
 					| #{description}
 			br
@@ -46,6 +111,9 @@ block content
 				br
 				label.setupnet(for='password') Password
 				input(type='password', name='password', id='password', size='12')
+				br
+				label.setupnet(for='email') Email
+				input(type='text', name='email', id='email', size='12')
 
 		div.subcontent(id='setup2' style='display: none')
 			h2 Wired Network Settings
@@ -54,28 +122,27 @@ block content
 				label.setupnet(for='eth0_mode') Mode
 				select(name='eth0_mode', id='eth0_mode' onchange="ipMode('eth0')")
 					if eth0.mode == "dynamic"
-						- var eth0_dis = "disabled";
 						option(value="dynamic" selected) Dynamic
 						option(value="static") Static
 					else if eth0.mode == "static"
-						- var eth0_dis = 0;
 						option(value="dynamic") Dynamic
 						option(value="static" selected) Static
-				br
-				label.setupnet(for='eth0_ip') IP Address
-				input.ip.eth0(type='text', name='eth0_ip', id='eth0_ip', size='12' value='#{eth0.ip}' disabled='#{eth0_dis}')
-				br
-				label.setupnet(for='eth0_subnet') Subnet Mask
-				input.ip(type='text', name='eth0_subnet', id='eth0_subnet', size='12' value='#{eth0.subnet}' disabled='#{eth0_dis}')
-				br
-				label.setupnet(for='eth0_gw') Gateway
-				input.ip(type='text', name='eth0_gw', id='eth0_gw', size='12' value='#{eth0.gw}' disabled='#{eth0_dis}')
-				br
-				label.setupnet(for='eth0_dns1') DNS1
-				input.ip(type='text', name='eth0_dns1', id='eth0_dns1', size='12' value='#{eth0.dns1}' disabled='#{eth0_dis}')
-				br
-				label.setupnet(for='eth0_dns2') DNS2
-				input.ip(type='text', name='eth0_dns2', id='eth0_dns2', size='12' value='#{eth0.dns2}' disabled='#{eth0_dis}')
+				div#eth0config
+					br
+					label.setupnet(for='eth0_ip') IP Address
+					input.ip.eth0(type='text', name='eth0_ip', id='eth0_ip', value='#{eth0.ip}')
+					br
+					label.setupnet(for='eth0_subnet') Subnet Mask
+					input.ip(type='text', name='eth0_subnet', id='eth0_subnet', value='#{eth0.subnet}')
+					br
+					label.setupnet(for='eth0_gw') Gateway
+					input.ip(type='text', name='eth0_gw', id='eth0_gw', value='#{eth0.gw}')
+					br
+					label.setupnet(for='eth0_dns1') DNS1
+					input.ip(type='text', name='eth0_dns1', id='eth0_dns1', value='#{eth0.dns1}')
+					br
+					label.setupnet(for='eth0_dns2') DNS2
+					input.ip(type='text', name='eth0_dns2', id='eth0_dns2', value='#{eth0.dns2}')
 
 		div.subcontent(id='setup3' style='display: none')
 			h2 Wireless Network Selection
@@ -106,31 +173,29 @@ block content
 				label.setupnet(for='wlan0_mode') Mode
 				select(name='wlan0_mode', id='wlan0_mode' onchange="ipMode('wlan0')")
 					if wlan0.mode == "dynamic"
-						- var wlan0_dis = "disabled";
 						option(value="dynamic" selected) Dynamic
 						option(value="static") Static
 					else if wlan0.mode == "static"
-						- var wlan0_dis = "";
 						option(value="dynamic") Dynamic
 						option(value="static" selected) Static
-				br
-				label.setupnet(for='wlan0_ip') IP Address
-				input.ip(type='text', name='wlan0_ip', id='wlan0_ip', size='12' value='#{wlan0.ip}' disabled='#{wlan0_dis}')
-				br
-				label.setupnet(for='wlan0_subnet') Subnet Mask
-				input.ip(type='text', name='wlan0_subnet', id='wlan0_subnet', size='12' value='#{wlan0.subnet}' disabled='#{wlan0_dis}')
-				br
-				label.setupnet(for='wlan0_gw') Gateway
-				input.ip(type='text', name='wlan0_gw', id='wlan0_gw', size='12' value='#{wlan0.gw}' disabled='#{wlan0_dis}')
-				br
-				label.setupnet(for='wlan0_dns1') DNS1
-				input.ip(type='text', name='wlan0_dns1', id='wlan0_dns1', size='12' value='#{wlan0.dns1}' disabled='#{wlan0_dis}')
-				br
-				label.setupnet(for='wlan0_dns2') DNS2
-				input.ip(type='text', name='wlan0_dns2', id='wlan0_dns2', size='12' value='#{wlan0.dns2}' disabled='#{wlan0_dis}')
+				div#wlan0config
+					br
+					label.setupnet(for='wlan0_ip') IP Address
+					input.ip(type='text', name='wlan0_ip', id='wlan0_ip', value='#{wlan0.ip}')
+					br
+					label.setupnet(for='wlan0_subnet') Subnet Mask
+					input.ip(type='text', name='wlan0_subnet', id='wlan0_subnet', value='#{wlan0.subnet}')
+					br
+					label.setupnet(for='wlan0_gw') Gateway
+					input.ip(type='text', name='wlan0_gw', id='wlan0_gw', value='#{wlan0.gw}')
+					br
+					label.setupnet(for='wlan0_dns1') DNS1
+					input.ip(type='text', name='wlan0_dns1', id='wlan0_dns1', value='#{wlan0.dns1}')
+					br
+					label.setupnet(for='wlan0_dns2') DNS2
+					input.ip(type='text', name='wlan0_dns2', id='wlan0_dns2', value='#{wlan0.dns2}')
 
-		h1.heading= ""
+		hr
 		div
-			input(id="setupPrev" type="button" value="Previous" onclick="wizard('setup', 3, 'prev');" style="visibility: hidden")
-			input(id="setupNext" type="button" value="Next" onclick="wizard('setup', 3, 'next');")
-			input(id="setupSubmit" type="submit" value="Submit" style="visibility: hidden")
+			input(id="setupB1" type="button" value="Previous")
+			input(id="setupB2" type="button" value=" Next ")

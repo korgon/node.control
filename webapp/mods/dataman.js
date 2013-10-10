@@ -160,7 +160,7 @@ db_management.prototype.getUsername = function(fn) {
 }
 
 // update user login
-db_management.prototype.updateUser = function(username, password) {
+db_management.prototype.updateUser = function(username, password, email) {
 	// update user, first get salt, then create password hash
 	db.query('SELECT salt FROM users WHERE id=1', [username], {salt: String}, function(rows) {
 		var user = rows[0];
@@ -168,7 +168,7 @@ db_management.prototype.updateUser = function(username, password) {
 			return;
 		}
 		hash(password, user.salt, function(err, hashies) {
-			db.query('UPDATE users set username=?, password=? where id=1', [username, hashies]);
+			db.query('UPDATE users set username=?, password=?, email=? where id=1', [username, hashies, email]);
 		});
 	});
 }

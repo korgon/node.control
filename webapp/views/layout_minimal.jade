@@ -2,13 +2,13 @@ doctype 5
 html
 	head
 		title= title
+		script(src="/javascripts/jquery-1.10.2.js")
+		block jscripts
 		link(rel='stylesheet', href='/stylesheets/style.css')
+		link(rel='stylesheet', href='/stylesheets/custom/jquery-ui-1.10.3.custom.css')
 	body
 		div.wrap
 			div.header
 				img(src='/images/header.png')
 			div.content
 				block content
-
-		script(src="/javascripts/jquery-1.10.2.js")
-		block jscripts
