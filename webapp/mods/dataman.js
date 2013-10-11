@@ -149,13 +149,13 @@ db_management.prototype.setupPull = function(fn) {
 //********* USER METHODS *********
 
 // retrieve user login name
-db_management.prototype.getUsername = function(fn) {
-	db.query('SELECT username FROM users WHERE id=1', {name: String}, function(rows) {
+db_management.prototype.getUserData = function(fn) {
+	db.query('SELECT username, email FROM users WHERE id=1', {uname: String, email: String}, function(rows) {
 		var user = rows[0];
 		if (user == null) {
 			return fn('invalid username');
 		}
-		return fn(user.name);
+		return fn(user);
 	});
 }
 

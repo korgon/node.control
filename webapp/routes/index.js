@@ -28,9 +28,9 @@ exports.setup = function(req, res) {
 	req.db.setupCheck(function(chk) {
 		var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jesus Loves Internets", security: "none", signal: 220} ];
 		if (chk == 0) {
-			req.db.getUsername(function(uname) {
+			req.db.getUserData(function(uname) {
 				req.db.setupPull(function(settings) {
-					res.render('setup', { title: 'Initial Setup', username: uname, wifis: wifis, hostname: settings.hostname, description: settings.description, eth0: settings.eth0_data, wlan0: settings.wlan0_data });
+					res.render('setup', { title: 'Initial Setup', username: uname.uname, email: uname.email, wifis: wifis, hostname: settings.hostname, description: settings.description, eth0: settings.eth0_data, wlan0: settings.wlan0_data });
 				});
 			});
 		}
@@ -41,11 +41,11 @@ exports.setup = function(req, res) {
 exports.setitup = function(req, res) {
 	//pull variables from form post
 	var eth0_data = {mode: req.body.eth0_mode, ip: req.body.eth0_ip, subnet: req.body.eth0_subnet, gw: req.body.eth0_gw, dns1: req.body.eth0_dns1, dns2: req.body.eth0_dns2};
-	var wlan0_data = {ssid: req.body.wlan0_ssid, password: req.body.wlan0_password, mode: req.body.wlan0_mode, ip: req.body.wlan0_ip, subnet: req.body.wlan0_subnet, gw: req.body.wlan0_gw, dns1: req.body.wlan0_dns1, dns2: req.body.wlan0_dns2};
+	var wlan0_data = {ssid: req.body.wlan0_ssid + '', password: req.body.wlan0_password + '', mode: req.body.wlan0_mode, ip: req.body.wlan0_ip, subnet: req.body.wlan0_subnet, gw: req.body.wlan0_gw, dns1: req.body.wlan0_dns1, dns2: req.body.wlan0_dns2};
 	//update username/pass
 	req.db.updateUser(req.body.username, req.body.password, req.body.email);
 	req.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
-	res.redirect('/');
+	res.send(wlan0_data);
 };
 
 exports.sensors = function(req, res) {

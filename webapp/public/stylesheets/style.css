@@ -1,6 +1,6 @@
 body {
 	padding: 50px;
-	font: 14px Segoe UI, Arial, sans-serif;
+	font: 11px Segoe UI, Arial, sans-serif;
 	background-color: #FFFFFF;
 	color: #333333;
 }
@@ -10,15 +10,21 @@ div.wrap {
 	margin: 0 auto; 
 }
 
+div.head { 
+
+}
+
 div.content { 
-	width: 620px; 
+	width: 690px; 
 	margin: 0 auto; 
 }
 
 div.subcontent { 
-	width: 600px; 
-	height: 315px;
-	margin: 0 auto; 
+	padding-top: 0;
+	margin-top: 0;
+	width: 600px;
+	height: 270px;
+	margin: 0 auto;
 	overflow: auto;
 }
 
@@ -26,6 +32,13 @@ div.center {
 	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+div.setupwifisel {
+	background-color: #dddddd;
+	border: 1px solid black;
+	border-radius: 3px;
+	height: 63px;
 }
 
 label.login {
@@ -39,31 +52,27 @@ label.setupnet {
   display: inline-block;
 }
 
-label.setupwifisel {
-	background-color: #999999;
-}
-
 label.setupwifi {
 	padding-top: 10px;
-	padding-bottom: 1px;
+	padding-bottom: 3px;
 }
 
 span.setupwifissid {
-	font-size: 18px;
+	font-size: 16px;
 	display: inline-block;
 	padding-left: 10px;
 	width: 290px;
 }
 
 span.setupwifisec {
-	font-size: 18px;
+	font-size: 16px;
 	display: inline-block;
 	padding-right: 10px;
 	width: 120px;
 }
 
 span.setupwifisig {
-	font-size: 18px;
+	font-size: 16px;
 	display: inline-block;
 	width: 110px;
 }
@@ -77,33 +86,71 @@ p.alert {
 	color: #800000;
 }
 
-li.menu {
-	display: inline;
-	list-style-type: none;
+legend {
+	color: #333333;
+	font-size: 2em;
 }
 
 input {
+	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: transparent;
-	padding: 3px;
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
+	background-color: #eaeaea;
+	text-align: left;
+	margin: 0 2px 2px 0;
+	padding-left: 3px;
+	border: 1px solid black;
+	border-radius: 3px;
+}
+
+textarea:focus, input.box:focus, input.ip_container:focus, select:focus {
+border: 1px solid #333333;
+}
+
+input.box {
+	width: 150px;
+	height: 20px;
+}
+
+input.boxLong {
+	width: 220px;
+	height: 20px;
 }
 
 select option {
-	background-color: #ffffff;
+	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
+	background-color: #eaeaea;
+	width: 150px;
+	height: 20px;
+	border: 1px solid black;
+	text-align: left;
+	margin: 0 2px 2px 0;
+	border-radius: 3px;
 }
 
 select {
-	background-color: #ffffff;
+	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
+	background-color: #eaeaea;
+	width: 150px;
+	height: 20px;
+	border: 1px solid black;
+	text-align: left;
+	margin: 0 2px 2px 0;
+	border-radius: 3px;
 }
 
 textarea {
-	background-color: transparent;
+	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
+	background-color: #eaeaea;
+	width: 400px;
+	height: 40px;
+	border: 1px solid black;
+	text-align: left;
+	padding-left: 3px;
+	margin: 0 2px 2px 0;
+	border-radius: 3px;
 }
 
 button {
@@ -116,14 +163,31 @@ input[type="text"]:disabled
 	background:#999999;
 }
 
+input[type="button"]
+{
+	font: 16px Segoe UI, Arial, sans-serif;
+	background-color: transparent;
+	width: 200px;
+	height: 30px;
+	border: 1px solid black;
+	text-align: center;
+	margin: 0 2px 2px 0;
+	border-radius: 3px;
+}
+
 img.clicky {
 	cursor: pointer;
 }
 
-li.menu a {
+ul.menu {
+
+}
+
+ul.menu li a {
+	display: inline; 
 	background-color: white;
 	color: black;
-	padding: 10px;
+	padding: 7px;
 	text-decoration: none;
 	border-style: solid;
 	border-top: 0;
@@ -132,7 +196,7 @@ li.menu a {
 	font-size: 12px;
 }
  
-li.menu a:hover {
+ul.menu a:hover {
 	/* This rule is only in effect when mouse is hovering */
 	color: black;
 	zoom: 1;
@@ -142,9 +206,21 @@ li.menu a:hover {
 	font-size: 12px;
 }
 
+ul.menu li {
+	display: inline-block;
+	list-style-type: none;
+}
+
 /* Used for ip address text inputs */
 .ip_container {
-  border: 1px inset #999;
+	font: 14px Segoe UI, Arial, sans-serif;
+	background-color: #eaeaea;
+	width: 150px;
+	height: 25px;
+	border: 1px solid black;
+	text-align: center;
+	margin: 0 2px 2px 0;
+	border-radius: 3px;
 }
 .ip_octet {
   border: 0;
@@ -159,4 +235,12 @@ h1.heading {
 	padding-top: 11px;
 	padding-left: 1px;
 	border-bottom: 1px solid #333333;
+	font-size: 3em;
+}
+
+h2 {
+	padding-top: -10px;
+	padding-botton: 0;
+	padding-left: 1px;
+	font-size: 2.2em;
 }
