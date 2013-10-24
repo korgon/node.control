@@ -1,6 +1,6 @@
 //	node.control routes
 exports.test = function(req, res) {
-	res.render('examples', { title: 'examples...' });
+	res.render('test', { title: 'Testing.....' });
 };
 
 exports.index = function(req, res) {
@@ -70,6 +70,7 @@ exports.loginto = function(req, res) {
 		}
 		else {
 			req.session.verified = true;
+			req.session.uname = req.body.username;
 			req.session.email = umail;
 			if (req.session.forward) res.redirect(req.session.forward);
 			else res.redirect('/');

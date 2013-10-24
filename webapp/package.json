@@ -8,7 +8,9 @@
   "dependencies": {
     "express": "3.4.0",
     "jade": "*",
-    "dblite": ">=0.3.5"
+    "dblite": ">=0.3.5",
+		"express.io": "1.1.13",
+		"express.io-middleware": "0.9.1"
   },
 	"devDependencies": {
 		"nodemon": "*"

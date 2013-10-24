@@ -1,27 +1,26 @@
-// node.control
-
-var express = require('express');
+// node.control express / socket.io
+var port = 3000;	// this will be 80 eventually...
+express = require('express.io');
+app = express().http().io();
 var routes = require('./routes');
-var http = require('http');
 
 // node.control dependencies.
 var mods = require('./mods');
 var db = new mods.dman();
 
-var app = express();
+// io middleware extension
+require('express.io-middleware')(app);
 
 // session middleware
-
 app.configure(function() {
-	app.set('port', process.env.PORT || 3000);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
 	app.locals.pretty = true;  // gives pretty html output from jade
 
 	// middleware (order matters!)
 	app.use(express.bodyParser());
-	app.use(express.cookieParser('seckrets dunt maek friendz'));
-	app.use(express.session());
+	app.use(express.cookieParser());
+	app.use(express.session({secret: "sekrets dunt maek freindz..."}));
 	app.use(express.methodOverride());
 
   // put any custom middleware here
@@ -66,6 +65,18 @@ function restricted(req, res, next) {
   }
 }
 
+// deny access to non validated user requests (io)
+app.io.use(function (req, next) {
+	// check for valid session
+  if (req.session.verified) {
+    next();
+  } else {
+		// need to authenticate...
+		req.io.emit('error', 'Unauthorized!');
+		console.log("Socket.io unauthorized attempt!");
+  }
+});
+
 // routes
 app.get('/test', routes.test);
 
@@ -86,6 +97,25 @@ app.get('/sensors', restricted, routes.sensors);
 // end routes
 
 // start server
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Node.control server listening on port ' + app.get('port'));
+app.listen(port);
+console.log('Server listening... on port: ' + port);
+
+// Begin socket.io routes....
+// =======================================
+
+// testdata io request
+app.io.route('testdata', function(req) {
+	console.log('(io) [connection] from ' + req.session.uname + ': ' + req.data);
+});
+
+// example of multi-request route.  Client usage ('get:sensors')
+app.io.route('get', {
+  time: function(req) {
+		req.io.emit('time', Date());
+		console.log('(io) [time request] from ' + req.session.uname);
+  },
+  sensors: function(req) {
+		req.io.emit('sensors', '...senz...');
+		console.log('(io) [sensor request] from ' + req.session.uname);
+  }
 });
