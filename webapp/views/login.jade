@@ -1,13 +1,21 @@
 extends layout_minimal
 
+block jscripts
+	script.
+		// do stuff once document loads
+		$(document).ready(function() { 
+			$('#username').focus();
+		});
+
 block content
-	h1.heading= title
-	p.alert= message
-		&nbsp;
-	div
+	div.center
 		form(method='post', action='/login')
-			label.login(for='username') Username
-			input(type='text', name='username', id='username', size='12')
-			label.login(for='password') Password
-			input(type='password', name='password', id='password', size='12')
-			input(type='submit', name='submit', value='Login')
+			div.subcontent
+				fieldset(style='margin-top: 222px')
+					legend <a>[ login ]</a>
+					p.alert= message
+					label.login(for='username') username
+					input(type='text', name='username', id='username', size='12')
+					label.login(for='password', style='margin-left: 20px') password
+					input(type='password', name='password', id='password', size='12')
+					input(type='submit', name='submit', value='login', style='margin-left: 20px')

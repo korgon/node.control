@@ -1,6 +1,7 @@
 extends layout_minimal
 
 block jscripts
+	script(src="/javascripts/jquery-waiting.js")
 	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script.
 		var curPage = 1, endPage = 4;
@@ -45,9 +46,13 @@ block jscripts
 					nav(curPage);
 				}
 			});
-
-			// Make ip address inputs
-			//$('.ip').ipaddress();
+			// waiting
+			$('#waiting').waiting({ 
+				elements: 7,
+				auto: true
+			});
+			// all items with a title attribute get tooltips :)
+			$( document ).tooltip();
 		});
 
 		function validateForm() {
@@ -141,20 +146,20 @@ block jscripts
 block content
 	div.center
 		br
-		img.clicky(src="/images/security.png" id="setupimg1")
-		img(src="/images/dash.png")
-		img.clicky(src="/images/network.png" id="setupimg2")
-		img(src="/images/dash.png")
-		img.clicky(src="/images/router.png" id="setupimg3")
-		img(src="/images/dash.png")
-		img.clicky(src="/images/wifi.png" id="setupimg4")
-
-	hr
+		img.clicky(src="/images/security.png" id="setupimg1" title="Login Credentials" style="padding: 3px")
+		img(src="/images/dash.png" style="padding: 10px")
+		img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px")
+		img(src="/images/dash.png" style="padding: 10px")
+		img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px")
+		img(src="/images/dash.png" style="padding: 10px")
+		img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px")
+		br
+		br
 
 	form(method='post' id='setupForm' name='setup' action='/setup' onsubmit="return validateForm()")
 		div.subcontent(id='setup1' style='display: none')
 			fieldset
-				legend Node Details
+				legend <a>[ node details ]</a>
 				label.setupnet(for='hostname') Hostname
 				input.box(type='text', name='hostname', id='hostname', size='12' value='#{hostname}')
 				br
@@ -164,7 +169,7 @@ block content
 			br
 			br
 			fieldset
-				legend Login Credentials
+				legend <a>[ login credentials ]</a>
 				label.setupnet(for='email') Email
 				input.boxLong(type='text', name='email', id='email', size='18' value='#{email}')
 				br
@@ -172,11 +177,11 @@ block content
 				input.box(type='text', name='username', id='username', size='18' value='#{username}')
 				br
 				label.setupnet(for='password') Password
-				input.box(type='password', name='password', id='password', size='18')
+				input.box(type='password', name='password', id='password', size='18' title='Password should be stronger than the force.')
 
 		div.subcontent(id='setup2' style='display: none')
 			fieldset
-				legend Wired Network Settings
+				legend <a>[ wired network settings ]</a>
 				label.setupnet(for='eth0_mode') Mode
 				select(name='eth0_mode', id='eth0_mode' onchange="ipMode('eth0')")
 					if eth0.mode == "dynamic"
@@ -204,7 +209,20 @@ block content
 
 		div.subcontent(id='setup3' style='display: none')
 			fieldset
-				legend Wireless Networks In Range
+				legend <a>[ wireless networks in range ]</a>
+				br
+				br
+				br
+				div#waiting.waitbox
+				br
+				h3.waitbox Scanning...
+				br
+				br
+
+
+		div.subcontent(id='setup3dos' style='display: none')
+			fieldset
+				legend <a>[ wireless networks in range ]</a>
 				each wifi, i in wifis
 					input(type='radio' name='wlan0_ssid' value='#{wifi.ssid}' id='wlan0_#{i}' onchange="wifiselect('w#{i}', #{wifis.length})" style='visibility: hidden')
 					div(id='w#{i}')
@@ -226,7 +244,7 @@ block content
 
 		div.subcontent(id='setup4' style='display: none')
 			fieldset
-				legend Wireless Network Settings
+				legend <a>[ wireless network settings ]</a>
 				label.setupnet(for='wlan0_mode') Mode
 				select(name='wlan0_mode', id='wlan0_mode' onchange="ipMode('wlan0')")
 					if wlan0.mode == "dynamic"
@@ -252,7 +270,6 @@ block content
 					label.setupnet(for='wlan0_dns2') DNS2
 					input.ip(type='text', name='wlan0_dns2', id='wlan0_dns2', value='#{wlan0.dns2}')
 
-		hr
 		div.center
 			input(id="setupB1" type="button" value="Previous")
 			input(id="setupB2" type="button" value=" Next ")

@@ -15,7 +15,17 @@ div.head {
 }
 
 div.content { 
-	width: 660px; 
+	width: 660px;
+	height: 560px;
+	margin: 0 auto; 
+}
+
+div.mincontent { 
+	background-image: url('/images/grid.png');
+	background-repeat:no-repeat;
+	background-position:center;
+	width: 660px;
+	height: 560px;
 	margin: 0 auto; 
 }
 
@@ -23,7 +33,7 @@ div.subcontent {
 	padding-top: 0;
 	margin-top: 0;
 	width: 600px;
-	height: 270px;
+	height: 330px;
 	margin: 0 auto;
 	overflow: auto;
 }
@@ -49,6 +59,7 @@ label.login {
 
 label.setupnet {
   width:111px;
+	margin-left: 20px;
   display: inline-block;
 }
 
@@ -86,15 +97,25 @@ p.alert {
 	color: #800000;
 }
 
+fieldset {
+	background-color: #fff;
+ -moz-border-radius: 5px;
+ -webkit-border-radius: 5px;
+}
+
 legend {
-	color: #333333;
+	background-color: #333333;
+	color: #eaeaea;
+	border: 1px solid black;
+	border-radius: 3px;
 	font-size: 2em;
+	margin-bottom: 9px;
 }
 
 input {
 	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: #eaeaea;
+	background-color: #fff;
 	text-align: left;
 	margin: 0 2px 2px 0;
 	padding-left: 3px;
@@ -119,7 +140,7 @@ input.boxLong {
 select option {
 	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: #eaeaea;
+	background-color: #fff;
 	width: 150px;
 	height: 20px;
 	border: 1px solid black;
@@ -131,7 +152,7 @@ select option {
 select {
 	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: #eaeaea;
+	background-color: #fff;
 	width: 150px;
 	height: 20px;
 	border: 1px solid black;
@@ -143,7 +164,7 @@ select {
 textarea {
 	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: #eaeaea;
+	background-color: #fff;
 	width: 400px;
 	height: 40px;
 	border: 1px solid black;
@@ -211,26 +232,6 @@ ul.menu li {
 	list-style-type: none;
 }
 
-/* Used for ip address text inputs */
-.ip_container {
-	font: 14px Segoe UI, Arial, sans-serif;
-	background-color: #eaeaea;
-	width: 150px;
-	height: 25px;
-	border: 1px solid black;
-	text-align: center;
-	margin: 0 2px 2px 0;
-	border-radius: 3px;
-}
-.ip_octet {
-  border: 0;
-  text-align: center;
-  width: 2em;
-}
-.ip_cidr {
-  width: 1.5em;
-}
-
 h1.heading {
 	padding-top: 11px;
 	padding-left: 1px;
@@ -243,4 +244,22 @@ h2 {
 	padding-botton: 0;
 	padding-left: 1px;
 	font-size: 2.2em;
+}
+
+/* waiting blocks css */
+.waiting { padding: 0; display: inline-block; }
+.waiting-element { margin: 0 2px 2px 0; background-color: #ccc; 
+    width: 10px; height: 20px; display: inline-block;}
+.waiting-play-0 { margin-bottom: 0; background-color: #999; }
+.waiting-play-1 { margin-bottom: 1px; background-color: #aaa; }
+.waiting-play-2 { margin-bottom: 2px; background-color: #bbb; }
+
+.centerboxout {
+	display: inline-block;
+  text-align: center;
+}
+
+.waitbox {
+  display: table;
+  margin: 0 auto;
 }
