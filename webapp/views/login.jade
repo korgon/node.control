@@ -1,21 +1,40 @@
 extends layout_minimal
 
 block jscripts
+	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script.
 		// do stuff once document loads
-		$(document).ready(function() { 
+		$(document).ready( function() { 
+
+			$('#login').button().click(function() {
+					$('#logon').submit();
+			});
 			$('#username').focus();
+			$('#login').button('disable');
+
+			$('#username').keypress( function() {
+				$('#login').button('enable');
+			});
+
+			$('input').keypress(function (e) {
+				if (e.which == 13) {
+					$('#login').focus().click();
+				}
+			});
+
 		});
 
 block content
 	div.center
-		form(method='post', action='/login')
+		form(method='post', action='/login', id='logon')
 			div.subcontent
-				fieldset(style='margin-top: 222px')
+				fieldset(style='margin-top: 180px')
 					legend <a>[ login ]</a>
 					p.alert= message
 					label.login(for='username') username
 					input(type='text', name='username', id='username', size='12')
 					label.login(for='password', style='margin-left: 20px') password
 					input(type='password', name='password', id='password', size='12')
-					input(type='submit', name='submit', value='login', style='margin-left: 20px')
+
+	div.center
+		input(id="login" type="button" value="enter")

@@ -25,14 +25,14 @@ div.mincontent {
 	background-repeat:no-repeat;
 	background-position:center;
 	width: 660px;
-	height: 560px;
+	height: 450px;
 	margin: 0 auto; 
 }
 
 div.subcontent { 
 	padding-top: 0;
 	margin-top: 0;
-	width: 600px;
+	width: 500px;
 	height: 330px;
 	margin: 0 auto;
 	overflow: auto;
@@ -44,8 +44,14 @@ div.center {
 	margin-right: auto;
 }
 
+div.setupspacer {
+	width: 600px;
+	height: 60px;
+}
+
 div.setupwifisel {
-	background-color: #dddddd;
+	color: #eaeaea;
+	background-color: #333;
 	border: 1px solid black;
 	border-radius: 3px;
 	height: 63px;
@@ -72,20 +78,20 @@ span.setupwifissid {
 	font-size: 16px;
 	display: inline-block;
 	padding-left: 10px;
-	width: 290px;
+	width: 240px;
 }
 
 span.setupwifisec {
 	font-size: 16px;
 	display: inline-block;
 	padding-right: 10px;
-	width: 120px;
+	width: 90px;
 }
 
 span.setupwifisig {
 	font-size: 16px;
 	display: inline-block;
-	width: 110px;
+	width: 90px;
 }
 
 a {
@@ -165,8 +171,8 @@ textarea {
 	color: #333333;
 	font: 14px Segoe UI, Arial, sans-serif;
 	background-color: #fff;
-	width: 400px;
-	height: 40px;
+	width: 300px;
+	height: 80px;
 	border: 1px solid black;
 	text-align: left;
 	padding-left: 3px;
@@ -253,11 +259,6 @@ h2 {
 .waiting-play-0 { margin-bottom: 0; background-color: #999; }
 .waiting-play-1 { margin-bottom: 1px; background-color: #aaa; }
 .waiting-play-2 { margin-bottom: 2px; background-color: #bbb; }
-
-.centerboxout {
-	display: inline-block;
-  text-align: center;
-}
 
 .waitbox {
   display: table;

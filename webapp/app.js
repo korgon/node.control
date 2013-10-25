@@ -80,32 +80,41 @@ app.io.use(function (req, next) {
 // routes
 app.get('/test', routes.test);
 
-app.get('/setup', routes.setup);
-app.post('/setup', routes.setitup);
 // login / out
-app.get('/login', setup, routes.login);
-app.post('/login', setup, routes.loginto);
-app.get('/logout', setup, routes.logout);
+app.get('/login', routes.login);
+app.post('/login', routes.loginto);
+app.get('/logout', routes.logout);
 
 // restricted routes
-app.get('/', restricted, routes.index);
+app.get('/', restricted, setup, routes.index);
 app.get('/schedule', restricted, routes.schedule);
 app.get('/control', restricted, routes.control);
 app.get('/nodes', restricted, routes.nodes);
 app.get('/settings', restricted, routes.settings);
 app.get('/sensors', restricted, routes.sensors);
+// setup (also restricted)
+app.get('/setup', restricted, routes.setup);
+app.post('/setup', restricted, routes.setitup);
+
 // end routes
 
 // start server
 app.listen(port);
-console.log('Server listening... on port: ' + port);
+console.log('Server listening... on port ' + port);
+
 
 // Begin socket.io routes....
-// =======================================
+// =================================================
+// routing similar to express, thanks to express.io
 
-// testdata io request
-app.io.route('testdata', function(req) {
-	console.log('(io) [connection] from ' + req.session.uname + ': ' + req.data);
+// wifiscan io request
+app.io.route('wifiscan', function(req) {
+	console.log('(io) [wifiscan request] from ' + req.session.uname);
+	var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jesus Loves Internets", security: "none", signal: 220} ];
+	// simulate some delay here ;)
+	setTimeout(function() {
+		req.io.emit('scanned', wifis);
+	}, 2000);
 });
 
 // example of multi-request route.  Client usage ('get:sensors')

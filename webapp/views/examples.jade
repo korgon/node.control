@@ -43,5 +43,26 @@ mixin userLi(user)
 	li #{user.name}: &lt; #{user.email}
 
 ul
+
+// crap from setup.jade for use later...
 	each user, i in users
 		li #{user.name} #{user.email}
+
+				each wifi, i in wifis
+					div(id='w#{i}')
+						input(type='radio' name='wlan0_ssid' value='#{wifi.ssid}' id='wlan0_#{i}' onchange="wifiselect('w#{i}', #{wifis.length})" style='visibility: hidden')
+						label.setupwifi(for='wlan0_#{i}')
+							span.setupwifissid
+								| #{wifi.ssid}
+							span.setupwifisec
+								img(src='/images/locked.png')
+								| &nbsp; #{wifi.security}
+							span.setupwifisig
+								| Signal &nbsp; 
+								if wifi.signal < 150
+									img(src='/images/signal_low.png')
+								else if wifi.signal >= 150 && wifi.signal < 200
+									img(src='/images/signal_med.png')
+								else if wifi.signal > 200
+									img(src='/images/signal_high.png')
+						br
