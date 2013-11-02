@@ -61,13 +61,40 @@ block jscripts
 				elements: 7,
 				auto: true
 			});
+			// dialog box for validation
+			$( "#dialog" ).dialog( {
+				autoOpen: false,
+				width: 400,
+				buttons: [
+					{
+						text: "Ok",
+						click: function() {
+							$( this ).dialog( "close" );
+						}
+					},
+					{
+						text: "Cancel",
+						click: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				]
+			});
 		});
 
 		function validateForm() {
-			var x = document.forms["setup"]["password"].value;
-			if (x == null || x == "")
+			var invalid_flag = 0;
+			var input_faults = "";
+			$('#dialog').empty();
+			var password_input = document.forms["setup"]["password"].value;
+			if (password_input == null || password_input == "")
 			{
-				alert("C'mon no password?");
+				invalid_flag = 1;
+				input_faults = input_faults + "Bad Password.<br>";
+			}
+			if (invalid_flag == 1) {
+				$('#dialog').append(input_faults);
+				$('#dialog').dialog('open');
 				return false;
 			}
 		}
@@ -77,20 +104,6 @@ block jscripts
 				$("#" + iface + "config").hide();
 			} else if ($("#" + iface + "_mode").val() == 'static') {
 				$("#" + iface + "config").show();
-			}
-		}
-
-		function wifiselect(id, wificnt) {
-			var ids = [];
-	
-			for (var i=0; i < wificnt; i++) {
-				if (id == 'w'+i) {
-					ids[i] = document.getElementById('w' + i);
-					ids[i].classList.add('setupwifisel');
-				} else {
-					ids[i] = document.getElementById('w' + i);
-					ids[i].classList.remove('setupwifisel');			
-				}
 			}
 		}
 
@@ -159,7 +172,6 @@ block jscripts
 		function wifiHide() {
 			$("#setupB1").button('disable');
 			$("#setupB2").button('disable');
-			$("#imagebar").hide();
 			$("#setup3").hide();
 			$("#load").show();
 			scanio.emit('wifiscan', function () {
@@ -170,7 +182,6 @@ block jscripts
 		function wifiShow() {
 			$("#setupB1").button('enable');
 			$("#setupB2").button('enable');
-			$("#imagebar").show();
 			$("#setup3").show();
 			$("#load").hide();
 		}
@@ -183,12 +194,10 @@ block jscripts
 			$('#wifis').empty();
 			$.each(scanned_networks.networks, function(index, wifiobj){
 				// check if ssid is null
-				if (wifiobj.ssid == "")
+				if (wifiobj.ssid == "<hidden>")
 					return true;
 
 				// determine security type
-				if (wifiobj.security_type.match(/wpa2/i))
-					security_min = "WPA2"
 				else if (wifiobj.security_type.match(/wpa/i))
 					security_min = "WPA"
 				else if (wifiobj.security_type.match(/wep/i))
@@ -197,10 +206,10 @@ block jscripts
 					security_min = "NONE"
 
 				// build divs for access points
-				html = "<div id='w" + index + "'>";
-				html = html + "<input type='radio' name='wlan0_ssid' value='" + wifiobj.ssid + "' id='wlan0_" + index + "'";
-				html = html + " style='visibility: hidden;'>";
-				html = html + "<input type='hidden' name='wlan0_security' value='" + wifiobj.security_type + "'>";
+				html = "<div class='selme' id='wdiv" + index + "'>";
+				html = html + "<input type='radio' name='wlan0_ssid' value='" + wifiobj.ssid;
+				html = html + "' id='wlan0_" + index + "' style='visibility: hidden;'>";
+				
 				html = html + "<label class='setupwifi' for='wlan0_" + index + "'>";
 				html = html + "<span class='setupwifissid'>" + wifiobj.ssid + "</span>";
 				html = html + "<span class='setupwifisec'><img src='/images/locked.png'>&nbsp;" + security_min + "</span>";
@@ -211,7 +220,14 @@ block jscripts
 					html = html + "<img src='/images/signal_med.png'>";
 				else if (wifiobj.sig_strength >= 66)
 					html = html + "<img src='/images/signal_high.png'>";
+				html = html + "</span></label></div>";
 				$('#wifis').append(html);
+			});
+			$("label").css('cursor', 'pointer');
+
+			$("input:radio").change( function() {
+				$(".selme").removeClass("setupwifisel");
+				$(this).parent(".selme").addClass("setupwifisel");
 			});
 			$('#wifis').append(JSON.stringify(scanned_networks, null, 4));
 			// show after appending
@@ -222,11 +238,16 @@ block jscripts
 			console.error('Unable to connect Socket.IO', reason);
 		});
 
-block content
-	div.setupspacer
 
+block content
 	form(method='post' id='setupForm' name='setup' action='/setup' onsubmit="return validateForm()")
+		div#imagebar.center(style='position: relative; top: -10px;')
+			img.clicky(src="/images/security.png" id="setupimg1" title="Login Credentials" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
+			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
 		div.subcontent(id='setup1' style='display: none')
+
 			fieldset
 				legend <a>|</a> node details <a>|</a>
 				label.setupnet(for='hostname') Hostname
@@ -325,12 +346,10 @@ block content
 					label.setupnet(for='wlan0_dns2') DNS2
 					input.ip(type='text', name='wlan0_dns2', id='wlan0_dns2', value='#{wlan0.dns2}')
 
+					<!-- ui-dialog -->
+					div#dialog(title="Invalid Setup Configuration")
+					<!-- end ui-dialog -->
+
 		div.center
 			input(id="setupB1" type="button" value="Previous")
 			input(id="setupB2" type="button" value="Next ")
-		div#imagebar.center
-			br
-			img.clicky(src="/images/security.png" id="setupimg1" title="Login Credentials" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
-			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
-			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
-			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
