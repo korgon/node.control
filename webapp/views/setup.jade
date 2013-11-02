@@ -61,6 +61,36 @@ block jscripts
 				elements: 7,
 				auto: true
 			});
+
+			// dialog box security (password / username for ap)
+			$( "#password_entry" ).dialog( {
+				autoOpen: false,
+				width: 400,
+				buttons: [
+					{
+						text: "Ok",
+						click: function() {
+							$('#wlan0_username').val($('#dialog_username').val());
+							if ($('#show_password').is(':checked'))
+								$('#wlan0_password').val($('#dialog_password_text').val());
+							else
+								$('#wlan0_password').val($('#dialog_password').val());
+							$('#dialog_username').prop('disabled', true);
+							$('#dialog_password').prop('disabled', true);
+							$('#dialog_password_text').prop('disabled', true);
+							$('#show_password').prop('disabled', true);
+							$( this ).dialog( "close" );
+						}
+					},
+					{
+						text: "Cancel",
+						click: function() {
+							$( this ).dialog( "close" );
+						}
+					}
+				]
+			});
+
 			// dialog box for validation
 			$( "#dialog" ).dialog( {
 				autoOpen: false,
@@ -84,16 +114,34 @@ block jscripts
 
 		function validateForm() {
 			var invalid_flag = 0;
-			var input_faults = "";
+			var faults_html = "<div class='ui-widget'><div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>";
+			faults_html = faults_html + "<p><span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>";
+			faults_html = faults_html +	"<strong>Alert:</strong><ul>";
+
 			$('#dialog').empty();
-			var password_input = document.forms["setup"]["password"].value;
-			if (password_input == null || password_input == "")
+			if ($('#username').val() == null || $('#username').val() == "")
 			{
 				invalid_flag = 1;
-				input_faults = input_faults + "Bad Password.<br>";
+				faults_html = faults_html + "<li>Must specify a user login.</li>";
+			}
+			if ($('#password').val() == null || $('#password').val() == "")
+			{
+				invalid_flag = 1;
+				faults_html = faults_html + "<li>Must specify a password.</li>";
+			}
+			if ($('#hostname').val() == null || $('#hostname').val() == "")
+			{
+				invalid_flag = 1;
+				faults_html = faults_html + "<li>Must specify a hostname.</li>";
+			}
+			if ($('#email').val() == null || $('#email').val() == "")
+			{
+				invalid_flag = 1;
+				faults_html = faults_html + "<li>Must specify a hostname.</li>";
 			}
 			if (invalid_flag == 1) {
-				$('#dialog').append(input_faults);
+				faults_html = faults_html + "</ul></p></div></div>";
+				$('#dialog').append(faults_html);
 				$('#dialog').dialog('open');
 				return false;
 			}
@@ -108,62 +156,36 @@ block jscripts
 		}
 
 		function nav(page) {
+			$('div[id^="setupview"]').hide();
+			$('img[id^="setupimg"]').css('opacity', '.33');
 			switch (page) {
 				case 1:
 					$('#setupB1').hide();
 					$('#setupB2').val("Next");
-					for (i=1; i<=endPage; i++) {
-						if (i==page) {
-							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '1');
-						}	else {
-							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '.33');
-						}
-					}
+					$('#setupview' + page).show();
+					$('#setupimg' + page).css('opacity', '1');
 					break;
 				case 2:
 					$('#setupB1').show();
 					$('#setupB2').val("Next");
-					for (i=1; i<=endPage; i++) {
-						if (i==page) {
-							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '1');
-						}	else {
-							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '.33');
-						}
-					}
+					$('#setupview' + page).show();
+					$('#setupimg' + page).css('opacity', '1');
 					break;
 				case 3:
 					$('#setupB1').show();
 					$('#setupB2').val("Next");
-					for (i=1; i<=endPage; i++) {
-						if (i==page) {
-							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '1');
-							if (firstload == 1)
-								wifiHide(); // do fancy socket.io wifi scanning here
-						}	else {
-							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '.33');
-						}
-					}
-					if (firstload == 1)
+					$('#setupview' + page).show();
+					$('#setupimg' + page).css('opacity', '1');
+					if (firstload == 1) {
+						wifiHide(); // do fancy socket.io wifi scanning here
 						firstload = 0;
+					}
 					break;
 				case 4:
 					$('#setupB1').show();
 					$('#setupB2').val("Submit");
-					for (i=1; i<=endPage; i++) {
-						if (i==page) {
-							$('#setup' + i).show();
-							$('#setupimg' + i).css('opacity', '1');
-						}	else {
-							$('#setup' + i).hide();
-							$('#setupimg' + i).css('opacity', '.33');
-						}
-					}
+					$('#setupview' + page).show();
+					$('#setupimg' + page).css('opacity', '1');
 					break;
 			}
 			// does magical socket.io stuffs			
@@ -172,7 +194,7 @@ block jscripts
 		function wifiHide() {
 			$("#setupB1").button('disable');
 			$("#setupB2").button('disable');
-			$("#setup3").hide();
+			$("#setupview3").hide();
 			$("#load").show();
 			scanio.emit('wifiscan', function () {
 				console.info('Sending request for wifi scan.');
@@ -182,7 +204,7 @@ block jscripts
 		function wifiShow() {
 			$("#setupB1").button('enable');
 			$("#setupB2").button('enable');
-			$("#setup3").show();
+			$("#setupview3").show();
 			$("#load").hide();
 		}
 
@@ -192,6 +214,7 @@ block jscripts
 		scanio.on('scanned', function(scanned_networks) {
 			// empty the div so no duplication exists
 			$('#wifis').empty();
+
 			$.each(scanned_networks.networks, function(index, wifiobj){
 				// check if ssid is null
 				if (wifiobj.ssid == "<hidden>")
@@ -209,7 +232,6 @@ block jscripts
 				html = "<div class='selme' id='wdiv" + index + "'>";
 				html = html + "<input type='radio' name='wlan0_ssid' value='" + wifiobj.ssid;
 				html = html + "' id='wlan0_" + index + "' style='visibility: hidden;'>";
-				
 				html = html + "<label class='setupwifi' for='wlan0_" + index + "'>";
 				html = html + "<span class='setupwifissid'>" + wifiobj.ssid + "</span>";
 				html = html + "<span class='setupwifisec'><img src='/images/locked.png'>&nbsp;" + security_min + "</span>";
@@ -220,16 +242,54 @@ block jscripts
 					html = html + "<img src='/images/signal_med.png'>";
 				else if (wifiobj.sig_strength >= 66)
 					html = html + "<img src='/images/signal_high.png'>";
-				html = html + "</span></label></div>";
+				html = html + "</span></label></div><br>";
 				$('#wifis').append(html);
+				// set data for use in form submission
+				$('#wlan0_' + index).data('mac_address', wifiobj.mac_address);
+				$('#wlan0_' + index).data('security_type', wifiobj.security_type);
 			});
-			$("label").css('cursor', 'pointer');
+			$("label.setupwifi").css('cursor', 'pointer');		// change cursor on hover
 
-			$("input:radio").change( function() {
+			$("input[name='wlan0_ssid']").click( function() {
 				$(".selme").removeClass("setupwifisel");
 				$(this).parent(".selme").addClass("setupwifisel");
+				$('#password_entry').empty();
+
+				$('#password_entry').dialog('option', 'title', 'Credentials for ' + $(this).val())
+				dialog_html = "<br>";
+				if ($(this).data('security_type').match(/eap/i)) {
+					dialog_html = dialog_html + "<label class='setupnet' for='dialog_username'><h4 style='margin: 0px;'>Username</h4></label>";
+					dialog_html = dialog_html + "<input class='boxLong dark' type='text' name='dialog_username' id='dialog_username' value=''>";
+				}
+				dialog_html = dialog_html + "<label class='setupnet' for='dialog_password'><h4 style='margin: 0px;'>Password</h4></label>";
+				dialog_html = dialog_html + "<input class='boxLong dark' type='password' name='dialog_password' id='dialog_password'>";
+				dialog_html = dialog_html + "<input class='boxLong dark' type='text' name='dialog_password_text' id='dialog_password_text' ";
+				dialog_html = dialog_html + "style='display: none;'>";
+				dialog_html = dialog_html + "<label class='setupnet' for='show_password' style='display: block; float: right;'>Show ";
+				dialog_html = dialog_html + "<input type='checkbox' class='dark' name='show_password' id='show_password' style='position: relative; top: 3px;'></label>";
+				$('#password_entry').append(dialog_html);
+
+				// set hidden inputs to selected network
+				$('#wlan0_mac').val($(this).data('mac_address'));
+				$('#wlan0_security').val($(this).data('security_type'));
+
+				// setup on click events for checkbox
+				$('#show_password').click(function() {
+					if ($('#show_password').is(':checked')) {
+						$('#dialog_password_text').val($('#dialog_password').val());
+						$('#dialog_password_text').toggle();
+						$('#dialog_password').toggle();
+					}
+					else {
+						$('#dialog_password').val($('#dialog_password_text').val());
+						$('#dialog_password_text').toggle();
+						$('#dialog_password').toggle();
+					}
+				});
+				if (!$(this).data('security_type').match(/none/i))
+					$('#password_entry').dialog('open');
 			});
-			$('#wifis').append(JSON.stringify(scanned_networks, null, 4));
+			// $('#wifis').append(JSON.stringify(scanned_networks, null, 4));
 			// show after appending
 			wifiShow();
 		});
@@ -246,7 +306,7 @@ block content
 			img.clicky(src="/images/network.png" id="setupimg2" title="Ethernet Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
 			img.clicky(src="/images/router.png" id="setupimg3" title="Select Wireless Access Point" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
 			img.clicky(src="/images/wifi.png" id="setupimg4" title="Wifi Settings" style="padding: 3px; margin-left: 13px; margin-right: 13px;")
-		div.subcontent(id='setup1' style='display: none')
+		div.subcontent(id='setupview1' style='display: none')
 
 			fieldset
 				legend <a>|</a> node details <a>|</a>
@@ -269,7 +329,7 @@ block content
 				label.setupnet(for='password') Password
 				input.box(type='password', name='password', id='password', size='18' title='Password should be stronger than the force.')
 
-		div.subcontent(id='setup2' style='display: none')
+		div.subcontent(id='setupview2' style='display: none')
 			fieldset
 				legend <a>|</a> wired network settings <a>|</a>
 				label.setupnet(for='eth0_mode') Mode
@@ -311,14 +371,18 @@ block content
 				br
 
 
-		div.subcontent(id='setup3' style='display: none')
+		div.subcontent(id='setupview3' style='display: none')
 			fieldset
 				legend <a>|</a> wireless networks in range <a>|</a>
 					img#refresh.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');
+				input(type='hidden' name='wlan0_mac' id='wlan0_mac' value='')
+				input(type='hidden' name='wlan0_username' id='wlan0_username' value='')
+				input(type='hidden' name='wlan0_password' id='wlan0_password' value='')
+				input(type='hidden' name='wlan0_security' id='wlan0_security' value='')
 				div#wifis
 
 
-		div.subcontent(id='setup4' style='display: none')
+		div.subcontent(id='setupview4' style='display: none')
 			fieldset
 				legend <a>|</a> wireless network settings <a>|</a>
 				label.setupnet(for='wlan0_mode') Mode
@@ -348,6 +412,7 @@ block content
 
 					<!-- ui-dialog -->
 					div#dialog(title="Invalid Setup Configuration")
+					div#password_entry(title="Password Information")
 					<!-- end ui-dialog -->
 
 		div.center

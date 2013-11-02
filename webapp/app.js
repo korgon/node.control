@@ -1,4 +1,7 @@
 // node.control express / socket.io
+
+console.log('{|} Launching node.control');
+
 var port = 3000;	// this will be 80 eventually...
 express = require('express.io');
 app = express().http().io();
@@ -75,7 +78,7 @@ app.io.use(function (req, next) {
   } else {
 		// need to authenticate...
 		req.io.emit('error', 'Unauthorized!');
-		console.log("Socket.io unauthorized attempt!");
+		console.log(Date() + "Socket.io unauthorized attempt!");
   }
 });
 
@@ -102,7 +105,10 @@ app.post('/setup', restricted, routes.setitup);
 
 // start server
 app.listen(port);
-console.log('Server listening... on port ' + port);
+setTimeout(function() {
+	console.log(' |--- [Listening on port ' + port + ']');
+	console.log('{|}');
+}, 3300);
 
 
 // Begin socket.io routes....
@@ -111,7 +117,7 @@ console.log('Server listening... on port ' + port);
 
 // wifiscan io request
 app.io.route('wifiscan', function(req) {
-	console.log('(io) [wifiscan request] from ' + req.session.uname);
+	console.log(Date() + '(io) [wifiscan request] from ' + req.session.uname);
 	wscan.scan(function(json_output){
 		req.io.emit('scanned', json_output);
 	});
@@ -121,10 +127,10 @@ app.io.route('wifiscan', function(req) {
 app.io.route('get', {
   time: function(req) {
 		req.io.emit('time', Date());
-		console.log('(io) [time request] from ' + req.session.uname);
+		console.log(Date() + '(io) [time request] from ' + req.session.uname);
   },
   sensors: function(req) {
 		req.io.emit('sensors', '...senz...');
-		console.log('(io) [sensor request] from ' + req.session.uname);
+		console.log(Date() + '(io) [sensor request] from ' + req.session.uname);
   }
 });

@@ -6,7 +6,6 @@ body {
 }
 
 div.wrap { 
-	width: 760px; 
 	margin: 0 auto;
 	top: 0px;
 	left: 0px;
@@ -14,19 +13,17 @@ div.wrap {
 	position: fixed;
 }
 
-div.head { 
-	margin: 0 auto;
-	position: relative;
-	padding: 0px;
+div.mainmenu { 
+	padding: 7px;
 }
 
 div.content { 
 	width: 660px;
 	height: 560px;
-	margin: 0 auto; 
+	margin: 0 auto;
 }
 
-div.mincontent { 
+div.content_minimal { 
 	background-image: url('/images/grid.png');
 	background-repeat:no-repeat;
 	background-position:center;
@@ -218,7 +215,8 @@ img.clicky {
 }
 
 ul.menu {
-
+	padding: 0px;
+	margin: 0px;
 }
 
 ul.menu li a {
@@ -239,9 +237,7 @@ ul.menu a:hover {
 	color: black;
 	zoom: 1;
 	filter: alpha(opacity=80);
-	opacity: .8;
-	font-weight: bold;
-	font-size: 12px;
+	opacity: .33;
 }
 
 ul.menu li {
