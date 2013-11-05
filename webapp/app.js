@@ -7,11 +7,9 @@ express = require('express.io');
 app = express().http().io();
 var routes = require('./routes');
 
-// node.control dependencies.
-var mods = require('./mods');
-var db = new mods.dman();
-var wscan = new mods.wiscan('wlan0');
-
+// node.controller object creation
+ctrl = require('./mods');
+var controller = new ctrl();
 
 // io middleware extension
 require('express.io-middleware')(app);
@@ -35,7 +33,7 @@ app.configure(function() {
 		delete req.session.message;
 		res.locals.message = '';
 		if (msg) res.locals.message = msg;
-		req.db = db;  // attach database object
+		req.controller = controller;  // attach controller object
 		next();
 	});
 
@@ -51,11 +49,9 @@ app.configure(function() {
 // if not setup force redirect to setup
 function setup(req, res, next) {
 	// check for initial setup
-	db.setupCheck(function(chk) {
-		if (chk == 0) {
-			res.redirect('/setup');
-		} else next();
-	});
+	if (controller.getSetup() == 0) {
+		res.redirect('/setup');
+	} else next();
 }
 
 // deny access to non validated user requests
@@ -117,8 +113,8 @@ setTimeout(function() {
 
 // wifiscan io request
 app.io.route('wifiscan', function(req) {
-	console.log(Date() + '(io) [wifiscan request] from ' + req.session.uname);
-	wscan.scan(function(json_output){
+	console.log(Date() + ' (io) [wifiscan request] from ' + req.session.uname);
+	controller.wifi.scan(function(json_output){
 		req.io.emit('scanned', json_output);
 	});
 });
@@ -127,10 +123,10 @@ app.io.route('wifiscan', function(req) {
 app.io.route('get', {
   time: function(req) {
 		req.io.emit('time', Date());
-		console.log(Date() + '(io) [time request] from ' + req.session.uname);
+		console.log(Date() + ' (io) [time request] from ' + req.session.uname);
   },
   sensors: function(req) {
 		req.io.emit('sensors', '...senz...');
-		console.log(Date() + '(io) [sensor request] from ' + req.session.uname);
+		console.log(Date() + ' (io) [sensor request] from ' + req.session.uname);
   }
 });

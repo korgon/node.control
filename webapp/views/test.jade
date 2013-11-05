@@ -5,6 +5,8 @@ block jscripts
 	script(src="/socket.io/socket.io.js")
 
 	script.
+		// variable for socketio repetition
+		var timer;
 		// socket.io stuffs...
 		tick = io.connect();
 
@@ -15,6 +17,7 @@ block jscripts
 
 		tick.on('error', function (reason) {
 			console.error('Unable to connect Socket.IO', reason);
+			clearInterval(timer);
 		});
 
 		tick.on('connect', function () {
@@ -26,9 +29,11 @@ block jscripts
 			// button
 			$('#sio').button().click(function() {
 				//tick.emit('testdata', prompt("testing?"));
-				tick.emit('get:time', function () {
-					console.info('sensor data request');
-				});
+				timer = setInterval( function() {
+					tick.emit('get:time', function () {
+						console.info('sensor data request');
+					});
+				}, 1000);
 			});
 		});
 

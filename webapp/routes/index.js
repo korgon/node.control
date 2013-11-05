@@ -25,17 +25,14 @@ exports.settings = function(req, res) {
 
 // setup controller
 exports.setup = function(req, res) {
-	req.db.setupCheck(function(chk) {
-		if (chk == 0) {
-			var wifis = [ {ssid: "UCCS Wireless", security: "WPA2", signal: 120}, {ssid: "Pretty fly for a wifi", security: "WEP", signal: 170}, {ssid: "Jesus Loves Internets", security: "none", signal: 220} ];
-			req.db.getUserData(function(uname) {
-				req.db.setupPull(function(settings) {
-					res.render('setup', { title: 'Initial Setup', username: uname.uname, email: uname.email, wifis: wifis, hostname: settings.hostname, description: settings.description, eth0: settings.eth0_data, wlan0: settings.wlan0_data });
-				});
+	if (req.controller.getSetup() == 0) {
+		req.controller.db.getUserData(function(uname) {
+			req.controller.db.setupPull(function(settings) {
+				res.render('setup', { title: 'Initial Setup', username: uname.uname, email: uname.email, wifis: "", hostname: settings.hostname, description: settings.description, eth0: settings.eth0_data, wlan0: settings.wlan0_data });
 			});
-		}
-		else res.redirect('/');
-	});
+		});
+	}
+	else res.redirect('/');
 }
 
 exports.setitup = function(req, res) {
@@ -43,14 +40,15 @@ exports.setitup = function(req, res) {
 	var eth0_data = {mode: req.body.eth0_mode, ip: req.body.eth0_ip, subnet: req.body.eth0_subnet, gw: req.body.eth0_gw, dns1: req.body.eth0_dns1, dns2: req.body.eth0_dns2};
 	var wlan0_data = {ssid: req.body.wlan0_ssid + '', mac_address: req.body.wlan0_mac, security_type: req.body.wlan0_security, username: req.body.wlan0_username, password: req.body.wlan0_password + '', mode: req.body.wlan0_mode, ip: req.body.wlan0_ip, subnet: req.body.wlan0_subnet, gw: req.body.wlan0_gw, dns1: req.body.wlan0_dns1, dns2: req.body.wlan0_dns2};
 	// update username/pass and the system variables
-	req.db.updateUser(req.body.username, req.body.password, req.body.email);
-	req.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
+	req.controller.db.updateUser(req.body.username, req.body.password, req.body.email);
+	req.controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
+	req.controller.updateSystemVariables();
 	res.redirect('/');
 };
 
 exports.sensors = function(req, res) {
 	// create json object, then push it into jade or to client
-	req.db.getSensors(function(senzors) {
+	req.controller.db.getSensors(function(senzors) {
 		res.format({
 			html: function() { res.render('sensors', { title: 'Sensors Data', senzors: senzors }); },
 			json: function() { res.json(senzors); }
@@ -63,7 +61,7 @@ exports.login = function(req, res) {
 };
 
 exports.loginto = function(req, res) {
-	req.db.authenticate(req.body.username, req.body.password, req.ip, function(err, umail) {
+	req.controller.db.authenticate(req.body.username, req.body.password, req.ip, function(err, umail) {
 		if (err != 'pass') {
 			req.session.message = "*** Invalid Username / Password ***";
 			res.redirect('/login');

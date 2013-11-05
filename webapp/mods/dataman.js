@@ -12,7 +12,7 @@ var crypto = require('crypto');
 var dblite = require('dblite');
 
 // module variables
-var db_path = './database/data.sqlite';
+var db_path = './mods/database/data.sqlite';
 var db;		// private placeholder for database connection
 
 // constructor...
@@ -60,7 +60,7 @@ function init_db() {
 	// ***** MAKE MORE DYNAMIC LATERS ******
 	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?)', [
 		null, 'node', 'sprinkler controller', 0, 
-		{mode: 'static', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
+		{mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{ssid: '', mac_address: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{mode: 'coordinator', serial: '0013a20040790728', pan: 'green eggs and ham'}]);
 		console.log(" |------ Added default system settings");
@@ -124,23 +124,7 @@ db_management.prototype.getSensorData = function(sid, fn) {
 	});
 }
 
-// retrieve sensor data with timestamp
-db_management.prototype.putSensorData = function(sid, rawdata) {
-	var now = new Date();
-	db.query('INSERT into ' + sid + ' VALUES (?, ?)', [now.getTime(), rawdata]);
-}
-
-db_management.prototype.getSensorData = function(fn) {
-}
-
-
 //********* SETUP METHODS *********
-// check for initial setup
-db_management.prototype.setupCheck = function(fn) {
-	db.query('SELECT setup FROM system where id=1', {setup: Number}, function(rows) {
-		fn(rows[0].setup);
-	});
-}
 
 // make changes to the system table from setup form
 db_management.prototype.setupDone = function(hn, desc, e_d, w_d) {
@@ -149,11 +133,12 @@ db_management.prototype.setupDone = function(hn, desc, e_d, w_d) {
 
 // retrieve data for setup pages
 db_management.prototype.setupPull = function(fn) {
-	db.query('SELECT hostname, description, eth0_data, wlan0_data FROM system WHERE id=1', {
+	db.query('SELECT hostname, description, eth0_data, wlan0_data, setup FROM system WHERE id=1', {
 		hostname: String, 
 		description: String, 
 		eth0_data: JSON.parse, 
-		wlan0_data: JSON.parse
+		wlan0_data: JSON.parse,
+		setup: Number
 	}, function(rows) {
 		// create json ?
 		fn(rows[0]);
@@ -207,14 +192,6 @@ db_management.prototype.authenticate = function(username, password, ip, fn) {
 		});
 	});
 }
-
-// for express.session cookies secretword
-db_management.prototype.getSaltyCookies = function(fn) {
-	db.query('SELECT cookie_salt FROM system', function(rows) {
-		fn(rows[0]);
-	});
-}
-
 
 
 // encryption function for generating hash and salt
