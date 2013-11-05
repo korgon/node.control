@@ -10,7 +10,8 @@ block jscripts
 					$('#logon').submit();
 			});
 			$('#username').focus();
-			$('#login').button('disable');
+			if ($('#username').val() == "")
+				$('#login').button('disable');
 
 			$('#username').keypress( function() {
 				$('#login').button('enable');

@@ -22,7 +22,8 @@ var setup;
 
 //********* Controller Constructor *********
 function controller() {
-	console.log (" |--- [Instantiating controller object]");
+	console.log(" |---[ Instantiating controller object ]---|");
+
 	updateSystemVariables();
 }
 

@@ -18,7 +18,7 @@ var db;		// private placeholder for database connection
 // constructor...
 function db_management() {
 	if (fs.existsSync(db_path)) {
-		console.log(" |--- [Database connection established]");
+		console.log(" |---[ Database connection established ]---|");
 		db = dblite(db_path);
 	}
 	else {
@@ -35,35 +35,35 @@ function init_db() {
 	console.log(" |--- [Creating new database]");
 	db.query('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, \
 		salt TEXT, email TEXT)');
-	console.log(" |------ Table users added");
+	console.log(" |---------   Table users added   ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS system (id INTEGER PRIMARY KEY, hostname TEXT, description TEXT, \
-		setup INTEGER, eth0_data TEXT, wlan0_data TEXT, xbee_data TEXT)');
-	console.log(" |------ Table system added");
+		setup INTEGER, ap_mode INTEGER, eth0_data TEXT, wlan0_data TEXT, xbee_data TEXT)');
+	console.log(" |---------   Table system added  ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS schedule (id INTEGER PRIMARY KEY, description TEXT, \
 		start_data TEXT, stop_data TEXT, interupt TEXT)');
-	console.log(" |------ Table schedule added");	
+	console.log(" |--------- Table schedule added  ---------|");	
 	db.query('CREATE TABLE IF NOT EXISTS remotes (id INTEGER PRIMARY KEY, name TEXT, description TEXT, \
 		xbee_data TEXT)');
-	console.log(" |------ Table remotes added");
+	console.log(" |---------  Table remotes added  ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS sensors (name TEXT PRIMARY KEY, description TEXT, location)');
-	console.log(" |------ Table sensors added");
+	console.log(" |---------  Table sensors added  ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS actuators (name TEXT PRIMARY KEY, description TEXT, location)');
-	console.log(" |------ Table actuators added");
+	console.log(" |--------- Table actuators added ---------|");
 
 	// insert default user admin, first create password ('') and salt
 	hash('', function(err, salties, hashies) {
 		db.query('INSERT INTO users VALUES (?, ?, ?, ?, ?)', [null, 'admin', hashies, salties, null]);
-		console.log(" |------ Inserted user admin");
+		console.log(" |---------  Inserted user admin  ---------|");
 	});
 
 	// insert default controller module data into system table
 	// ***** MAKE MORE DYNAMIC LATERS ******
 	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?)', [
-		null, 'node', 'sprinkler controller', 0, 
+		null, 'node', 'sprinkler controller', 0, 0, 
 		{mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
-		{ssid: '', mac_address: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
+		{ssid: '', bssid: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{mode: 'coordinator', serial: '0013a20040790728', pan: 'green eggs and ham'}]);
-		console.log(" |------ Added default system settings");
+		console.log(" |---------    Defaults loaded    ---------|");
 
 	// remotes should be added by the user
 
@@ -85,7 +85,7 @@ db_management.prototype.addRemote = function(rname, rserial, rinputs, routputs) 
 // add an output to actuator table for user interface
 function addActuator(aname, desc, location) {
 	db.query('INSERT into actuators VALUES (?, ?, ?)', [aname, desc, location]);
-	console.log(" |------ Added actuator " + aname);
+	console.log(" |---------    Added actuator     ---------|");
 }
 
 // retrieve list of all actuators (outputs)
@@ -101,7 +101,7 @@ db_management.prototype.getActuators = function(fn) {
 function addSensor(sid, desc, location) {
 	db.query('INSERT into sensors VALUES (?, ?, ?)', [sid, desc, location]);
 	db.query('CREATE TABLE IF NOT EXISTS ' + sid + ' (time INTEGER PRIMARY KEY, value REAL)');
-	console.log(" |------ Added sensor " + sid);
+	console.log(" |---------      Added sensor     ---------|");
 }
 
 // retrieve list of all sensors

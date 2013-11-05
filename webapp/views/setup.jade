@@ -195,7 +195,7 @@ block jscripts
 			$("#setupB1").button('disable');
 			$("#setupB2").button('disable');
 			$("#setupview3").hide();
-			$("#load").show();
+			$("#setupviewload").show();
 			scanio.emit('wifiscan', function () {
 				console.info('Sending request for wifi scan.');
 			});
@@ -205,7 +205,7 @@ block jscripts
 			$("#setupB1").button('enable');
 			$("#setupB2").button('enable');
 			$("#setupview3").show();
-			$("#load").hide();
+			$("#setupviewload").hide();
 		}
 
 		// socketio stuff
@@ -245,7 +245,7 @@ block jscripts
 				html = html + "</span></label></div><br>";
 				$('#wifis').append(html);
 				// set data for use in form submission
-				$('#wlan0_' + index).data('mac_address', wifiobj.mac_address);
+				$('#wlan0_' + index).data('bssid', wifiobj.bssid);
 				$('#wlan0_' + index).data('security_type', wifiobj.security_type);
 			});
 			$("label.setupwifi").css('cursor', 'pointer');		// change cursor on hover
@@ -270,7 +270,7 @@ block jscripts
 				$('#password_entry').append(dialog_html);
 
 				// set hidden inputs to selected network
-				$('#wlan0_mac').val($(this).data('mac_address'));
+				$('#wlan0_mac').val($(this).data('bssid'));
 				$('#wlan0_security').val($(this).data('security_type'));
 
 				// setup on click events for checkbox
@@ -296,6 +296,10 @@ block jscripts
 
 		scanio.on('error', function (reason) {
 			console.error('Unable to connect Socket.IO', reason);
+			$('#wifis').empty();
+			error_html = "<div class=center><br><br><br><h3>...lost connection...</h3>try to log back in<br><br><br></div>";
+			$('#wifis').append(error_html);
+			wifiShow();
 		});
 
 
@@ -357,7 +361,7 @@ block content
 					label.setupnet(for='eth0_dns2') DNS2
 					input.ip(type='text', name='eth0_dns2', id='eth0_dns2', value='#{eth0.dns2}')
 
-		div.subcontent(id='load' style='display: none')
+		div.subcontent(id='setupviewload' style='display: none')
 			fieldset
 				legend <a>|</a> wireless networks in range <a>|</a>
 					img.clicky(src='/images/refresh.png' style='margin-left: 9px; padding-top:4px;');

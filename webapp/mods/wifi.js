@@ -29,10 +29,7 @@ function terminal_output(command, callback){
 //********* Wifi Scanning Functions *********
 function getData(callback){
 	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(error, info, stderr){
-		console.log('scanned '+ wireless_interface);
 		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error, output, stderr){
-			console.log('getting results');
-			console.log(output);
 			callback(output);
 		});
 	});	
@@ -45,9 +42,6 @@ function parseData(data, callback){
 	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
 	var siglevel = /\t[0-9]{1,3}\t/g;
 	var ssid = /\]\s+[\s<>\w\-\(\)]+(?=\s+)/g
-
-	console.log('processing data')
-	console.log(data);
 	
 	macAddress = data.match(bssid);
 	frequencyInt = data.match(frequency);
@@ -70,8 +64,7 @@ function parseData(data, callback){
 	for (sec in security){
 		security[sec] = security[sec].replace(/\t/g, '');
 	}
-	
-	console.log(security);
+
 	callback(SSID, security, sigLevelInt, frequencyInt, macAddress);
 }
 
@@ -96,15 +89,13 @@ wireless.prototype.scan = function(callback) {
 //********* Wifi Connect Function *********
 wireless.prototype.connect = function(connJSON, callback){
 	terminal_output('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
-		//console.log('wlan0 removed');
-	});
+});
 
 	if (connJSON.security.match(/WEP/)){
 		var stream = fs.createWriteStream("./wpa_supplicant.conf");
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
-			
-stream.write('ctrl_interface_group=nodectrl\n');
+			stream.write('ctrl_interface_group=nodectrl\n');
 			stream.write('update_config=1\n');
 			stream.write('network={\n');
 			stream.write('\tssid="'+connJSON.ssid+'"\n');
@@ -115,7 +106,6 @@ stream.write('ctrl_interface_group=nodectrl\n');
 			current_date = new Date().getTime();
 			current_time = current_date.getTime();
 			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf', function(error, stdout, stderr){
-				//console.log('Is it hanging...?');
 				setInterval(function(){
 					now_date = Date();
 					now_time = now_date.getTime();
@@ -124,7 +114,6 @@ stream.write('ctrl_interface_group=nodectrl\n');
 						}
 					}, 2000);
 					terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-					//console.log('Please do not hang :3')
 				});
 			});
 		});
@@ -146,7 +135,7 @@ stream.write('ctrl_interface_group=nodectrl\n');
 				stream.write('\tpassword="'+connJSON.password+'"\n');
 			}
 			stream.write('\tbssid='+connJSON.bssid+'\n');
-			//console.log('HERE');
+
 			if(connJSON.security.match(/PSK/)){
 				stream.write('\tpsk="'+connJSON.password+'"\n');
 			}
@@ -155,13 +144,10 @@ stream.write('ctrl_interface_group=nodectrl\n');
 			}
 			stream.write('}');
 			stream.end();
-			//console.log('Password?\n');
+
 			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B', function(error, stdout, stderr){
-				//console.log(error, stdout, stderr);
-				//console.log('Pass Here?');
 				terminal_output('sudo /sbin/udhcpc -i wlan0', function(error, stdout, stderr){
-					//console.log(error, stdout, stderr);
-					//console.log('Please do not hang :3');
+					// dhcp
 				});
 			});
 		});
@@ -169,3 +155,11 @@ stream.write('ctrl_interface_group=nodectrl\n');
 }
 
 module.exports = wireless;
+
+/*
+var JSONin = {"bssid":"00:23:69:46:b2:12","ssid":"traegalia","username":"", "password":"ADAB1C21BD82347205BB3B0156", "security":"[WPA2-PSK-TKIP][ESS]"};
+var wifi = new wireless;
+wifi.connect(JSONin, function() {
+	console.log("connecting...");
+});
+*/

@@ -1,6 +1,7 @@
 // node.control express / socket.io
 
-console.log('{|} Launching node.control');
+console.log('{| ((( +++ Launching  node.control +++ ))) |}');
+console.log(' |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|');
 
 var port = 3000;	// this will be 80 eventually...
 express = require('express.io');
@@ -74,7 +75,7 @@ app.io.use(function (req, next) {
   } else {
 		// need to authenticate...
 		req.io.emit('error', 'Unauthorized!');
-		console.log(Date() + "Socket.io unauthorized attempt!");
+		console.log(Date() + " (io) [unauthorized attempt]");
   }
 });
 
@@ -102,8 +103,9 @@ app.post('/setup', restricted, routes.setitup);
 // start server
 app.listen(port);
 setTimeout(function() {
-	console.log(' |--- [Listening on port ' + port + ']');
-	console.log('{|}');
+	console.log(' |---[     Listening on port ' + port + '      ]---|');
+	console.log(' |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|');
+	console.log('');
 }, 3300);
 
 
