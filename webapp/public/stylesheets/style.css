@@ -30,9 +30,9 @@ div.content_minimal {
 	background-image: url('/images/grid.png');
 	background-repeat:no-repeat;
 	background-position:center;
-	width: 660px;
+	width: 450px;
 	height: 450px;
-	margin: 0 auto; 
+	margin: 33px auto; 
 	padding-top: 0px;
 }
 

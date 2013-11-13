@@ -10,7 +10,8 @@ block jscripts
 		var serverTime;
 
 		// do stuff once document loads
-		$(document).ready(function() { 
+		$(window).load(function() {
+			//$(document).ready(function() { 
 			// give a red border to all div elements
 			//$("div").css({"border-color": "#FF0000", "border-weight":"1px", "border-style":"solid"});
 
@@ -18,47 +19,45 @@ block jscripts
 			$( document ).tooltip({track: true , opacity: 0.5});
 
 			// hide / show stuff on clicks
-			$('#button_settings').click(function() {
-				$('#settings_links').toggle();
+			$('.buttonIcon').click(function() {
+				$(this).parent().children('div.buttonLinks').toggle();
 			});
 
 			// position buttons around center node
-			var nodeoffset = $('#node').offset();
-			var nodewidth = $('#node').width();
-			var nodeheight = $('#node').height();
 			var buttons = $('#main').children("div[id^='container_']").size();
 			// find center of node circle...
-			var node_x = $('#node').offset().left - $('#node').width();
+			var node_x = $('#node').offset().left;
 			var node_y = $('#node').offset().top;
-
 			var button_index = 1;
 			$("div[id^='container_']").each(function() {
 				// variables used in positioning
+				var angleoffset = Math.PI/4;
 				var button_angle = 2*Math.PI / buttons * button_index;
-				var pos_x = node_x + $(this).width()*Math.cos(button_angle);
-				var pos_y = node_y + $(this).height()*Math.sin(button_angle);
+				var pos_x = node_x + $(this).width()*Math.cos(button_angle + angleoffset);
+				var pos_y = node_y + $(this).height()*Math.sin(button_angle + angleoffset);
 				// rotate around the center of node...
-				$(this).css({"top": pos_y, "left": pos_x});
-
+				$(this).offset({"top": pos_y, "left": pos_x});
 				// count child divs (links)
 				var links = $(this).children('div.buttonLinks').children().size();
 				var link_index = 1;
 				// position each link around button
-				$(this).children('div.buttonLinks').children().each(function() {
+				$(this).children('div.buttonLinks').offset({"top": pos_y, "left": pos_x}).children().each(function() {
 					var link_angle = 2*Math.PI / links * link_index;
-					var link_pos_x = pos_x + $(this).width()*Math.cos(link_angle);
-					var link_pos_y = pos_y + $(this).height()*Math.sin(link_angle);
-					//$(this).css({"top": link_pos_y, "left": link_pos_x});
-					$(this).css({"border-color": "#FF0000", "border-weight":"1px", "border-style":"solid"});
+					var link_pos_x = pos_x + ($(this).width()+25)*Math.cos(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
+					var link_pos_y = pos_y + ($(this).height()+25)*Math.sin(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
+					$(this).offset({"top": link_pos_y, "left": link_pos_x});
 					link_index++;
 				});
 				button_index++;
 			});
-			
 
-			// get data from server
+			// hide all buttonlinks divs after positioning is complete
+			$('.buttonLinks').toggle();			
+
+			// get local time from server
 			nodeio.emit('get:time', function () {
 				console.info('time data request');
+				$('#data').append('*');
 			});
 
 			// popup dialog used for confirmations
@@ -135,12 +134,19 @@ block jscripts
 		nodeio = io.connect();
 
 		nodeio.on('time', function(timefromserver) {
+			clearInterval(clock);
 			serverTime = timefromserver;
-			setInterval(function() {
+			var clock = setInterval(function() {
 				timeupdate(timefromserver);
 				timefromserver += 1000;
 			}, 1000);
 			console.info('got time: ' + timefromserver);
+			// request a new time in 10 minutes (clock tends to drift...)
+			setTimeout( function() {
+				nodeio.emit('get:time', function () {
+					console.info('time data request');
+				});
+			}, 600000);
 		});
 
 		nodeio.on('error', function (reason) {
@@ -153,42 +159,43 @@ block jscripts
 
 
 block content
-	div#node.center.dark.circle(style='width: 180px; height: 180px; position:relative; top:135px;')
+	div#node.center.dark.circle(style='width: 180px; height: 180px; position:relative; top:135px; z-index: 9;')
 		h1.node #{hostname}
 		h5#date.date &nbsp;
 		h4#time.time &nbsp;
 
-	div#container_settings.buttonContainer(style='position: absolute; left: 0; width: 180px; height: 180px; top: 200px;')
-		div#button_settings.buttonIcon(title='Settings' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer; z-index: 10;')
+	div#container_settings.buttonContainer(style='position: absolute; width: 180px; height: 180px; border: 3px solid transparent; z-index: 7;')
+		div#button_settings.buttonIcon(title='Settings' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer;')
 			img(src='/images/icons/settings.png' style='position: absolute; top: 7px; left: 7px;')
 
-		div#settings_links.buttonLinks(style='position:relative; height:230px; display: none;')
-			div#security.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 45px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;' title='Modify User Profile')
+		div#settings_links.buttonLinks(style='position: absolute;')
+			div#security.linkIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;' title='Modify User Profile')
 				img(src='/images/security_small.png' style='position: absolute; top: 5px; left: 5px;')
-			div#wifi.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 90px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;' title='Wireless Settings')
+			div#wifi.linkIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;' title='Wireless Settings')
 				img(src='/images/wifi_small.png' style='position: absolute; top: 5px; left: 5px;')
-			div#ethernet.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 135px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;' title='Ethernet Settings')
+			div#ethernet.linkIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;' title='Ethernet Settings')
 				img(src='/images/network_small.png' style='position: absolute; top: 5px; left: 5px;')
-			div#accesspoint.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 180px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;' title='Access Point Settings')
+			div#accesspoint.linkIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;' title='Access Point Settings')
 				img(src='/images/router_small.png' style='position: absolute; top: 5px; left: 5px;')
-			div#general.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 225px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;' title='Controller Settings')
+			div#general.linkIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;' title='Controller Settings')
 				img(src='/images/wrench_small.png' style='position: absolute; top: 5px; left: 5px;')
-			div.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 270px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #005000; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;')
-				img(src='/images/check.png' style='position: absolute; top: 5px; left: 5px;')
-			div.linkIcon(style='position: absolute; width: 34px; height: 34px; top: 315px; left: -18px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #a00000; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer; z-index: 9;')
-				img(src='/images/delete.png' style='position: absolute; top: 5px; left: 5px;')
 
-	div#container_control.buttonContainer(style='position: absolute; left: 0; width: 180px; height: 180px; top: 200px;')
-		div#button_control.buttonIcon(title='Control' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer; z-index: 10;')
+	div#container_control.buttonContainer(style='position: absolute; width: 180px; height: 180px; border: 3px solid transparent; z-index: 7;')
+		div#button_control.buttonIcon(title='Control' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer;')
 			img(src='/images/icons/control.png' style='position: absolute; top: 7px; left: 7px;')
 
-	div#container_schedule.buttonContainer(style='position: absolute; left: 0; width: 180px; height: 180px; top: 200px;')
-		div#button_schedule.buttonIcon(title='Schedule' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer; z-index: 10;')
+	div#container_schedule.buttonContainer(style='position: absolute; width: 180px; height: 180px; border: 3px solid transparent; z-index: 7;')
+		div#button_schedule.buttonIcon(title='Schedule' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer;')
 			img(src='/images/icons/schedule.png' style='position: absolute; top: 7px; left: 7px;')
 
-	div#container_sensor.buttonContainer(style='position: absolute; left: 0; width: 180px; height: 180px; top: 200px;')
-		div#button_sensor.buttonIcon(title='Sensor' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer; z-index: 10;')
+	div#container_sensor.buttonContainer(style='position: absolute; width: 180px; height: 180px; border: 3px solid transparent; z-index: 7;')
+		div#button_sensor.buttonIcon(title='Sensor' style='position: absolute; width: 62px; height: 62px; top: 56px; left: 56px; color: #eaeaea; border: 1px solid #000; border-radius: 999px; background-color: #333; font-size: 2em; box-shadow: 0px 0px 6px #333; cursor: pointer;')
 			img(src='/images/icons/box.png' style='position: absolute; top: 7px; left: 7px;')
+		div.buttonLinks(style='position: absolute;')
+			div.actionIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #005000; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;')
+				img(src='/images/check.png' style='position: absolute; top: 5px; left: 5px;')
+			div.actionIcon(style='position: absolute; width: 34px; height: 34px; color: #eee; border: 1px solid #333; border-radius: 999px; background-color: #a00000; font-size: 2em; box-shadow: 0px 0px 6px #555; cursor: pointer;')
+				img(src='/images/delete.png' style='position: absolute; top: 5px; left: 5px;')
 
 
 
