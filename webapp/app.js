@@ -54,7 +54,7 @@ function setup(req, res, next) {
 	} else next();
 }
 
-// deny access to non validated user requests
+// deny access to non validated user requests and redirect
 function restricted(req, res, next) {
 	// check for valid session
   if (req.session.verified) {
@@ -63,6 +63,21 @@ function restricted(req, res, next) {
 		// need to authenticate...
 		req.session.forward = req.url;
     res.redirect('/login');
+  }
+}
+
+// deny access to non validated user requests (for popups)
+function restricted_popup(req, res, next) {
+	// check for valid session
+  if (req.session.verified) {
+    next();
+  } else {
+		// need to authenticate...
+		authmesg = "<script>$('#popup').dialog('option', 'buttons', { 'ok': function () " 
+		+ "{window.location.replace('/login');} })" 
+		+ "</script><h1 class='popup'>Session Timeout</h1><p class='alert'>" 
+		+ "*** your session has timed out ****</p>";
+    res.send(authmesg);
   }
 }
 
@@ -88,8 +103,9 @@ app.post('/login', routes.loginto);
 app.get('/logout', routes.logout);
 
 // popups
-app.get('/popup/security', restricted, routes.pop_settings_security);
-app.get('/popup/general', restricted, routes.pop_settings_general);
+app.get('/popup/security', restricted_popup, routes.pop_settings_security);
+app.get('/popup/general', restricted_popup, routes.pop_settings_general);
+app.get('/popup/email', restricted_popup, routes.pop_settings_email);
 
 // restricted routes
 app.get('/', restricted, setup, routes.index);
@@ -131,12 +147,29 @@ app.io.route('wifiscan', function(req) {
 
 // multi-request route to handle all user modifications
 app.io.route('put', {
-  user: function(req) {
-		controller.db.updateUser(req.body.username, req.body.password, req.body.email);
-		console.log(Date() + ' (io) [updated user] from ' + req.session.uname);
+  security: function(req) {
+		controller.db.authenticate(req.session.uname, req.data.oldpassword, req.ip, function(err, umail) {
+			if (err == 'pass') {
+				req.io.emit('valid_pass');
+				controller.db.updateUser(req.data.username, req.data.password);
+				if (req.session.verified) {
+					req.session.verified = false;
+					req.session.message = "*** Logged Out ***"
+				}
+			}
+			else {
+				req.io.emit('invalid_pass');
+			}
+		});
+		console.log(Date() + ' (io) [update security] ' + req.session.uname + ' => ' + req.data.username);
+  },
+  email: function(req) {
+		controller.db.updateEmail(req.data.email);
+		console.log(Date() + ' (io) [update email] new email for ' + req.session.uname + ': ' + req.data.email);
   },
   general: function(req) {
-		console.log(Date() + ' (io) [updated general] from ' + req.session.uname);
+		controller.db.putSystemSettings(req.data.hostname, req.data.description, req.data.tempmode);
+		console.log(Date() + ' (io) [update general] from ' + req.session.uname);
   }
 });
 

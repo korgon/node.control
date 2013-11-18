@@ -6,11 +6,16 @@ exports.test = function(req, res) {
 // popups
 exports.pop_settings_security = function(req, res) {
 	controller.db.getUserData(function(uname) {
-		res.render('popup/security', { username: uname.uname, email: uname.email });
+		res.render('popup/security', { username: uname.uname });
+	});
+};
+exports.pop_settings_email = function(req, res) {
+	controller.db.getUserData(function(uname) {
+		res.render('popup/email', { email: uname.email });
 	});
 };
 exports.pop_settings_general = function(req, res) {
-	res.render('popup/general', { title: 'Security Settings' });
+	res.render('popup/general', { hostname: controller.getHostname() });
 };
 
 exports.proto = function(req, res) {
@@ -78,7 +83,8 @@ exports.setitup = function(req, res) {
 	var eth0_data = {mode: req.body.eth0_mode, ip: req.body.eth0_ip, subnet: req.body.eth0_subnet, gw: req.body.eth0_gw, dns1: req.body.eth0_dns1, dns2: req.body.eth0_dns2};
 	var wlan0_data = {ssid: req.body.wlan0_ssid + '', bssid: req.body.wlan0_mac, security_type: req.body.wlan0_security, username: req.body.wlan0_username, password: req.body.wlan0_password + '', mode: req.body.wlan0_mode, ip: req.body.wlan0_ip, subnet: req.body.wlan0_subnet, gw: req.body.wlan0_gw, dns1: req.body.wlan0_dns1, dns2: req.body.wlan0_dns2};
 	// update username/pass and the system variables
-	controller.db.updateUser(req.body.username, req.body.password, req.body.email);
+	controller.db.updateUser(req.body.username, req.body.password);
+	controller.db.updateEmail(req.body.email);
 	controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
 	controller.wifi.connect(wlan0_data, function() {
 		// successful connection!

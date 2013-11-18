@@ -1,41 +1,31 @@
-form(id='general' name='setup' onsubmit="return check()")
-	div#errors
+h1.popup General Settings
+div
 	div
-		label.setup(for='hostname')
-			h4(style='margin: 0px;') Hostname
-		input#email.box.dark(type='text' name='hostname' value='')
-		div#hostnameerror
+		label.poplabel(for='pop_hostname') Hostname
+		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
+		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_hostname_error
 
 script.
 	function check() {
-		var invalid_flag = 0;
-		var faults_html = "<div class='ui-widget'><div class='ui-state-error ui-corner-all' style='padding: 0 .7em;'>";
-		faults_html = faults_html + "<p><span class='ui-icon ui-icon-alert' style='float: left; margin-right: .3em;'></span>";
-		faults_html = faults_html +	"<strong>Alert:</strong><ul>";
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
 
-		if ($('#username').val() == null || $('#username').val() == "")
+		var invalid_flag = 0;
+		var message = '';
+
+		if ($('#pop_hostname').val() == "")
 		{
 			invalid_flag = 1;
-			faults_html = faults_html + "<li>Must specify a user login.</li>";
+			message = '* hostname is empty';
+			$('#pop_hostname_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_hostname_alert').addClass('ui-icon ui-icon-alert');
 		}
-		if ($('#password').val() == null || $('#password').val() == "")
-		{
-			invalid_flag = 1;
-			faults_html = faults_html + "<li>Must specify a password.</li>";
-		}
-		if ($('#confirm_password').val() == null || $('#confirm_password').val() == "")
-		{
-			invalid_flag = 1;
-			faults_html = faults_html + "<li>Passwords don't match.</li>";
-		}
-		if ($('#email').val() == null || $('#email').val() == "")
-		{
-			invalid_flag = 1;
-			faults_html = faults_html + "<li>Email is required.</li>";
-		}
-		if (invalid_flag == 1) {
-			faults_html = faults_html + "</ul></p></div></div>";
-			$('#errors').append(faults_html);
-			return false;
+		if (invalid_flag != 1) {
+			data = {
+				hostname: $('#pop_hostname').val()
+			}
+			nodeio.emit('put:general', data);
 		}
 	}

@@ -26,17 +26,17 @@ block jscripts
 		});
 
 block content
-	.center
-		.center.dark.circle(style='width: 290px; height: 290px; position:relative; top:80px; z-index: -1;')
-			h1.login(style='margin-top: 50px;') :login:
+	.content
+		.logincirc
+			h1.login(style='margin-top: 50px;') [login]
 		form(method='post', action='/login', id='logon')
-			.login(style='position: relative; top:-56px;')
-				p.alert= message
+			.login(style='position: relative; top: 15px;')
 				div
 					label.login(for='username') username
 					input#username.popinput(type='text' name='username')
 				div
 					label.login(for='password') password
 					input.popinput(type='password' name='password')
-			.center(style='position: relative; top:-35px;')
+				p.alert= message
+			.center(style='position: relative; top: 40px;')
 				input(id="login" type="button" value="enter")

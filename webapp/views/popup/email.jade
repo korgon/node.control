@@ -1,0 +1,39 @@
+h1.popup Change Email
+div
+	div
+		label.poplabel(for='pop_email') Email Address
+		input#pop_email.popinput(type='text' name='pop_email' value='#{email}')
+		span#pop_email_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_email_error
+
+script.
+	function check() {
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
+
+		var invalid_flag = 0;
+		var message = '';
+		if ($('#pop_email').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* email is empty';
+			$('#pop_email_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_email_alert').addClass('ui-icon ui-icon-alert');
+		}
+		else if ($('#pop_email').val().match(/[0-9a-zA-Z\_\.-]+@[a-zA-Z0-9-.]+\.([a-zA-Z]{2,4})/g) != $('#pop_email').val())
+		{
+			invalid_flag = 1;
+			message = '* email is not valid bitch';
+			$('#pop_email_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_email_alert').addClass('ui-icon ui-icon-alert');
+		}		
+		if (invalid_flag != 1) {
+			data = {
+				email: $('#pop_email').val()
+			}
+			nodeio.emit('put:email', data);
+			return true;
+		}
+		else return false;
+	}

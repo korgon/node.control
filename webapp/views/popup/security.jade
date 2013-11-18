@@ -1,28 +1,23 @@
 h1.popup Modify User Profile
-form(id='security' name='setup' onsubmit="return check()")
+div
 	div
-		div
-			label.poplabel(for='email') Email Address
-			input#email.popinput(type='text' name='email' value='#{email}')
-			span#email_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-			div#email_error
-		div
-			label.poplabel(for='username') Username
-			input#username.popinput(type='text' name='username' value='#{username}')
-			span#username_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-			div#username_error
-		div
-			label.poplabel(for='password') Old Password
-			input#oldpassword.popinput(type='password' name='password' value='')
-			span#oldpassword_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-		div
-			label.poplabel(for='password') New Password
-			input#password.popinput(type='password' name='password' value='')
-			span#password_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-		div
-			label.poplabel(for='confrim_password') New Password
-			input#confirm_password.popinput(type='password' name='confirm_password' value='')
-			div#password_error
+		label.poplabel(for='pop_username') Username
+		input#pop_username.popinput(type='text' name='pop_username' value='#{username}')
+		span#pop_username_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_username_error
+	div
+		label.poplabel(for='pop_oldpassword') Old Password
+		input#pop_oldpassword.popinput(type='password' name='pop_oldpassword' value='')
+		span#pop_oldpassword_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+	div
+		label.poplabel(for='pop_password') New Password
+		input#pop_password.popinput(type='password' name='pop_password' value='')
+		span#pop_password_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+	div
+		label.poplabel(for='pop_confrim_password') New Password
+		input#pop_confirm_password.popinput(type='password' name='pop_confirm_password' value='')
+		span#pop_confirm_password_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_password_error
 
 script.
 	function check() {
@@ -32,39 +27,60 @@ script.
 
 		var invalid_flag = 0;
 		var message = '';
-		if ($('#username').val() == null || $('#username').val() == "") {
+		if ($('#pop_username').val() == "") {
 			invalid_flag = 1;
 			message = '* username is empty';
-			$('#username_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#username_alert').addClass('ui-icon ui-icon-alert');
-		} else if ($('#username').val().length < 4) {
+			$('#pop_username_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_username_alert').addClass('ui-icon ui-icon-alert');
+		}
+		else if ($('#pop_username').val().length < 4) {
 			invalid_flag = 1;
 			message = '* username is too short';
-			$('#username_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#username_alert').addClass('ui-icon ui-icon-alert');			
+			$('#pop_username_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_username_alert').addClass('ui-icon ui-icon-alert');			
 		}
-		if ($('#password').val() == null || $('#password').val() == "")
+		else if ($('#pop_username').val().length > 18) {
+			invalid_flag = 1;
+			message = '* username is too long';
+			$('#pop_username_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_username_alert').addClass('ui-icon ui-icon-alert');			
+		}
+		if ($('#pop_password').val() == "")
 		{
 			invalid_flag = 1;
 			message = '* password is empty';
-			$('#password_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#password_alert').addClass('ui-icon ui-icon-alert');
+			$('#pop_password_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_password_alert').addClass('ui-icon ui-icon-alert');
 		}
-		if ($('#confirm_password').val() != $('#password').val())
+		if ($('#pop_confirm_password').val() != $('#pop_password').val())
 		{
 			invalid_flag = 1;
 			message = '* passwords do not match';
-			$('#password_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#password_alert').addClass('ui-icon ui-icon-alert');
-		}
-		if ($('#email').val() == null || $('#email').val() == "")
-		{
-			invalid_flag = 1;
-			message = '* email is empty';
-			$('#email_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#email_alert').addClass('ui-icon ui-icon-alert');
+			$('#pop_password_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_password_alert').addClass('ui-icon ui-icon-alert');
+			$('#pop_confirm_password_alert').addClass('ui-icon ui-icon-alert');
 		}
 		if (invalid_flag != 1) {
-			// submit the data
+			data = {
+				username: $('#pop_username').val(),
+				oldpassword: $('#pop_oldpassword').val(),
+				password: $('#pop_password').val()
+			}
+			nodeio.emit('put:security', data);
+			return false;
 		}
+		else return false;
 	}
+
+	nodeio.on('invalid_pass', function () {
+		console.info('credentials were invalid...');
+		message = '* invalid old password';
+		$('#pop_password_error').append("<p class='inputerror'>" + message + "</p>");
+		$('#pop_oldpassword_alert').addClass('ui-icon ui-icon-alert');
+	});
+
+	nodeio.on('valid_pass', function () {
+		console.info('credentials were verified, changes made...');
+		$("#popup").dialog('close');
+		window.location.replace("/login");
+	});

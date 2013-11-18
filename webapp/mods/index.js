@@ -19,6 +19,7 @@ var wifi = new wireless("wlan0");
 // controller variables
 var hostname;
 var setup;
+var temp_display;
 
 //********* Controller Constructor *********
 function controller() {
@@ -31,6 +32,7 @@ function updateSystemVariables() {
 	db.setupPull(function(data) {
 		hostname = data.hostname;
 		setup = data.setup;
+		temp_display = data.temp_mode;
 	});
 }
 

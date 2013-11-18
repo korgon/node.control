@@ -113,7 +113,7 @@ wireless.prototype.connect = function(connJSON, callback){
 			stream.end();
 			current_date = new Date().getTime();
 			current_time = current_date.getTime();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf', function(error, stdout, stderr){
+			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./config/wpa_supplicant.conf -B', function(error, stdout, stderr){
 				console.log('Is it hanging...?');
 				setInterval(function(){
 					now_date = Date();

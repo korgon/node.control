@@ -1,39 +1,90 @@
 body {
-	padding: 50px;
+	padding: 0px;
+	margin: 0px;
 	font: 11px Segoe UI, Arial, sans-serif;
 	background-color: #FFFFFF;
 	color: #333333;
 }
 
-div.wrap { 
-	margin: 0 auto;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	position: fixed;
+div.content {
+	position: absolute;
+	height: 600px;
+	width: 600px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);    
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	z-index: 3;
 }
 
-div.mainmenu { 
-	width: 686px;
-	padding: 7px;
-}
-
-div.content { 
-	position: relative;
-	width: 660px;
-	height: 560px;
-	margin: 0 auto;
-}
-
-div.content_minimal { 
-	position: relative;
+div.back {
+	height: 600px;
+	width: 600px;
 	background-image: url('/images/grid.png');
 	background-repeat:no-repeat;
 	background-position:center;
-	width: 450px;
-	height: 450px;
-	margin: 33px auto; 
-	padding-top: 0px;
+}
+
+div.bigcirc {
+	position: absolute;
+	width: 700px;
+	height: 700px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);    
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	background-color: #aaa;
+	color: #eaeaea;
+	border: 1px solid #999;
+	box-shadow: 0px 0px 90px 6px #111 inset;
+	border-radius: 999px;
+	margin-bottom: 9px;
+	text-align: center;
+	z-index: 100;
+}
+
+div.logincirc {
+	position: relative;
+	width: 290px;
+	height: 290px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);    
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	background-color: #333;
+	color: #eaeaea;
+	border: 1px solid #111;
+	box-shadow: 0px 0px 180px 6px #111 inset, 0px 0px 33px 3px #000;
+	border-radius: 999px;
+	margin-bottom: 9px;
+	text-align: center;
+	z-index: 0;
+}
+
+div.node {
+	position: relative;
+	width: 180px;
+	height: 180px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);    
+	-webkit-transform: translate(-50%, -50%);
+	-moz-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	background-color: #444;
+	color: #eaeaea;
+	border: 1px solid black;
+	box-shadow: 0px 0px 90px 6px #111 inset, 0px 0px 6px 1px #111;
+	border-radius: 999px;
+	margin-bottom: 9px;
+	text-align: center;
+	z-index: 9;
 }
 
 div.setupcontent { 
@@ -46,22 +97,85 @@ div.setupcontent {
 }
 
 div.login { 
-	background-color: #222;
+	background-color: #000;
 	border: 1px solid black;
 	color: #eaeaea;
 	border-radius: 6px;
-	padding-top: 0;
+	padding-top: 9px;
 	margin-top: 0;
 	width: 270px;
 	margin: 0 auto;
 }
 
-div.frame { 
-	position: relative;
-	width: 660px;
-	height: 560px;
-	margin-top: 0;
-	margin: 0 auto;
+div.buttonTitle {
+	position: absolute;
+	color: #eee;
+	border: 1px solid #333;
+	border-radius: 6px;
+	background-color: #333;
+	font-size: 2em;
+	box-shadow: 0px 0px 6px #555;
+	z-index: 9;
+	padding-bottom: 1px;
+	padding-top: -1px;
+	text-align: center;
+}
+
+div.buttonContainer {
+	position: absolute;
+	width: 180px;
+	height: 180px;
+	border-radius:999px;
+	border: 3px solid transparent;
+	z-index: 11;
+}
+
+div.buttonIcon {
+	position: absolute;
+	width: 62px;
+	height: 62px;
+	top: 56px;
+	left: 56px;
+	color: #eaeaea;
+	border: 1px solid #000;
+	border-radius: 999px;
+	background-color: #444;
+	font-size: 2em;
+	box-shadow: 0px 0px 31px 1px #111 inset, 0px 0px 3px 1px #111;
+	cursor: pointer;
+	z-index: 5;
+}
+
+img.buttonImage {
+	position: absolute;
+	top: 7px;
+	left: 7px;
+}
+
+div.buttonLinks {
+	position: absolute;
+	width: 180px;
+	height: 180px;
+}
+
+div.linkIcon {
+	position: absolute;
+	width: 34px;
+	height: 34px;
+	color: #eee;
+	border: 1px solid #000;
+	border-radius: 999px;
+	background-color: #333;
+	font-size: 2em;
+	box-shadow: 0px 0px 15px 1px #333 inset, 0px 0px 2px 1px #000;
+	cursor: pointer;
+	z-index: 5;
+}
+
+img.linkImage {
+	position: absolute;
+	top: 5px;
+	left: 5px;
 }
 
 div.center {
@@ -130,58 +244,36 @@ a {
 	color: #00B7FF;
 }
 
+p.inputerror {
+	text-align: right;
+	font-size: 12px;
+	margin: 0px;
+	margin-right: 33px;
+	padding: 0px;
+	font-weight: bold;
+	color: #cb0000;
+}
+
 p.error {
 	font-size: 16px;
 	margin: 0px;
 	padding: 0px;
 	font-weight: bold;
-	color: #800000;
+	color: #cb0000;
 }
 
 p.alert {
+	text-align: center;
 	margin: 0px;
-	padding: 0px;
+	padding: 5px;
 	font-weight: bold;
-	color: #800000;
-}
-
-p.inputerror {
-	text-align: right;
-	margin: 0px;
-	padding: 0px;
-	padding-right: 33px;
-	font-weight: bold;
-	color: #800000;
+	color: #cb0000;
 }
 
 fieldset {
 	background-color: #fff;
 	border: 1px solid black;
 	border-radius: 6px;
-}
-
-fieldset.login {
-	background-color: #222;
-	border: 1px solid black;
-	color: #eaeaea;
-	border-radius: 6px;
-}
-
-div.heading {	
-	position: relative;
-	color: #000;
-	border: 1px solid black;
-	border-top: 0px;
-	font-size: 2em;
-	padding-left: 9px;
-	padding-right: 9px;
-	margin-bottom: 9px;
-	width: 150px;
-}
-
-div.heading img {
-	float: left;
-	padding-right: 9px;;
 }
 
 legend {
@@ -220,6 +312,7 @@ input.popinput {
 	background-color: #333333;
 	color: #eaeaea;
 	border: 1px solid black;
+	autocomplete: "off"
 }
 
 input.box {
@@ -290,18 +383,6 @@ input[type="button"]
 	text-align: center;
 	margin: 0 2px 2px 0;
 	border-radius: 3px;
-}
-
-img.button {
-	margin: 5px;
-	padding: 3px;
-	background-color: #333333;
-	border: 1px solid black;
-	border-radius: 999px;
-}
-
-img.clicky {
-	cursor: pointer;
 }
 
 ul.menu {
@@ -375,44 +456,6 @@ h5.date {
 	padding: 0px;
 }
 
-.imageContainer {
-	text-align: center;
-}
-.imageContainer img {
-	display: block;
-}
-.imageContainer div {
-	position: relative;
-	display: inline-block;
-}
-.imageContainer span {
-	position: absolute;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	background: #000;
-	background: rgba(0,0,0,.5);
-}
-
-div.icon img {
-	position: absolute;
-	left: 14px;
-	top: 14px;
-}
-div.icon {
-	width: 60px;
-	height: 60px;
-	background-color: #333;
-	color: #eae;
-	border: 1px solid black;
-	border-radius: 999px;
-	position: relative;
-}
-div.icon:hover {
-	background-color: #555;
-}
-
-
 .dark {
 	background-color: #333333;
 	color: #eaeaea;
@@ -445,4 +488,21 @@ div.icon:hover {
 .waitbox {
   display: table;
   margin: 0 auto;
+}
+
+
+
+
+
+
+img.button {
+	margin: 5px;
+	padding: 3px;
+	background-color: #333333;
+	border: 1px solid black;
+	border-radius: 999px;
+}
+
+img.clicky {
+	cursor: pointer;
 }

@@ -37,7 +37,7 @@ function init_db() {
 		salt TEXT, email TEXT)');
 	console.log(" |---------   Table users added   ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS system (id INTEGER PRIMARY KEY, hostname TEXT, description TEXT, \
-		setup INTEGER, ap_mode INTEGER, eth0_data TEXT, wlan0_data TEXT, xbee_data TEXT)');
+		temp_mode TEXT, setup INTEGER, ap_mode INTEGER, eth0_data TEXT, wlan0_data TEXT, xbee_data TEXT)');
 	console.log(" |---------   Table system added  ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS schedule (id INTEGER PRIMARY KEY, description TEXT, \
 		start_data TEXT, stop_data TEXT, interupt TEXT)');
@@ -58,8 +58,8 @@ function init_db() {
 
 	// insert default controller module data into system table
 	// ***** MAKE MORE DYNAMIC LATERS ******
-	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?)', [
-		null, 'node', 'sprinkler controller', 0, 0, 
+	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+		null, 'node', 'sprinkler controller', 'F', 0, 0, 
 		{mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{ssid: '', bssid: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
 		{mode: 'coordinator', serial: '0013a20040790728', pan: 'green eggs and ham'}]);
@@ -127,15 +127,21 @@ db_management.prototype.getSensorData = function(sid, fn) {
 //********* SETUP METHODS *********
 
 // make changes to the system table from setup form
-db_management.prototype.setupDone = function(hn, desc, e_d, w_d) {
-	db.query('UPDATE system set hostname=?, description=?, eth0_data=?, wlan0_data=?, setup=1 where id=1', [hn, desc, e_d, w_d]);
+db_management.prototype.setupDone = function(hostname, desc, eth_d, wlan_d) {
+	db.query('UPDATE system set hostname=?, description=?, eth0_data=?, wlan0_data=?, setup=1 where id=1', [hostname, desc, eth_d, wlan_d]);
+}
+
+// change hostname, description, temperature display
+db_management.prototype.putSystemSettings = function(hostname, desc, tempmode) {
+	db.query('UPDATE system set hostname=?, description=?, temp_mode=? where id=1', [hostname, desc, tempmode]);
 }
 
 // retrieve data for setup pages
 db_management.prototype.setupPull = function(fn) {
-	db.query('SELECT hostname, description, eth0_data, wlan0_data, setup FROM system WHERE id=1', {
+	db.query('SELECT hostname, description, temp_mode, eth0_data, wlan0_data, setup FROM system WHERE id=1', {
 		hostname: String, 
 		description: String, 
+		temp_mode: String,
 		eth0_data: JSON.parse, 
 		wlan0_data: JSON.parse,
 		setup: Number
@@ -159,7 +165,7 @@ db_management.prototype.getUserData = function(fn) {
 }
 
 // update user login
-db_management.prototype.updateUser = function(username, password, email) {
+db_management.prototype.updateUser = function(username, password) {
 	// update user, first get salt, then create password hash
 	db.query('SELECT salt FROM users WHERE id=1', [username], {salt: String}, function(rows) {
 		var user = rows[0];
@@ -167,12 +173,17 @@ db_management.prototype.updateUser = function(username, password, email) {
 			return;
 		}
 		hash(password, user.salt, function(err, hashies) {
-			db.query('UPDATE users set username=?, password=?, email=? where id=1', [username, hashies, email]);
+			db.query('UPDATE users set username=?, password=? where id=1', [username, hashies]);
 		});
 	});
 }
 
-// verify user credentials returns 1 if verified
+// update user email
+db_management.prototype.updateEmail = function(email) {
+	db.query('UPDATE users set email=? where id=1', [email]);
+}
+
+// verify user credentials returns 'pass' if verified
 db_management.prototype.authenticate = function(username, password, ip, fn) {
 	var valid = 0;
 	db.query('SELECT * FROM users WHERE username = ?', [username], {id: Number, name: String, pass: String,	salt: String, email: String}, function(rows) {
