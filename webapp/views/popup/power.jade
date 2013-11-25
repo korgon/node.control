@@ -1,0 +1,31 @@
+h1.popup Log Out
+div
+	div
+		label.poplabel(for='pop_hostname') Hostname
+		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
+		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_hostname_error
+
+script.
+	function check() {
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
+
+		var invalid_flag = 0;
+		var message = '';
+
+		if ($('#pop_hostname').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* hostname is empty';
+			$('#pop_hostname_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_hostname_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if (invalid_flag != 1) {
+			data = {
+				hostname: $('#pop_hostname').val()
+			}
+			nodeio.emit('put:general', data);
+		}
+	}

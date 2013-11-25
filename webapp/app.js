@@ -76,7 +76,7 @@ function restricted_popup(req, res, next) {
 		authmesg = "<script>$('#popup').dialog('option', 'buttons', { 'ok': function () " 
 		+ "{window.location.replace('/login');} })" 
 		+ "</script><h1 class='popup'>Session Timeout</h1><p class='alert'>" 
-		+ "*** your session has timed out ****</p>";
+		+ "*** your session has timed out ***</p>";
     res.send(authmesg);
   }
 }
@@ -103,9 +103,18 @@ app.post('/login', routes.loginto);
 app.get('/logout', routes.logout);
 
 // popups
+app.get('/popup/newschedule', restricted_popup, routes.pop_schedule_new);
+app.get('/popup/viewschedule', restricted_popup, routes.pop_schedule_view);
 app.get('/popup/security', restricted_popup, routes.pop_settings_security);
 app.get('/popup/general', restricted_popup, routes.pop_settings_general);
 app.get('/popup/email', restricted_popup, routes.pop_settings_email);
+app.get('/popup/wifi', restricted_popup, routes.pop_settings_wifi);
+app.get('/popup/ethernet', restricted_popup, routes.pop_settings_ethernet);
+app.get('/popup/accesspoint', restricted_popup, routes.pop_settings_accesspoint);
+app.get('/popup/time', restricted_popup, routes.pop_settings_time);
+app.get('/popup/power', restricted_popup, routes.pop_control_power);
+app.get('/popup/run', restricted_popup, routes.pop_control_run);
+app.get('/popup/groups', restricted_popup, routes.pop_control_groups);
 
 // restricted routes
 app.get('/', restricted, setup, routes.index);
@@ -168,9 +177,14 @@ app.io.route('put', {
 		console.log(Date() + ' (io) [update email] new email for ' + req.session.uname + ': ' + req.data.email);
   },
   general: function(req) {
-		controller.db.putSystemSettings(req.data.hostname, req.data.description, req.data.tempmode);
+		controller.db.putSystemSettings(req.data.hostname, req.data.description, req.data.tempdisplay, req.data.apmode);
+		controller.updateSystemVariables();
+		req.io.emit('doneupdating')
 		console.log(Date() + ' (io) [update general] from ' + req.session.uname);
-  }
+  },
+	time: function(req) {
+		controller.setTimeDate(req.data.timedate);
+	}
 });
 
 // example of multi-request route.  Client usage ('get:sensors')

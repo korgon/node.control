@@ -7,6 +7,8 @@ block jscripts
 	script.
 		// global variables
 		var hostname = '#{hostname}';
+		var wirelessmode = #{apmode};
+		var temperaturedisplay = '#{tempdisplay}';
 		var serverTime;
 
 		// do stuff once document loads
@@ -22,6 +24,7 @@ block jscripts
 
 			$('.buttonContainer').mouseenter(showLinks);
 			$('.buttonContainer').mouseleave(hideLinks);
+
 			
 			$('.linkIcon').hover( function(){
 				$(this).stop(true,true).animate({ height: "+=4", width: "+=4", left: "-=2", top: "-=2" }, "fast");
@@ -44,7 +47,7 @@ block jscripts
 				}
 			});
 
-			// position buttons around center node
+			// position buttons / title around center node
 			var buttons = $('#main').children("div[id^='container_']").size();
 			// find location of node circle...
 			var node_x = $('#node').offset().left;
@@ -54,30 +57,44 @@ block jscripts
 				// variables used in positioning
 				var button_angle = 2*Math.PI / buttons * button_index;
 				var angleoffset = Math.PI/2;
-				var pos_x = node_x + ($(this).width()+9)*Math.cos(button_angle + angleoffset) + $('#node').width()/2 - $(this).width()/2;
-				var pos_y = node_y + ($(this).height()+9)*Math.sin(button_angle + angleoffset) + $('#node').width()/2 - $(this).width()/2;
-				// rotate around the center of node...
+				var total_angle = button_angle + angleoffset;
+				var pos_x = node_x + ($(this).width()+9)*Math.cos(total_angle) + $('#node').width()/2 - $(this).width()/2;
+				var pos_y = node_y + ($(this).height()+9)*Math.sin(total_angle) + $('#node').width()/2 - $(this).width()/2;
 				$(this).offset({"top": pos_y, "left": pos_x});
+				// title positioning
+				switch (true) {
+					case (total_angle%(2*Math.PI) <= Math.PI/2 || total_angle%(2*Math.PI) >= 3*Math.PI/2):
+						var postit_x = pos_x + $(this).width();
+						var postit_y = pos_y + $(this).height()/2 - $(this).prev().height()/2;
+						$(this).prev().offset({"top": postit_y, "left": postit_x});
+						break;
+					case (total_angle%(2*Math.PI) > Math.PI/2 || total_angle%(2*Math.PI) < 3*Math.PI/2):
+						var postit_x = pos_x - $(this).prev().width();
+						var postit_y = pos_y + $(this).height()/2 - $(this).prev().height()/2;
+						$(this).prev().offset({"top": postit_y, "left": postit_x});
+						break;
+				}
 				// count child divs (links)
-				var links = $(this).children('div.buttonLinks').children().size();
+				var links = $(this).children('div.buttonLinks').children('div.linkIcon').size();
 				var link_index = 1;
 				// position each link around button
-				$(this).children('div.buttonLinks').offset({"top": pos_y, "left": pos_x}).children().each(function() {
+				$(this).children('div.buttonLinks').offset({"top": pos_y, "left": pos_x}).children('div.linkIcon').each(function() {
 					var link_angle = 2*Math.PI / links * link_index;
 					var link_pos_x = pos_x + ($(this).width()+27)*Math.cos(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
 					var link_pos_y = pos_y + ($(this).height()+27)*Math.sin(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
 					$(this).offset({"top": link_pos_y, "left": link_pos_x});
-					connectDivs($(this), $(this).parent().parent(), '#000', 1, $(this).parent());
+					connectDivs($(this), $(this).parent().parent(), '#00B7FF', 1, $(this).parent());
 					link_index++;
 				});
 				connectDivs($(this), $(this).parent().children('#node'), '#000', 1, $(this).parent());
 				button_index++;
 			});
 
-			// connect all buttons and links to one another...
-			var $buttonarray = $('#main').children("div[id^='container_']");
-			for (i=0; i< buttons; i++)
+			// connect all buttons to one another...
+			var $buttonarray = $('#main').children('div.buttonContainer');
+			for (i=0; i<buttons; i++)
 			{
+				$buttonarray.eq(i).children('div.buttonIcon').data("title", $(this).attr("title")).removeAttr("title");
 				if (i == buttons - 1) {
 					connectDivs($buttonarray.eq(i), $buttonarray.eq(0), '#000', 1, $buttonarray.eq(i).parent());
 					connectDivs($buttonarray.eq(i), $buttonarray.eq(1), '#000', 1, $buttonarray.eq(i).parent());
@@ -90,14 +107,42 @@ block jscripts
 					connectDivs($buttonarray.eq(i), $buttonarray.eq(i+1), '#000', 1, $buttonarray.eq(i).parent());
 					connectDivs($buttonarray.eq(i), $buttonarray.eq(i+2), '#000', 1, $buttonarray.eq(i).parent());
 				}
+				// connect all links to one another and set data.title from html title attribute
+				var $linkarray = $buttonarray.eq(i).children('div.buttonLinks').children('div.linkIcon');
+				var links = $linkarray.size();
+				$('#data').append(' ' + links + ' ');
+				if (links >= 3)
+				{
+					for (j=0; j<links; j++)
+					{
+						$linkarray.eq(j).data("title", $(this).attr("title")).removeAttr("title");
+						if (j == links - 1) {
+							connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							connectDivs($linkarray.eq(j), $linkarray.eq(1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+						}
+						else if (j == links - 2) {
+							connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+						}
+						else {
+							connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							connectDivs($linkarray.eq(j), $linkarray.eq(j+2), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+						}
+						connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent());
+					}
+				}
+				else {
+					for (j=0; j<links; j++)
+						connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent(), 2);
+				}
 			}
 
-			// hide all buttonlinks divs after positioning is complete
-			$('.buttonLinks').toggle();
-			$('#loadtext').toggle();
+			// hide all buttonlinks divs and titles after positioning is complete
+			$('.buttonLinks').hide();
+			$('.buttonTitle').hide();
 			$('#loading').stop(true,true).animate({ height: "-=333", width: "-=333" }, "slow");
 			$('#loading').css('z-index', 0);
-
+			$('#node').css('z-index', 100);
 
 			// get local time from server
 			nodeio.emit('get:time', function () {
@@ -172,20 +217,23 @@ block jscripts
 			$('#time').text(h + ':' + m + ':' + s);
 		}
 
-		// show and hide button links
+		// show and hide button links / title
 		function hideLinks() {
 			$(this).children('div.buttonLinks').fadeOut();
 			$(this).children('div.buttonIcon').stop(true,true).animate({ height: "-=4", width: "-=4", left: "+=2", top: "+=2" }, "fast");
 			$(this).children('div.buttonIcon').children('img.buttonImage').stop(true,true).animate({ height: "-=4", width: "-=4" }, "fast");
+			$(this).prev().fadeOut();
 		}
 		function showLinks() {
 			$(this).children('div.buttonLinks').fadeIn();
 			$(this).children('div.buttonIcon').stop(true,true).animate({ height: "+=4", width: "+=4", left: "-=2", top: "-=2" }, "fast");
 			$(this).children('div.buttonIcon').children('img.buttonImage').stop(true,true).animate({ height: "+=4", width: "+=4" }, "fast");
+			$(this).prev().fadeIn();
 		}
 
 		// connect divs with a line
-		function connectDivs(div1, div2, color, thickness, appendTo) {
+		function connectDivs(div1, div2, color, thickness, appendTo, zindex) {
+			if (zindex == null) zindex = 0;
 			var off1 = div1.offset();
 			var off2 = div2.offset();
 			// center point
@@ -202,7 +250,7 @@ block jscripts
 			// angle
 			var angle = Math.atan2((y1-y2),(x1-x2))*(180/Math.PI);
 
-			var newLine = $("<div style='position: absolute; padding:0px; margin:0px; height:" + thickness + "px; background-color:" + color + "; line-height:1px; width:" + length + "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle + "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle + "deg); transform:rotate(" + angle + "deg); z-index: 0;' /></div>");
+			var newLine = $("<div class='divline' style='position: absolute; padding:0px; margin:0px; height:" + thickness + "px; background-color:" + color + "; line-height:1px; width:" + length + "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle + "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle + "deg); transform:rotate(" + angle + "deg); z-index: " + zindex + ";' /></div>");
 			// append and move new line
 			appendTo.append(newLine);
 			newLine.offset({"top": cy, "left": cx});
@@ -232,116 +280,123 @@ block jscripts
 
 block content
 	div#loading.bigcirc
-		h1#loadtext(style='position: relative; top: 260px; font-size: 66px; color: #000')
 
 	div#node.node
-		h1.node [#{hostname}]
+		h1#title.node [#{hostname}]
 		h5#date.date &nbsp;
 		h4#time.time &nbsp;
 
 	div#title_settings.buttonTitle
 		<a>|</a> settings <a>|</a>
 	div#container_settings.buttonContainer
-		div#button_settings.buttonIcon(title='Settings')
+		div#button_settings.buttonIcon(title='settings')
 			img.buttonImage(src='/images/icons/settings.png')
 		div#settings_links.buttonLinks
-			div#security.linkIcon(title='Modify User Login')
-				img.linkImage(src='/images/icons/security_small.png')
-			div#wifi.linkIcon(title='Wireless Settings')
-				img.linkImage(src='/images/icons/wifi_small.png')
-			div#ethernet.linkIcon(title='Ethernet Settings')
-				img.linkImage(src='/images/icons/network_small.png')
-			div#accesspoint.linkIcon(title='Access Point Settings')
-				img.linkImage(src='/images/icons/router_small.png')
-			div#general.linkIcon(title='Controller Settings')
-				img.linkImage(src='/images/icons/wrench_small.png')
-			div#email.linkIcon(title='Change Email Address')
-				img.linkImage(src='/images/icons/email_small.png')
-			div#email.linkIcon(title='Change Time')
-				img.linkImage(src='/images/icons/clock_small.png')
+			div#security.linkIcon(title='modify user login')
+				img.linkImage(src='/images/icons/small_security.png')
+			if apmode == 1
+				div#accesspoint.linkIcon(title='access point settings')
+					img.linkImage(src='/images/icons/small_router.png')
+			else
+				div#wifi.linkIcon(title='wireless settings')
+					img.linkImage(src='/images/icons/small_wifi.png')
+			div#ethernet.linkIcon(title='ethernet settings')
+				img.linkImage(src='/images/icons/small_network.png')
+			div#general.linkIcon(title='controller settings')
+				img.linkImage(src='/images/icons/small_wrench.png')
+			div#email.linkIcon(title='change email address')
+				img.linkImage(src='/images/icons/small_email.png')
+			div#time.linkIcon(title='time settings')
+				img.linkImage(src='/images/icons/small_clock.png')
 
-	div#title_settings.buttonTitle
-		<a>|</a> manual control <a>|</a>
-	div#container_control.buttonContainer
-		div#button_control.buttonIcon(title='Control')
-			img.buttonImage(src='/images/icons/control.png')
+	div#title_humidity.buttonTitle
+		<a>|</a> humidity <a>|</a>
+	div#container_humidity.buttonContainer
+		div#button_humidity.buttonIcon(title='Sensor')
+			img.buttonImage(src='/images/icons/box.png')
 		div.buttonLinks
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
 
+	div#title_remotes.buttonTitle
+		<a>|</a> remotes <a>|</a>
+	div#container_remotes.buttonContainer
+		div#button_remotes.buttonIcon(title='data')
+			img.buttonImage(src='/images/icons/remote.png')
+		div.buttonLinks
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #A00000;')
+				img.linkImage(src='/images/icons/small_delete.png')
+
+	div#title_schedule.buttonTitle
+		<a>|</a> scheduling <a>|</a>
 	div#container_schedule.buttonContainer
-		div#button_schedule.buttonIcon(title='Schedule')
+		div#button_schedule.buttonIcon(title='schedule')
 			img.buttonImage(src='/images/icons/schedule.png')
 		div.buttonLinks
-			div.linkIcon
-				img.linkImage(src='/images/check.png')
+			div#newschedule.linkIcon(title='create new schedule' style='background-color: #0A4A20;')
+				img.linkImage(src='/images/icons/small_add.png')
+			div#viewschedule.linkIcon(title='view schedule')
+				img.linkImage(src='/images/icons/small_view.png')
 
-	div#container_sensor.buttonContainer
-		div#button_sensor.buttonIcon(title='Sensor')
+	div#title_temperature.buttonTitle
+		<a>|</a> temperature <a>|</a>
+	div#container_temperature.buttonContainer
+		div#button_temperature.buttonIcon(title='temperature')
 			img.buttonImage(src='/images/icons/box.png')
 		div.buttonLinks
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 
-	div#container_sensor.buttonContainer
-		div#button_sensor.buttonIcon(title='Sensor')
-			img.buttonImage(src='/images/icons/box.png')
+
+	div#title_control.buttonTitle
+		<a>|</a> control <a>|</a>
+	div#container_control.buttonContainer
+		div#button_control.buttonIcon(title='control')
+			img.buttonImage(src='/images/icons/control.png')
+		div.buttonLinks
+			div#power.linkIcon(title='power' style='background-color: #9A0000;')
+				img.linkImage(src='/images/icons/small_power.png')
+			div#run.linkIcon(title='run now')
+				img.linkImage(src='/images/icons/small_controls.png')
+			div#groups.linkIcon(title='groups')
+				img.linkImage(src='/images/icons/small_groups.png')
+
+	div#title_favorites.buttonTitle
+		<a>|</a> favorites <a>|</a>
+	div#container_favorites.buttonContainer
+		div#button_favorites.buttonIcon(title='favorites')
+			img.buttonImage(src='/images/icons/star.png')
 		div.buttonLinks
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-
-	div#container_sensor.buttonContainer
-		div#button_sensor.buttonIcon(title='Sensor')
-			img.buttonImage(src='/images/icons/box.png')
-		div.buttonLinks
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-
-	div#container_sensor.buttonContainer
-		div#button_sensor.buttonIcon(title='Sensor')
-			img.buttonImage(src='/images/icons/box.png')
-		div.buttonLinks
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/delete.png')
+				img.linkImage(src='/images/icons/small_delete.png')
 
 
 	div#popup
 	div#confirm
+	div#data

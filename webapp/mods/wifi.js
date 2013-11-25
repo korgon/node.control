@@ -36,18 +36,6 @@ function getData(callback){
 	});	
 }
 
-//********* Get IP address *************
-wireless_scan.prototype.getIPaddress = function(callback){
-	var inet_regex = /inet (([0-9]{1,3}.){3}[0-9]{1,3})/g
-	terminal_output('ip addr show ' + wireless_interface, function(ip_address, stdout, stderr){
-		if(ip_address)
-			callback(ip_address.match(inet_regex)[0].split('inet ')[1]);
-		else		
-			callback('Either not connected to internet or interface selected was wrong')
-	});
-}
-
-
 function parseScan(data, callback){
 	//Creating the search parameters
 	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g;
@@ -96,6 +84,17 @@ wireless.prototype.scan = function(callback) {
 				callback(isDone);	
 			});
 		});
+	});
+}
+
+//********* Get IP address *************
+wireless.prototype.getIPaddress = function(callback){
+	var inet_regex = /inet (([0-9]{1,3}.){3}[0-9]{1,3})/g
+	terminal_output('ip addr show ' + wireless_interface, function(ip_address, stdout, stderr){
+		if(ip_address)
+			callback(ip_address.match(inet_regex)[0].split('inet ')[1]);
+		else		
+			callback('Either not connected to internet or interface selected was wrong')
 	});
 }
 

@@ -5,6 +5,41 @@ div
 		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
 		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
 		div#pop_hostname_error
+	div
+		label.poplabel(for='pop_description') Description
+		textarea#pop_description.poptext(type='text' name='pop_description')
+			| #{description}
+	div(style='padding-top: 15px;')
+		label.poplabel Wireless Mode
+		span(style='padding-left: 30px;')
+			if apmode == 1
+				input#pop_apmode(type='radio' name='pop_apmode' value=1 checked=true disabled=true)
+			else
+				input#pop_apmode(type='radio' name='pop_apmode' value=1 checked=false disabled=true)
+			label(for='pop_apmode')
+				img(src='/images/icons/small_router.png' style='position: relative; top: 3px;')
+		span(style='padding-left: 30px;')
+			if apmode == 0
+				input#pop_wifimode(type='radio' name='pop_apmode' value=0 checked=true disabled=true)
+			else
+				input#pop_wifimode(type='radio' name='pop_apmode' value=0 checked=false disabled=true)
+			label(for='pop_wifimode')
+				img(src='/images/icons/small_wifi.png' style='position: relative; top: 3px;')
+
+	div(style='padding-top: 25px;')
+		label.poplabel Temperature
+		span(style='padding-left: 30px;')
+			if tempdisplay == 'C'
+				input#pop_tempdisplay_c(type='radio' name='pop_tempdisplay' value='C' checked=true)
+			else
+				input#pop_tempdisplay_c(type='radio' name='pop_tempdisplay' value='C' checked=false)
+			label.poplabel(for='pop_tempdisplay_c' style='width: 10px;') &#x2103
+		span(style='padding-left: 39px;')
+			if tempdisplay == 'F'
+				input#pop_tempdisplay_f(type='radio' name='pop_tempdisplay' value='F' checked=true)
+			else
+				input#pop_tempdisplay_f(type='radio' name='pop_tempdisplay' value='F' checked=false)
+			label.poplabel(for='pop_tempdisplay_f' style='width: 10px;') &#x2109
 
 script.
 	function check() {
@@ -24,8 +59,18 @@ script.
 		}
 		if (invalid_flag != 1) {
 			data = {
-				hostname: $('#pop_hostname').val()
+				hostname: $('#pop_hostname').val(),
+				description: $('#pop_description').val(),
+				tempdisplay: $("input:radio[name=pop_tempdisplay]:checked").val(),
+				apmode: $("input:radio[name=pop_apmode]:checked").val()
 			}
 			nodeio.emit('put:general', data);
 		}
 	}
+
+	// change system variables based on user changes...
+	nodeio.on('doneupdating', function () {
+		console.info('updating system variables...');
+		$("#popup").dialog('close');
+		window.location.replace("/");
+	});

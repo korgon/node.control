@@ -74,6 +74,7 @@ script.
 
 	nodeio.on('invalid_pass', function () {
 		console.info('credentials were invalid...');
+		$("div[id$='_error']").empty()
 		message = '* invalid old password';
 		$('#pop_password_error').append("<p class='inputerror'>" + message + "</p>");
 		$('#pop_oldpassword_alert').addClass('ui-icon ui-icon-alert');

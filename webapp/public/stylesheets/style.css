@@ -9,7 +9,7 @@ body {
 div.content {
 	position: absolute;
 	height: 600px;
-	width: 600px;
+	width: 900px;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);    
@@ -85,6 +85,21 @@ div.node {
 	margin-bottom: 9px;
 	text-align: center;
 	z-index: 9;
+}
+
+div.minicirc {
+	position: absolute;
+	width: 120px;
+	height: 120px;
+	color: #eee;
+	border-radius: 999px;
+	background-color: #aaa;
+	color: #eaeaea;
+	border: 1px solid #999;
+	box-shadow: 0px 0px 90px 6px #111 inset;
+	font-size: 2em;
+	cursor: pointer;
+	z-index: 1;
 }
 
 div.setupcontent { 
@@ -170,6 +185,38 @@ div.linkIcon {
 	box-shadow: 0px 0px 15px 1px #333 inset, 0px 0px 2px 1px #000;
 	cursor: pointer;
 	z-index: 5;
+}
+
+div.buttonDrag {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 62px;
+	height: 62px;
+	margin: 6px;
+	display: inline-block;
+	color: #eaeaea;
+	border-radius: 999px;
+	font-size: 2em;
+	cursor: pointer;
+	border: 1px solid #000;
+	background-color: #000;
+	box-shadow: 0px 0px 55px 1px #666 inset, 0px 0px 6px #000000;
+	z-index: 5;
+}
+
+div.buttonDrag:hover {
+	border: 1px solid #000;
+	background-color: #000;
+	box-shadow: 0px 0px 31px 1px #666 inset, 0px 0px 6px #000000;
+}
+
+
+div.tab {
+	background-color: #555;
+	color: #eaeaea;
+	border: 1px solid #555;
+	box-shadow: 0px 0px 90px 6px #333 inset;
 }
 
 img.linkImage {
@@ -300,8 +347,8 @@ input {
 	border-radius: 3px;
 }
 
-textarea:focus, input.box:focus, input.popinput:focus, select:focus {
-	border: 1px solid #cc6600;
+textarea:focus, textarea.poptext:focus, input.box:focus, input.popinput:focus, select:focus {
+	border: 1px solid #000;
 	box-shadow: 0px 0px 6px #ff9900;
 }
 
@@ -313,6 +360,21 @@ input.popinput {
 	color: #eaeaea;
 	border: 1px solid black;
 	autocomplete: "off"
+}
+
+textarea.poptext {
+	font: 14px Segoe UI, Arial, sans-serif;
+	width: 148px;
+	height: 50px;
+	background-color: #333333;
+	color: #eaeaea;
+	border: 1px solid black;
+	text-align: left;
+	margin: 3px;
+	resize: none; 
+	overflow-y: hidden;
+	border-radius: 3px;
+	vertical-align: top;
 }
 
 input.box {

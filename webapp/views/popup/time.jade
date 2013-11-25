@@ -1,0 +1,50 @@
+h1.popup Clock Settings
+div.center
+	div#datepicker.center
+	div
+		label.poplabel(style='width: auto;') Set Time
+		input#pop_time.popinput(type='text' name='pop_time' style='width: 50px;')
+		input#pop_date(type='hidden' name='pop_date')
+		span#pop_time_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		div#pop_time_error
+
+script.
+
+	$( "#datepicker" ).datepicker({
+			inline: true,
+			altField: '#pop_date',
+			altFormat: '@'
+	});
+
+	function check() {
+		// clear all the error boxes and alerts
+		$("div[id$='_error']").empty()
+		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
+
+		var invalid_flag = 0;
+		var message = '';
+
+		if ($('#pop_time').val() == "")
+		{
+			invalid_flag = 1;
+			message = '* time is empty';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_time_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if ($('#pop_date') == null)
+		{
+			invalid_flag = 1;
+			message = '* must pick a date';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");			
+		}
+		if (invalid_flag != 1) {
+			newTimeDate = $('#pop_date').val()/1000;
+			data = {
+				timedate: newTimeDate
+			}
+			$("#datepicker").attr( 'readOnly' , 'true' );
+			//$('#pop_time_error').append(new Date(data.newTimeDate));
+			nodeio.emit('put:time', data);
+			window.location.replace("/");
+		}
+	}

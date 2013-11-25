@@ -9,6 +9,8 @@
 //	|--- 
 // ---------------------------------------------------
 
+var exec = require('child_process').exec
+
 // data management
 var database = require("./dataman.js");
 var db = new database();
@@ -17,9 +19,11 @@ var wireless = require("./wifi.js");
 var wifi = new wireless("wlan0");
 
 // controller variables
-var hostname;
-var setup;
-var temp_display;
+var sys_hostname;
+var sys_desc;
+var sys_temp_display;
+var sys_ap_mode;
+var sys_setup;
 
 //********* Controller Constructor *********
 function controller() {
@@ -30,19 +34,47 @@ function controller() {
 // pull settings from database
 function updateSystemVariables() {
 	db.setupPull(function(data) {
-		hostname = data.hostname;
-		setup = data.setup;
-		temp_display = data.temp_mode;
+		sys_hostname = data.hostname;
+		sys_desc = data.description;
+		sys_setup = data.setup;
+		sys_temp_display = data.temp_mode;
+		sys_ap_mode = data.ap_mode;
+	});
+}
+
+// run terminal commands
+function terminal_output(command, callback){
+	exec(command, function(error, stdout, stderr){
+		      callback(error, stdout, stderr);
 	});
 }
 
 //********* Get and/or Set Private Variables *********
+
+controller.prototype.setTimeDate = function(timedate) {
+	terminal_output('sudo /bin/date -s @'+timedate, function(error, stdout, stderr) {
+		if (error) throw error;
+	});
+}
+
 controller.prototype.getSetup = function() {
-	return setup;
+	return sys_setup;
 }
 
 controller.prototype.getHostname = function() {
-	return hostname;
+	return sys_hostname;
+}
+
+controller.prototype.getAPmode = function() {
+	return sys_ap_mode;
+}
+
+controller.prototype.getTempdisplay = function() {
+	return sys_temp_display;
+}
+
+controller.prototype.getDesc = function() {
+	return sys_desc;
 }
 
 //********* Exports *********

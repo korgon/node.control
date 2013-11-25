@@ -132,16 +132,17 @@ db_management.prototype.setupDone = function(hostname, desc, eth_d, wlan_d) {
 }
 
 // change hostname, description, temperature display
-db_management.prototype.putSystemSettings = function(hostname, desc, tempmode) {
-	db.query('UPDATE system set hostname=?, description=?, temp_mode=? where id=1', [hostname, desc, tempmode]);
+db_management.prototype.putSystemSettings = function(hostname, desc, tempmode, apmode) {
+	db.query('UPDATE system set hostname=?, description=?, temp_mode=?, ap_mode=? where id=1', [hostname, desc, tempmode, apmode]);
 }
 
 // retrieve data for setup pages
 db_management.prototype.setupPull = function(fn) {
-	db.query('SELECT hostname, description, temp_mode, eth0_data, wlan0_data, setup FROM system WHERE id=1', {
+	db.query('SELECT hostname, description, temp_mode, ap_mode, eth0_data, wlan0_data, setup FROM system WHERE id=1', {
 		hostname: String, 
 		description: String, 
 		temp_mode: String,
+		ap_mode: Number,
 		eth0_data: JSON.parse, 
 		wlan0_data: JSON.parse,
 		setup: Number

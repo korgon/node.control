@@ -3,7 +3,27 @@ exports.test = function(req, res) {
 	res.render('test', { title: 'Testing.....' });
 };
 
-// popups
+// start popups
+exports.pop_schedule_new = function(req, res) {
+	res.render('popup/newschedule', { hostname: controller.getHostname() });
+};
+
+exports.pop_schedule_view = function(req, res) {
+	res.render('popup/viewschedule', { hostname: controller.getHostname() });
+};
+
+exports.pop_control_power = function(req, res) {
+	res.render('popup/power');
+};
+
+exports.pop_control_run = function(req, res) {
+	res.render('popup/run', { hostname: controller.getHostname() });
+};
+
+exports.pop_control_groups = function(req, res) {
+	res.render('popup/groups', { hostname: controller.getHostname() });
+};
+
 exports.pop_settings_security = function(req, res) {
 	controller.db.getUserData(function(uname) {
 		res.render('popup/security', { username: uname.uname });
@@ -15,15 +35,29 @@ exports.pop_settings_email = function(req, res) {
 	});
 };
 exports.pop_settings_general = function(req, res) {
-	res.render('popup/general', { hostname: controller.getHostname() });
+	res.render('popup/general', { hostname: controller.getHostname(), description: controller.getDesc(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
 };
+exports.pop_settings_wifi = function(req, res) {
+	res.render('popup/wifi', { hostname: controller.getHostname() });
+};
+exports.pop_settings_accesspoint = function(req, res) {
+	res.render('popup/accesspoint', { hostname: controller.getHostname() });
+};
+exports.pop_settings_ethernet = function(req, res) {
+	res.render('popup/ethernet', { hostname: controller.getHostname() });
+};
+exports.pop_settings_time = function(req, res) {
+	res.render('popup/time', { hostname: controller.getHostname() });
+};
+// end popups
+
 
 exports.proto = function(req, res) {
-  res.render('proto', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname() });
+  res.render('proto', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
 };
 
 exports.index = function(req, res) {
-  res.render('index', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname() });
+  res.render('index', { title: 'control.[' + controller.getHostname() + ']', hostname: controller.getHostname(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
 };
 
 exports.control = function(req, res) {
