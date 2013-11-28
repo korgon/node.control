@@ -1,0 +1,18 @@
+extends layout_minimal
+
+block content
+	.content
+		.logincirc
+			h1.login(style='margin-top: 99px;') [reboot]
+			p.alert(style='position: relative; top: -55px;') this may take a minute...
+
+block jscripts
+	script(src="/socket.io/socket.io.js")
+	script.
+		// socket.io
+		nodeio = io.connect();
+
+		nodeio.emit('reboot');
+		setTimeout(function() {
+			window.location.replace("/login");
+		}, 45000);

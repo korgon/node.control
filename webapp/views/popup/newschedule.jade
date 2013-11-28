@@ -1,34 +1,155 @@
 h1.popup Create Schedule
-div(style='position: relative; width: 600px; height: 370px; padding: 20px; background-color: #000;')
-	div(style='position: relative; width: 200px; height: 370px; float: left;')
+div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding: 20px; background-color: #000;')
+	div(style='position: relative; width: 75px; height: 370px; float: left;')
 
-		div#tab1content.tab(style='position: absolute; width: 168px; height: 370px; border-bottom-left-radius: 6px; border-bottom-right-radius: 9px; z-index: 1;')
-			div(style='position: relative; width: 168px; height: 32px; top: 0px, left: 0px;')
-				div#tab1(style='position: relative; float: left; width: 82px; height: 32px; z-index: 2; border-right: 1px solid #555;')
-				div#tab2.tab(style='position: relative; float: left; width: 83px; height: 32px; top: 0px, left: 0px; background-color: #111; border-bottom: 1px solid #555; border-top: 1px solid #333; border-left: 1px solid #333;')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/control.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/box.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/lightbulb.png')
-			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
-				img.buttonImage(src='/images/icons/burst.png')
+		div#pop_actuators.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
+			div#pop_actuators_scrollup(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_up.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
+			div#pop_actuators_buttons(style='position: relative; width: 72px; height: 300px;')
+				div#pop_actuators_buttonslot1
+					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
+						img.buttonImage(src='/images/icons/control.png')
+				div#pop_actuators_buttonslot2
+					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
+						img.buttonImage(src='/images/icons/box.png')
+				div#pop_actuators_buttonslot3
+					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
+						img.buttonImage(src='/images/icons/actuators/lightbulb.png')
+				div#pop_actuators_buttonslot4
+					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
+						img.buttonImage(src='/images/icons/burst.png')
 
-	div(style='position: relative; width: 400px; height: 370px; float: left;')
-		div(style='position: relative; width: 400px; height: 100px; text-align: center;	margin-left: auto; margin-right: auto;')
-			div(style='position: relative; width: 81px; height: 81px; display: inline-block; background-color: #000; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
-		div(style='position: relative; width: 400px; height: 170px; background-color: #000;')
-			div(style='position: relative; width: 65px; height: 170px; float: left;')
+			div#pop_actuators_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
+
+
+
+
+
+	div#pop_dropzone(style='position: relative; width: 270px; height: 372px; float: left;')
+
+		div(style='position: relative; width: 270px; height: 100px; visibility: hidden;')
+			div#pop_start(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/start.png"); background-repeat:no-repeat;	background-position:center;')
+
+		div(style='position: relative; width: 270px; height: 170px; background-color: #000;')
+			div(style='position: relative; width: 50px; height: 170px; float: left;')
 			div(style='position: relative; width: 170px; height: 170px; float: left;')
-				div#runme(style='position: absolute; width: 140px; height: 140px; top: 5px; left: 10px; background-color: #000; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
-			div(style='position: relative; width: 165px; height: 170px; float: left;')
-				div(style='position: absolute; width: 81px; height: 81px; top:38px; left: 38px; background-color: #000; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
-		div(style='position: relative; width: 400px; height: 100px; text-align: center;	margin-left: auto; margin-right: auto;')
-			div#stop(style='position: relative; width: 81px; height: 81px; display: inline-block; background-color: #000; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
-			div(style='position: relative; width: 81px; height: 81px; display: inline-block; background-color: #000; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
-			div(style='position: relative; width: 81px; height: 81px; display: inline-block; background-color: #000; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
+				div#pop_runme(style='position: absolute; width: 140px; height: 140px; top: 5px; left: 10px; background-color: #000; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
+
+		div(style='position: relative; width: 270px; height: 100px; visibility: hidden;')
+			div#pop_stop(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/stop4.png"); background-repeat:no-repeat;	background-position:center;')
+
+
+
+
+
+
+	div(style='position: relative; width: 75px; height: 370px; float: left;')
+
+		div#pop_sensors.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
+			div#pop_sensors_scrollup(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_up.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
+			div#pop_sensors_buttons(style='position: relative; width: 72px; height: 300px;')
+				div#pop_sensors_buttonslot1
+				div#pop_sensors_buttonslot2
+				div#pop_sensors_buttonslot3
+				div#pop_sensors_buttonslot4
+			div#pop_sensors_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
 
 
 script.
+	// arrays for holding sensors and actuators
+	var tab_slots = 4;
+	var sensor_array = [];
+	var sensor_index = 0;
+	var actuator_array = [];
+	var actuator_index = 0;
 
+	// socket.io stuff
+	// get actuators/sensors from server
+	nodeio.emit('get:sensordata');
+	nodeio.emit('get:actuatordata');
+
+	// disable divs
+	disable_tab('pop_actuators');
+	disable_tab('pop_sensors');
+
+	function move_slot_index(tabid, dir) {
+		if (tabid == 'pop_sensors') {
+			var index_max = Math.floor(sensor_array.length/tab_slots) - 1;
+			if (sensor_array.length%tab_slots > 0) index_max++;
+			index_max = index_max*4;
+			if (dir == 'up') {
+				if (sensor_index == 0) sensor_index = index_max;
+				else sensor_index -= 4;
+			} else if (dir == 'down') {
+				if (sensor_index == index_max) sensor_index = 0;
+				else sensor_index += 4;
+			}
+			index = sensor_index;
+		}	else if (tabid == 'pop_actuators') {
+			var index_max = Math.floor(actuator_array.length/tab_slots) - 1;
+			if (actuator_array.length%tab_slots > 0) index_max++;
+			index_max = index_max*4;
+			if (dir == 'up') {
+				if (actuator_index == 0) actuator_index = index_max;
+				else actuator_index -= 4;
+			} else if (dir == 'down') {
+				if (actuator_index == index_max) actuator_index = 0;
+				else actuator_index += 4;
+			}
+			index = actuator_index;
+		}
+		refresh_tab(tabid, index);
+	}
+
+	function refresh_tab(tabid, index) {
+		if (tabid == 'pop_actuators') {
+			var slot_array = actuator_array;
+		}	else if (tabid == 'pop_sensors') {
+			var slot_array = sensor_array;
+		}
+		$this = $('#' + tabid);
+		var $buttonslots = $this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']")
+		// empty all buttons
+		$buttonslots.empty();
+		var newbutton;
+		for (slot=0; slot < tab_slots; slot++)
+		{
+			if (slot_array[slot+index] != null)
+			{
+				newbutton = "<div id='" + slot_array[slot+index].id + "' class='buttonDrag' title='";
+				newbutton = newbutton + slot_array[slot+index].id + "'><img class='buttonImage' src='";
+				newbutton = newbutton + "/images/icons/box.png'></div>";
+				$buttonslots.eq(slot).append(newbutton);
+			}
+		}
+	}
+
+	function disable_tab(tabid) {
+		$this = $('#' + tabid);
+		$this.css('opacity', .15);
+		$this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']").children('div.buttonDrag').css('cursor', 'default').unbind('mouseenter mouseleave');;
+		$this.children("div[id^='" + tabid + "_scroll']").unbind('mouseenter mouseleave click');
+	}
+
+	function enable_tab(tabid) {
+		$this = $('#' + tabid);
+		$this.css('opacity', 1);
+		$this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']").children('div.buttonDrag').css('cursor', 'pointer').hover( function () {
+			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+		}, function () {
+			$(this).css('box-shadow', '');
+		});
+		if ($this.data('scrollable') == 1) {
+			$this.children("div[id^='" + tabid + "_scroll']").css('opacity', .5);			
+			$this.children("div[id^='" + tabid + "_scroll']").hover( function() {
+				$(this).css({'opacity': 1, 'cursor': 'pointer'});
+			}, function () {
+				$(this).css('opacity', .5);
+			});
+			$this.children("div[id^='" + tabid + "_scrollup']").click(function() {
+				move_slot_index(tabid, 'up');
+			});
+			$this.children("div[id^='" + tabid + "_scrolldown']").click(function() {
+				move_slot_index(tabid, 'down');
+			});
+		}
+	}

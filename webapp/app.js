@@ -95,7 +95,6 @@ app.io.use(function (req, next) {
 
 // routes
 app.get('/test', routes.test);
-app.get('/proto', routes.proto);
 
 // login / out
 app.get('/login', routes.login);
@@ -114,10 +113,14 @@ app.get('/popup/accesspoint', restricted_popup, routes.pop_settings_accesspoint)
 app.get('/popup/time', restricted_popup, routes.pop_settings_time);
 app.get('/popup/power', restricted_popup, routes.pop_control_power);
 app.get('/popup/run', restricted_popup, routes.pop_control_run);
-app.get('/popup/groups', restricted_popup, routes.pop_control_groups);
+app.get('/popup/editfavorites', restricted_popup, routes.pop_control_editfavorites);
+app.get('/popup/viewremotes', restricted_popup, routes.pop_remotes_view);
 
 // restricted routes
 app.get('/', restricted, setup, routes.index);
+app.get('/reboot', restricted, routes.reboot);
+app.get('/shutdown', restricted, routes.shutdown);
+
 app.get('/schedule', restricted, routes.schedule);
 app.get('/control', restricted, routes.control);
 app.get('/nodes', restricted, routes.nodes);
@@ -152,6 +155,18 @@ app.io.route('wifiscan', function(req) {
 	controller.wifi.scan(function(json_output){
 		req.io.emit('scanned', json_output);
 	});
+});
+
+// restart request
+app.io.route('reboot', function(req) {
+	console.log(Date() + ' (io) [reboot request] from ' + req.session.uname);
+	controller.reboot();
+});
+
+// shutdown request
+app.io.route('shutdown', function(req) {
+	console.log(Date() + ' (io) [shutdown request] from ' + req.session.uname);
+	controller.shutdown();
 });
 
 // multi-request route to handle all user modifications
@@ -194,8 +209,16 @@ app.io.route('get', {
 		req.io.emit('time', now.getTime());
 		console.log(Date() + ' (io) [time request] from ' + req.session.uname);
   },
-  sensors: function(req) {
-		req.io.emit('sensors', '...senz...');
-		console.log(Date() + ' (io) [sensor request] from ' + req.session.uname);
+  actuatordata: function(req) {
+		controller.db.getActuators(function(actuators) {
+			req.io.emit('actuators', actuators);
+			console.log(Date() + ' (io) [actuatordata request] from ' + req.session.uname);
+		});
+  },
+  sensordata: function(req) {
+		controller.db.getSensors(function(sensors) {
+			req.io.emit('sensors', sensors);
+			console.log(Date() + ' (io) [sensordata request] from ' + req.session.uname);
+		});
   }
 });

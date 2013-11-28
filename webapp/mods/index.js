@@ -49,13 +49,27 @@ function terminal_output(command, callback){
 	});
 }
 
-//********* Get and/or Set Private Variables *********
+//********* Run a few linux commands *********
 
-controller.prototype.setTimeDate = function(timedate) {
+controller.prototype.shutdown = function(timedate) {
+	terminal_output('sudo /sbin/shutdown now' , function(error, stdout, stderr) {
+		if (error) throw error;
+	});
+}
+
+controller.prototype.reboot = function(timedate) {
+	terminal_output('sudo /sbin/reboot' , function(error, stdout, stderr) {
+		if (error) throw error;
+	});
+}
+
+controller.prototype.setTimeDate = function() {
 	terminal_output('sudo /bin/date -s @'+timedate, function(error, stdout, stderr) {
 		if (error) throw error;
 	});
 }
+
+//********* Get and/or Set Private Variables *********
 
 controller.prototype.getSetup = function() {
 	return sys_setup;

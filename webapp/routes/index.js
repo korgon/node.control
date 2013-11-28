@@ -12,6 +12,10 @@ exports.pop_schedule_view = function(req, res) {
 	res.render('popup/viewschedule', { hostname: controller.getHostname() });
 };
 
+exports.pop_remotes_view = function(req, res) {
+	res.render('popup/viewremotes', { hostname: controller.getHostname() });
+};
+
 exports.pop_control_power = function(req, res) {
 	res.render('popup/power');
 };
@@ -20,8 +24,8 @@ exports.pop_control_run = function(req, res) {
 	res.render('popup/run', { hostname: controller.getHostname() });
 };
 
-exports.pop_control_groups = function(req, res) {
-	res.render('popup/groups', { hostname: controller.getHostname() });
+exports.pop_control_editfavorites = function(req, res) {
+	res.render('popup/editfavorites', { hostname: controller.getHostname() });
 };
 
 exports.pop_settings_security = function(req, res) {
@@ -52,12 +56,16 @@ exports.pop_settings_time = function(req, res) {
 // end popups
 
 
-exports.proto = function(req, res) {
-  res.render('proto', { title: 'node.control:' + controller.getHostname(), hostname: controller.getHostname(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
-};
-
 exports.index = function(req, res) {
   res.render('index', { title: 'control.[' + controller.getHostname() + ']', hostname: controller.getHostname(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
+};
+
+exports.reboot = function(req, res) {
+  res.render('reboot', { title: 'node.control: reboot' });
+};
+
+exports.shutdown = function(req, res) {
+  res.render('shutdown', { title: 'node.control: shutdown' });
 };
 
 exports.control = function(req, res) {

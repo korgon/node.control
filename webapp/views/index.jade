@@ -145,9 +145,7 @@ block jscripts
 			$('#node').css('z-index', 100);
 
 			// get local time from server
-			nodeio.emit('get:time', function () {
-				console.info('time data request');
-			});
+			nodeio.emit('get:time');
 
 			// popup dialog used for confirmations
 			$("#confirm").dialog({
@@ -193,7 +191,6 @@ block jscripts
 					$("#popup").dialog("open");
 				});
 			});
-
 		});
 
 		// functions
@@ -256,7 +253,8 @@ block jscripts
 			newLine.offset({"top": cy, "left": cx});
 		}
 
-		// socket.io
+		//********* socket.io event handlers *********
+		// socket.io FOR ALL popups!
 		nodeio = io.connect();
 
 		nodeio.on('time', function(timefromserver) {
@@ -277,6 +275,42 @@ block jscripts
 			console.info('successfully established a working and authorized connection');
 		});
 
+		// fill actuator array on data
+		nodeio.on('actuators', function (actuatordata) {
+			$this = $('#pop_actuators');
+			for (i=0; i < actuatordata.length; i++)
+			{
+				actuator_array.push(actuatordata[i]);
+			}
+			actuatordata.length = 0;
+			// enable scroll buttons based on number of elements
+			if (actuator_array.length > tab_slots)
+				$this.data('scrollable', 1);
+			else
+				$this.data('scrollable', 0);
+			refresh_tab('pop_actuators', 0);
+			enable_tab('pop_actuators');
+		});
+
+		// fill sensor array on data
+		nodeio.on('sensors', function (sensordata) {
+			$this = $('#pop_sensors');
+			for (i=0; i < sensordata.length; i++)
+			{
+				sensor_array.push(sensordata[i]);
+			}
+			sensordata.length = 0;
+			// enable scroll buttons based on number of elements
+			if (sensor_array.length > tab_slots)
+				$this.data('scrollable', 1);
+			else
+				$this.data('scrollable', 0);
+			$('#data').append(sensor_array.length + ' ');
+			refresh_tab('pop_sensors', 0);
+			enable_tab('pop_sensors');
+		});
+
+		//********* end socket.io event handlers *********
 
 block content
 	div#loading.bigcirc
@@ -316,17 +350,17 @@ block content
 			img.buttonImage(src='/images/icons/box.png')
 		div.buttonLinks
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 
 	div#title_remotes.buttonTitle
 		<a>|</a> remotes <a>|</a>
@@ -334,10 +368,8 @@ block content
 		div#button_remotes.buttonIcon(title='data')
 			img.buttonImage(src='/images/icons/remote.png')
 		div.buttonLinks
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+			div#viewremotes.linkIcon(title='view remotes')
+				img.linkImage(src='/images/icons/small_view.png')
 
 	div#title_schedule.buttonTitle
 		<a>|</a> scheduling <a>|</a>
@@ -345,10 +377,10 @@ block content
 		div#button_schedule.buttonIcon(title='schedule')
 			img.buttonImage(src='/images/icons/schedule.png')
 		div.buttonLinks
-			div#newschedule.linkIcon(title='create new schedule' style='background-color: #0A4A20;')
-				img.linkImage(src='/images/icons/small_add.png')
 			div#viewschedule.linkIcon(title='view schedule')
 				img.linkImage(src='/images/icons/small_view.png')
+			div#newschedule.linkIcon(title='create new schedule' style='background-color: #008800;')
+				img.linkImage(src='/images/icons/dark_small_add.png')
 
 	div#title_temperature.buttonTitle
 		<a>|</a> temperature <a>|</a>
@@ -356,14 +388,14 @@ block content
 		div#button_temperature.buttonIcon(title='temperature')
 			img.buttonImage(src='/images/icons/box.png')
 		div.buttonLinks
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+			div.linkIcon(style='background-color: #00A2BF;')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
+			div.linkIcon(style='background-color: #00A2BF;')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
+			div.linkIcon(style='background-color: #00A2BF;')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
+			div.linkIcon(style='background-color: #00A2BF;')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 
 
 	div#title_control.buttonTitle
@@ -373,11 +405,11 @@ block content
 			img.buttonImage(src='/images/icons/control.png')
 		div.buttonLinks
 			div#power.linkIcon(title='power' style='background-color: #9A0000;')
-				img.linkImage(src='/images/icons/small_power.png')
+				img.linkImage(src='/images/icons/dark_small_power.png')
 			div#run.linkIcon(title='run now')
 				img.linkImage(src='/images/icons/small_controls.png')
-			div#groups.linkIcon(title='groups')
-				img.linkImage(src='/images/icons/small_groups.png')
+			div#editfavorites.linkIcon(title='groups')
+				img.linkImage(src='/images/icons/small_star.png')
 
 	div#title_favorites.buttonTitle
 		<a>|</a> favorites <a>|</a>
@@ -386,17 +418,17 @@ block content
 			img.buttonImage(src='/images/icons/star.png')
 		div.buttonLinks
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/small_delete.png')
+				img.linkImage(src='/images/icons/dark_small_delete.png')
 
 
 	div#popup
 	div#confirm
-	div#data
+	div#data(style='width: 200px')

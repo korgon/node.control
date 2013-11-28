@@ -124,6 +124,8 @@ div.login {
 
 div.buttonTitle {
 	position: absolute;
+	top: 300px;
+	left: 300px;
 	color: #eee;
 	border: 1px solid #333;
 	border-radius: 6px;
@@ -138,6 +140,8 @@ div.buttonTitle {
 
 div.buttonContainer {
 	position: absolute;
+	top: 300px;
+	left: 300px;
 	width: 180px;
 	height: 180px;
 	border-radius:999px;
@@ -193,7 +197,7 @@ div.buttonDrag {
 	left: 0px;
 	width: 62px;
 	height: 62px;
-	margin: 6px;
+	margin: 4px;
 	display: inline-block;
 	color: #eaeaea;
 	border-radius: 999px;
@@ -204,13 +208,6 @@ div.buttonDrag {
 	box-shadow: 0px 0px 55px 1px #666 inset, 0px 0px 6px #000000;
 	z-index: 5;
 }
-
-div.buttonDrag:hover {
-	border: 1px solid #000;
-	background-color: #000;
-	box-shadow: 0px 0px 31px 1px #666 inset, 0px 0px 6px #000000;
-}
-
 
 div.tab {
 	background-color: #555;
@@ -505,6 +502,10 @@ h1.login {
 	font-size: 60px;
 }
 
+h3.line {
+	border-bottom: 1px solid #333333;
+}
+
 h4.time {
 	font-size: 18px;
 	margin: 0px;
@@ -551,11 +552,6 @@ h5.date {
   display: table;
   margin: 0 auto;
 }
-
-
-
-
-
 
 img.button {
 	margin: 5px;

@@ -1,31 +1,51 @@
 h1.popup Log Out
 div
-	div
-		label.poplabel(for='pop_hostname') Hostname
-		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
-		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-		div#pop_hostname_error
+	div(style='position: relative; width: 150px; height: 45px;')
+		div#pop_power.linkIcon(title='power' style='background-color: #9A0000; border: 1px solid #9A0000; display: inline-block;')
+			img.linkImage(src='/images/icons/dark_small_power.png')
+		div(style='position: absolute; left: 45px; top: -4px;')
+			h3 Shut Down
+	div(style='position: relative; width: 150px; height: 45px;')
+		div#pop_reboot.linkIcon(title='reboot' style='background-color: #008800; border: 1px solid #008800; display: inline-block;')
+			img.linkImage(src='/images/icons/dark_small_reboot.png')
+		div(style='position: absolute; left: 45px; top: -4px;')
+			h3 Reboot
+	div(style='position: relative; width: 150px; height: 45px;')
+		div#pop_logout.linkIcon(title='logout' style='background-color: #00A2BF; border: 1px solid #00A2BF; display: inline-block;')
+			img.linkImage(src='/images/icons/dark_small_logout.png')
+		div(style='position: absolute; left: 45px; top: -4px;')
+				h3 Log Out
 
 script.
+	$('#popup').dialog('option', 'buttons', { 'Cancel': function() {check();} }); 
+	$("div[id^='pop_']").hover( function(){
+		$(this).stop(true,true).animate({ height: "+=4", width: "+=4", left: "-=2", top: "-=2" }, "fast");
+		$(this).children('img.linkImage').stop(true,true).animate({ height: "+=4", width: "+=4" }, "fast");
+	}, function() {
+		$(this).stop(true,true).animate({ height: "-=4", width: "-=4", left: "+=2", top: "+=2" }, "fast");
+		$(this).children('img.linkImage').stop(true,true).animate({ height: "-=4", width: "-=4" }, "fast");
+	});
+
+	// scripts to handle icon clicks...
+	$('#pop_logout').click( function () {
+		window.location.replace("/logout");
+	});
+	$('#pop_reboot').click( function () {
+		window.location.replace("/reboot");
+	});
+	$('#pop_power').click( function () {
+		window.location.replace("/shutdown");
+	});
+
 	function check() {
-		// clear all the error boxes and alerts
-		$("div[id$='_error']").empty()
-		$("span[id$='_alert']").removeClass('ui-icon ui-icon-alert')
-
-		var invalid_flag = 0;
-		var message = '';
-
-		if ($('#pop_hostname').val() == "")
+		$('#popup').dialog('option', 'buttons', 
 		{
-			invalid_flag = 1;
-			message = '* hostname is empty';
-			$('#pop_hostname_error').append("<p class='inputerror'>" + message + "</p>");
-			$('#pop_hostname_alert').addClass('ui-icon ui-icon-alert');
-		}
-		if (invalid_flag != 1) {
-			data = {
-				hostname: $('#pop_hostname').val()
+			"Save": function() {
+				if (check()) $(this).dialog("close");
+			},
+			"Close": function() {
+				$(this).dialog("close");
 			}
-			nodeio.emit('put:general', data);
-		}
+		});
+		$('#popup').dialog("close");
 	}

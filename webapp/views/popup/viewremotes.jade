@@ -1,0 +1,19 @@
+h1.popup Create Schedule
+div(style='position: relative; width: 700px; height: 370px; padding: 2px; background-color: #000;')
+	div(style='position: relative; width: 700px; height: 82px;')
+		div(style='position: relative; width: 75px; hieght: 82px; float: left;')
+		div#actuators.tab(style='position: relative; width: 548px; height: 80px; float: left; border-radius: 6px; z-index: 1;')
+			
+			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
+				img.buttonImage(src='/images/icons/control.png')
+			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
+				img.buttonImage(src='/images/icons/box.png')
+			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
+				img.buttonImage(src='/images/icons/lightbulb.png')
+			div#button_sensor.buttonDrag(title='Sensor' style='position: relative; top: 0px; left: 0px; margin: 9px; display: inline-block;')
+				img.buttonImage(src='/images/icons/burst.png')
+		div(style='position: relative; width: 75px; hieght: 82px; float: left;')
+
+
+script.
+	$("div").css({"border-color": "#FF0000", "border-weight":"1px", "border-style":"solid"});
