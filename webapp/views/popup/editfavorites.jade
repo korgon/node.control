@@ -1,12 +1,179 @@
 h1.popup Edit Favorites
-div
-	div
-		label.poplabel(for='pop_hostname') Hostname
-		input#pop_hostname.popinput(type='text' name='pop_hostname' value='#{hostname}')
-		span#pop_hostname_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
-		div#pop_hostname_error
+div#pop_dragzone(style='position: relative; width: 475px; height: 372px; padding: 20px; background-color: #000;')
+	div(style='position: relative; width: 75px; height: 370px; float: left;')
+
+		div#pop_actuators.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
+			div#pop_actuators_scrollup(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_up.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
+			div#pop_actuators_slots(style='position: relative; width: 72px; height: 300px;')
+			div#pop_actuators_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
+
+
+
+
+
+	div#pop_dropzone(style='position: relative; width: 400px; height: 372px; float: left;')
+		div#pop_star.bigcirc(style='width: 100px; height: 100px; background-image: url("/images/icons/dark_star.png"); background-repeat:no-repeat;	background-position:center; z-index: 0;')
+		div#pop_slot1(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot2(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot3(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot4(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot5(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot6(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff;	border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+		div#pop_slot7(style='position: absolute; width: 60px; height: 64px; top: 154px; left: 168px;	color: #eaeaea;	border: 2px dashed #fff; border-radius: 999px; background-image: url("/images/icons/small_control.png"); background-repeat:no-repeat;	background-position:center;')
+
 
 script.
-	function check() {
+	// arrays for holding sensors and actuators
+	var tab_slots = 4;
+	var actuator_array = [];
+	var actuator_index = 0;
 
+	// socket.io stuff
+	// get actuators from server
+	nodeio.emit('get:actuatordata');
+
+	// position slots around center star
+	var slots = $("div[id^='pop_slot']").size();
+	// find location of star...
+	var star_x = $('#pop_star').offset().left;
+	var star_y = $('#pop_star').offset().top - 3;
+	var slot_index = 1;
+	$("div[id^='pop_slot']").each(function() {
+		// variables used in positioning
+		var slot_angle = 2*Math.PI / slots * slot_index;
+		var angleoffset = Math.PI/2;
+		var total_angle = slot_angle + angleoffset;
+		var pos_x = star_x + ($(this).width()+69)*Math.cos(total_angle);
+		var pos_y = star_y + ($(this).height()+69)*Math.sin(total_angle);
+		$(this).offset({"top": pos_y, "left": pos_x});
+		slot_index++;
+	});
+
+	function create_buttons(tabid) {
+		$this = $('#' + tabid);
+		if (tabid == 'pop_actuators') {
+			var slot_array = actuator_array;
+		}	else if (tabid == 'pop_sensors') {
+			var slot_array = sensor_array;
+		}
+		var slot_class = 'buttonDrag';
+		var buttons = slot_array.length;		
+		// enable scroll buttons based on number of elements
+		if (buttons > tab_slots) {
+			$this.data('scrollable', 1);
+			$this.children("div[id^='" + tabid + "_scroll']").css('opacity', .5).hover( function() {
+				$(this).css({'opacity': 1, 'cursor': 'pointer'});
+			}, function () {
+				$(this).css('opacity', .5);
+			});
+			$this.children("div[id^='" + tabid + "_scrollup']").click(function() {
+				move_slot_index(tabid, 'up');
+			});
+			$this.children("div[id^='" + tabid + "_scrolldown']").click(function() {
+				move_slot_index(tabid, 'down');
+			});
+		}
+		// create buttons from slot_array
+		var top_offset = 0;
+		for (var button=0; button < buttons; button++) {
+			if (top_offset > 225) top_offset = 0;
+			var newbutton = "<div id='" + tabid + "_button" + button+1 + "' class='" + slot_class + "' title='";
+			newbutton = newbutton + slot_array[button].id + "' style='top: " + top_offset + "px;";
+			if (button > tab_slots-1)	// don't display anything beyond slot numbers
+				newbutton = newbutton + " display: none;'>";
+			else
+				newbutton = newbutton + "'>";
+			newbutton = newbutton + "<img class='buttonImage' src='/images/icons/box.png'></div>";
+			$('#' + tabid + '_slots').append(newbutton);
+			top_offset = top_offset + 75;
+		}
+		$("div[id^='" + tabid + "_button']").hover(function () {
+			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+		}, function () {
+			$(this).css('box-shadow', '');
+		});
+		makeDraggable(tabid);
+	}
+
+	function move_slot_index(tabid, dir) {
+		if (tabid == 'pop_actuators') {
+			var buttons = actuator_array.length;
+			var index = actuator_index;
+		}	else if (tabid == 'pop_sensors') {
+			var buttons = sensor_array.length;
+			var index = sensor_index;
+		}
+		// hide all buttons;
+		$("div[id^='" + tabid + "_button']").hide();
+		var index_max = Math.floor(buttons/tab_slots) - 1;
+		var unfilled = buttons%tab_slots;
+		if (unfilled > 0) index_max++;
+		var padding = tab_slots;
+		index_max = index_max*tab_slots;
+		if (dir == 'up') {
+			if (index == 0) index = index_max;
+			else index -= tab_slots;
+		} else if (dir == 'down') {
+			if (index == index_max) index = 0;
+			else index += tab_slots;
+		}
+		if (index == index_max)
+			if (unfilled > 0) padding = unfilled;
+		$("div[id^='" + tabid + "_button']").slice(index,index+padding).show();
+		if (tabid == 'pop_actuators') actuator_index = index;
+		else if (tabid == 'pop_sensors') sensor_index = index;
+	}
+
+	function disable_tab(tabid) {
+		$('#' + tabid).css('opacity', .15);
+		$("div[id^='" + tabid + "_button']").css('cursor', 'default').unbind('mouseenter mouseleave');
+		if ($('#' + tabid).data('scrollable') == 1) {
+			$("div[id^='" + tabid + "_scroll']").css('cursor', 'default').unbind('mouseenter mouseleave click');
+		}
+	}
+
+	function enable_tab(tabid) {
+		$('#' + tabid).css('opacity', 1);
+		$("div[id^='" + tabid + "_button']").hover( function () {
+			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+		}, function () {
+			$(this).css('box-shadow', '');
+		});
+		if ($('#' + tabid).data('scrollable') == 1) {
+			$("div[id^='" + tabid + "_scroll']").css('opacity', .5).hover( function() {
+				$(this).css({'opacity': 1, 'cursor': 'pointer'});
+			}, function () {
+				$(this).css('opacity', .5);
+			});
+			$("div[id^='" + tabid + "_scrollup']").click(function() {
+				move_slot_index(tabid, 'up');
+			});
+			$("div[id^='" + tabid + "_scrolldown']").click(function() {
+				move_slot_index(tabid, 'down');
+			});
+		}
+	}
+
+	// drag and drop stuffs...
+	$("div[id^='pop_slot']").droppable( {
+		accept: "div[id^='pop_actuators_button']",
+		hoverClass: 'dark',
+		drop: addFavorite
+	});
+
+	function makeDraggable(tabid) {
+		$("div[id^='" + tabid + "_button']").draggable( {
+			containment: '#pop_dragzone',
+			stack: "div[id^='" + tabid + "_button']",
+			cursor: 'move',
+			revert: true
+		});
+	}
+	
+	function addFavorite(event, ui) {
+		$(this).droppable( 'disable' );
+		ui.draggable.draggable( 'disable' );
+		ui.draggable.position( { of: $(this), my: 'left top', at: 'left top' } );
+		ui.draggable.draggable( 'option', 'revert', false );
+		$('#data').append(' added ');
 	}

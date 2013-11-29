@@ -4,20 +4,7 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 
 		div#pop_actuators.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
 			div#pop_actuators_scrollup(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_up.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
-			div#pop_actuators_buttons(style='position: relative; width: 72px; height: 300px;')
-				div#pop_actuators_buttonslot1
-					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
-						img.buttonImage(src='/images/icons/control.png')
-				div#pop_actuators_buttonslot2
-					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
-						img.buttonImage(src='/images/icons/box.png')
-				div#pop_actuators_buttonslot3
-					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
-						img.buttonImage(src='/images/icons/actuators/lightbulb.png')
-				div#pop_actuators_buttonslot4
-					div#button_sensor.buttonDrag(title='Sensor' style='position: relative; margin: 4px; display: inline-block;')
-						img.buttonImage(src='/images/icons/burst.png')
-
+			div#pop_actuators_slots(style='position: relative; width: 72px; height: 300px;')
 			div#pop_actuators_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
 
 
@@ -26,16 +13,16 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 
 	div#pop_dropzone(style='position: relative; width: 270px; height: 372px; float: left;')
 
-		div(style='position: relative; width: 270px; height: 100px; visibility: hidden;')
-			div#pop_start(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/start.png"); background-repeat:no-repeat;	background-position:center;')
+		div(style='position: relative; width: 270px; height: 100px;')
+			div#pop_start(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/start2.png"); background-repeat:no-repeat;	background-position:center;')
 
-		div(style='position: relative; width: 270px; height: 170px; background-color: #000;')
+		div(style='position: relative; width: 270px; height: 170px;')
 			div(style='position: relative; width: 50px; height: 170px; float: left;')
 			div(style='position: relative; width: 170px; height: 170px; float: left;')
-				div#pop_runme(style='position: absolute; width: 140px; height: 140px; top: 5px; left: 10px; background-color: #000; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
+				div#pop_runme(style='position: absolute; width: 140px; height: 140px; top: 5px; left: 10px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
 
-		div(style='position: relative; width: 270px; height: 100px; visibility: hidden;')
-			div#pop_stop(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 15px;	background-image: url("/images/icons/stop4.png"); background-repeat:no-repeat;	background-position:center;')
+		div(style='position: relative; width: 270px; height: 100px;')
+			div#pop_stop(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/stop5.png"); background-repeat:no-repeat;	background-position:center;')
 
 
 
@@ -46,101 +33,39 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 
 		div#pop_sensors.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
 			div#pop_sensors_scrollup(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_up.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
-			div#pop_sensors_buttons(style='position: relative; width: 72px; height: 300px;')
-				div#pop_sensors_buttonslot1
-				div#pop_sensors_buttonslot2
-				div#pop_sensors_buttonslot3
-				div#pop_sensors_buttonslot4
+			div#pop_sensors_slots(style='position: relative; width: 72px; height: 300px;')
 			div#pop_sensors_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
 
 
 script.
 	// arrays for holding sensors and actuators
 	var tab_slots = 4;
-	var sensor_array = [];
+	var sensor_array = [{'id': 'time/date'}];
 	var sensor_index = 0;
 	var actuator_array = [];
 	var actuator_index = 0;
+
+	$('#pop_start').hide();
+	$('#pop_stop').hide();
 
 	// socket.io stuff
 	// get actuators/sensors from server
 	nodeio.emit('get:sensordata');
 	nodeio.emit('get:actuatordata');
 
-	// disable divs
-	disable_tab('pop_actuators');
-	disable_tab('pop_sensors');
-
-	function move_slot_index(tabid, dir) {
-		if (tabid == 'pop_sensors') {
-			var index_max = Math.floor(sensor_array.length/tab_slots) - 1;
-			if (sensor_array.length%tab_slots > 0) index_max++;
-			index_max = index_max*4;
-			if (dir == 'up') {
-				if (sensor_index == 0) sensor_index = index_max;
-				else sensor_index -= 4;
-			} else if (dir == 'down') {
-				if (sensor_index == index_max) sensor_index = 0;
-				else sensor_index += 4;
-			}
-			index = sensor_index;
-		}	else if (tabid == 'pop_actuators') {
-			var index_max = Math.floor(actuator_array.length/tab_slots) - 1;
-			if (actuator_array.length%tab_slots > 0) index_max++;
-			index_max = index_max*4;
-			if (dir == 'up') {
-				if (actuator_index == 0) actuator_index = index_max;
-				else actuator_index -= 4;
-			} else if (dir == 'down') {
-				if (actuator_index == index_max) actuator_index = 0;
-				else actuator_index += 4;
-			}
-			index = actuator_index;
-		}
-		refresh_tab(tabid, index);
-	}
-
-	function refresh_tab(tabid, index) {
+	function create_buttons(tabid) {
+		$this = $('#' + tabid);
 		if (tabid == 'pop_actuators') {
 			var slot_array = actuator_array;
 		}	else if (tabid == 'pop_sensors') {
 			var slot_array = sensor_array;
 		}
-		$this = $('#' + tabid);
-		var $buttonslots = $this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']")
-		// empty all buttons
-		$buttonslots.empty();
-		var newbutton;
-		for (slot=0; slot < tab_slots; slot++)
-		{
-			if (slot_array[slot+index] != null)
-			{
-				newbutton = "<div id='" + slot_array[slot+index].id + "' class='buttonDrag' title='";
-				newbutton = newbutton + slot_array[slot+index].id + "'><img class='buttonImage' src='";
-				newbutton = newbutton + "/images/icons/box.png'></div>";
-				$buttonslots.eq(slot).append(newbutton);
-			}
-		}
-	}
-
-	function disable_tab(tabid) {
-		$this = $('#' + tabid);
-		$this.css('opacity', .15);
-		$this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']").children('div.buttonDrag').css('cursor', 'default').unbind('mouseenter mouseleave');;
-		$this.children("div[id^='" + tabid + "_scroll']").unbind('mouseenter mouseleave click');
-	}
-
-	function enable_tab(tabid) {
-		$this = $('#' + tabid);
-		$this.css('opacity', 1);
-		$this.children("div[id^='" + tabid + "_buttons']").children("div[id^='" + tabid + "_buttonslot']").children('div.buttonDrag').css('cursor', 'pointer').hover( function () {
-			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
-		}, function () {
-			$(this).css('box-shadow', '');
-		});
-		if ($this.data('scrollable') == 1) {
-			$this.children("div[id^='" + tabid + "_scroll']").css('opacity', .5);			
-			$this.children("div[id^='" + tabid + "_scroll']").hover( function() {
+		var slot_class = 'buttonDrag';
+		var buttons = slot_array.length;		
+		// enable scroll buttons based on number of elements
+		if (buttons > tab_slots) {
+			$this.data('scrollable', 1);
+			$this.children("div[id^='" + tabid + "_scroll']").css('opacity', .5).hover( function() {
 				$(this).css({'opacity': 1, 'cursor': 'pointer'});
 			}, function () {
 				$(this).css('opacity', .5);
@@ -152,4 +77,139 @@ script.
 				move_slot_index(tabid, 'down');
 			});
 		}
+		// create buttons from slot_array
+		var top_offset = 0;
+		for (var button=0; button < buttons; button++) {
+			if (top_offset > 225) top_offset = 0;
+			var newbutton = "<div id='" + tabid + "_button" + button+1 + "' class='" + slot_class + "' title='";
+			newbutton = newbutton + slot_array[button].id + "' style='top: " + top_offset + "px;";
+			if (button > tab_slots-1)	// don't display anything beyond slot numbers
+				newbutton = newbutton + " display: none;'>";
+			else
+				newbutton = newbutton + "'>";
+			newbutton = newbutton + "<img class='buttonImage' src='/images/icons/box.png'></div>";
+			$('#' + tabid + '_slots').append(newbutton);
+			top_offset = top_offset + 75;
+		}
+		$("div[id^='" + tabid + "_button']").hover(function () {
+			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+		}, function () {
+			$(this).css('box-shadow', '');
+		});
+		makeDraggable(tabid);
+	}
+
+	function move_slot_index(tabid, dir) {
+		if (tabid == 'pop_actuators') {
+			var buttons = actuator_array.length;
+			var index = actuator_index;
+		}	else if (tabid == 'pop_sensors') {
+			var buttons = sensor_array.length;
+			var index = sensor_index;
+		}
+		// hide all buttons;
+		$("div[id^='" + tabid + "_button']").hide();
+		var index_max = Math.floor(buttons/tab_slots) - 1;
+		var unfilled = buttons%tab_slots;
+		if (unfilled > 0) index_max++;
+		var padding = tab_slots;
+		index_max = index_max*tab_slots;
+		if (dir == 'up') {
+			if (index == 0) index = index_max;
+			else index -= tab_slots;
+		} else if (dir == 'down') {
+			if (index == index_max) index = 0;
+			else index += tab_slots;
+		}
+		if (index == index_max)
+			if (unfilled > 0) padding = unfilled;
+		$("div[id^='" + tabid + "_button']").slice(index,index+padding).show();
+		if (tabid == 'pop_actuators') actuator_index = index;
+		else if (tabid == 'pop_sensors') sensor_index = index;
+	}
+
+	function disable_tab(tabid) {
+		$('#' + tabid).css('opacity', .15);
+		$("div[id^='" + tabid + "_button']").css('cursor', 'default').unbind('mouseenter mouseleave');
+		if ($('#' + tabid).data('scrollable') == 1) {
+			$("div[id^='" + tabid + "_scroll']").css('cursor', 'default').unbind('mouseenter mouseleave click');
+		}
+		$("div[id^='" + tabid + "_button']").draggable('disable');
+	}
+
+	function enable_tab(tabid) {
+		$('#' + tabid).css('opacity', 1);
+		$("div[id^='" + tabid + "_button']").hover( function () {
+			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+		}, function () {
+			$(this).css('box-shadow', '');
+		});
+		if ($('#' + tabid).data('scrollable') == 1) {
+			$("div[id^='" + tabid + "_scroll']").css('opacity', .5).hover( function() {
+				$(this).css({'opacity': 1, 'cursor': 'pointer'});
+			}, function () {
+				$(this).css('opacity', .5);
+			});
+			$("div[id^='" + tabid + "_scrollup']").click(function() {
+				move_slot_index(tabid, 'up');
+			});
+			$("div[id^='" + tabid + "_scrolldown']").click(function() {
+				move_slot_index(tabid, 'down');
+			});
+		}
+		$("div[id^='" + tabid + "_button']").css('cursor', 'move').draggable('enable');
+	}
+
+	function makeDraggable(tabid) {
+		$("div[id^='" + tabid + "_button']").draggable( {
+			containment: '#pop_dragzone',
+			stack: "div[id^='" + tabid + "_button']",
+			cursor: 'move',
+			revert: true,
+			helper: 'clone'
+		});
+	}
+
+	// drag and drop stuffs...
+	$('#pop_start').droppable( {
+		accept: "div[id^='pop_sensors_button']",
+		hoverClass: 'dark',
+		drop: addStart
+	});
+
+	$('#pop_stop').droppable( {
+		accept: "div[id^='pop_sensors_button']",
+		hoverClass: 'dark',
+		drop: addStop
+	});
+
+	$('#pop_runme').droppable( {
+		accept: "div[id^='pop_actuators_button']",
+		hoverClass: 'dark',
+		drop: addRun
+	});
+
+	function addStart(event, ui) {
+		$(this).droppable('disable');
+		ui.draggable.draggable('option', 'revert', false);
+		$('#data').append(' addedstart ');
+		$('#pop_stop').show();
+		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
+	}
+
+	function addStop(event, ui) {
+		$(this).droppable('disable');
+		ui.draggable.draggable('option', 'revert', false);
+		$('#data').append(' addedstop ');
+		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
+		disable_tab('pop_sensors');
+	}
+	
+	function addRun(event, ui) {
+		$(this).droppable('disable');
+		ui.draggable.draggable('option', 'revert', false);
+		$('#data').append(' addedrun ');
+		disable_tab('pop_actuators');
+		enable_tab('pop_sensors');
+		$('#pop_start').show();
 	}

@@ -21,7 +21,6 @@ block jscripts
 			//$( document ).tooltip({track: false , opacity: 0.5});
 
 			// hide / show stuff on hover
-
 			$('.buttonContainer').mouseenter(showLinks);
 			$('.buttonContainer').mouseleave(hideLinks);
 
@@ -92,7 +91,7 @@ block jscripts
 
 			// connect all buttons to one another...
 			var $buttonarray = $('#main').children('div.buttonContainer');
-			for (i=0; i<buttons; i++)
+			for (var i=0; i<buttons; i++)
 			{
 				$buttonarray.eq(i).children('div.buttonIcon').data("title", $(this).attr("title")).removeAttr("title");
 				if (i == buttons - 1) {
@@ -113,7 +112,7 @@ block jscripts
 				$('#data').append(' ' + links + ' ');
 				if (links >= 3)
 				{
-					for (j=0; j<links; j++)
+					for (var j=0; j<links; j++)
 					{
 						$linkarray.eq(j).data("title", $(this).attr("title")).removeAttr("title");
 						if (j == links - 1) {
@@ -196,13 +195,13 @@ block jscripts
 		// functions
 
 		function timeupdate(atime) {
-			date = new Date(atime);
-			year = date.getFullYear();
-			month = date.getMonth();
-			months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-			d = date.getDate();
-			day = date.getDay();
-			days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+			var date = new Date(atime);
+			var year = date.getFullYear();
+			var month = date.getMonth();
+			var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+			var d = date.getDate();
+			var day = date.getDay();
+			var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
 			h = date.getHours();
 			if (h<10) h = "0"+h;
 			m = date.getMinutes();
@@ -277,37 +276,23 @@ block jscripts
 
 		// fill actuator array on data
 		nodeio.on('actuators', function (actuatordata) {
-			$this = $('#pop_actuators');
-			for (i=0; i < actuatordata.length; i++)
+			for (var i=0; i < actuatordata.length; i++)
 			{
 				actuator_array.push(actuatordata[i]);
 			}
 			actuatordata.length = 0;
-			// enable scroll buttons based on number of elements
-			if (actuator_array.length > tab_slots)
-				$this.data('scrollable', 1);
-			else
-				$this.data('scrollable', 0);
-			refresh_tab('pop_actuators', 0);
-			enable_tab('pop_actuators');
+			create_buttons('pop_actuators');
 		});
 
 		// fill sensor array on data
 		nodeio.on('sensors', function (sensordata) {
-			$this = $('#pop_sensors');
 			for (i=0; i < sensordata.length; i++)
 			{
 				sensor_array.push(sensordata[i]);
 			}
 			sensordata.length = 0;
-			// enable scroll buttons based on number of elements
-			if (sensor_array.length > tab_slots)
-				$this.data('scrollable', 1);
-			else
-				$this.data('scrollable', 0);
-			$('#data').append(sensor_array.length + ' ');
-			refresh_tab('pop_sensors', 0);
-			enable_tab('pop_sensors');
+			create_buttons('pop_sensors');
+			disable_tab('pop_sensors');
 		});
 
 		//********* end socket.io event handlers *********
@@ -379,7 +364,7 @@ block content
 		div.buttonLinks
 			div#viewschedule.linkIcon(title='view schedule')
 				img.linkImage(src='/images/icons/small_view.png')
-			div#newschedule.linkIcon(title='create new schedule' style='background-color: #008800;')
+			div#newschedule.linkIcon(title='create new schedule' style='background-color: #036d00;')
 				img.linkImage(src='/images/icons/dark_small_add.png')
 
 	div#title_temperature.buttonTitle

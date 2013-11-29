@@ -28,15 +28,18 @@ block jscripts
 block content
 	.content
 		.logincirc
-			h1.login(style='margin-top: 50px;') [login]
+			h1.login(style='margin-top: 50px;') [ login ]
 		form(method='post', action='/login', id='logon')
-			.login(style='position: relative; top: 15px;')
+			.login(style='position: relative; top: 0px;')
 				div
 					label.login(for='username') username
 					input#username.popinput(type='text' name='username')
 				div
 					label.login(for='password') password
 					input.popinput(type='password' name='password')
-				p.alert= message
-			.center(style='position: relative; top: 40px;')
+				if (message != "")
+					p.alert= message
+				else
+					p.alert *** please verify credentials ***
+			.center(style='position: relative; top: 5px;')
 				input(id="login" type="button" value="enter")

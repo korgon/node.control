@@ -5,11 +5,11 @@ exports.test = function(req, res) {
 
 // start popups
 exports.pop_schedule_new = function(req, res) {
-	res.render('popup/newschedule', { hostname: controller.getHostname() });
+	res.render('popup/newschedule');
 };
 
 exports.pop_schedule_view = function(req, res) {
-	res.render('popup/viewschedule', { hostname: controller.getHostname() });
+	res.render('popup/viewschedule');
 };
 
 exports.pop_remotes_view = function(req, res) {
@@ -25,7 +25,7 @@ exports.pop_control_run = function(req, res) {
 };
 
 exports.pop_control_editfavorites = function(req, res) {
-	res.render('popup/editfavorites', { hostname: controller.getHostname() });
+	res.render('popup/editfavorites');
 };
 
 exports.pop_settings_security = function(req, res) {

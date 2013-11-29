@@ -32,7 +32,7 @@ function db_management() {
 // ***** MAKE MORE DYNAMIC LATERS ******
 function init_db() {
 	db = dblite(db_path);
-	console.log(" |--- [Creating new database]");
+	console.log(" |---[     Creating new database       ]---|");
 	db.query('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, \
 		salt TEXT, email TEXT)');
 	console.log(" |---------   Table users added   ---------|");
@@ -71,6 +71,23 @@ function init_db() {
 	// adding two sensors for temperature and humidity for testing
 	addSensor('temp0', 'onboard temperature sensor', 'local');
 	addSensor('hum0', 'onboard humidity sensor', 'local');
+	// adding zones...
+	addActuator('zone1', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone2', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone3', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone4', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone5', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone6', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone7', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone8', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone9', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone10', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone11', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone12', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone13', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone14', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone15', 'sprinkler solenoid', 'gpiox');
+	addActuator('zone16', 'sprinkler solenoid', 'gpiox');
 }
 
 //********* REMOTE METHODS *********

@@ -192,17 +192,15 @@ div.linkIcon {
 }
 
 div.buttonDrag {
-	position: relative;
+	position: absolute;
 	top: 0px;
-	left: 0px;
 	width: 62px;
 	height: 62px;
 	margin: 4px;
-	display: inline-block;
 	color: #eaeaea;
 	border-radius: 999px;
 	font-size: 2em;
-	cursor: pointer;
+	cursor: move;
 	border: 1px solid #000;
 	background-color: #000;
 	box-shadow: 0px 0px 55px 1px #666 inset, 0px 0px 6px #000000;
@@ -521,8 +519,6 @@ h5.date {
 
 .dark {
 	background-color: #333333;
-	color: #eaeaea;
-	border: 1px solid black;
 }
 
 .round {
