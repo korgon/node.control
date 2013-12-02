@@ -24,7 +24,11 @@ exports.pop_control_run = function(req, res) {
 	res.render('popup/run', { hostname: controller.getHostname() });
 };
 
-exports.pop_control_editfavorites = function(req, res) {
+exports.pop_control_editgroups = function(req, res) {
+	res.render('popup/editgroups', { hostname: controller.getHostname() });
+};
+
+exports.pop_settings_editfavorites = function(req, res) {
 	res.render('popup/editfavorites');
 };
 
@@ -57,7 +61,7 @@ exports.pop_settings_time = function(req, res) {
 
 
 exports.index = function(req, res) {
-  res.render('index', { title: 'control.[' + controller.getHostname() + ']', hostname: controller.getHostname(), apmode: controller.getAPmode(), tempdisplay: controller.getTempdisplay() });
+  res.render('index', { title: 'node.control', apmode: controller.getAPmode() });
 };
 
 exports.reboot = function(req, res) {

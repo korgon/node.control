@@ -21,8 +21,28 @@ function wireless(_interface){
 }
 
 // function for executing command in *NIX terminal. Output is sent to callback
-function terminal_output(command, callback){
-	exec(command, function(error, stdout, stderr){
+function terminal_output(/*command,options,callback*/){
+
+	_default = { encoding: 'utf8', timeout: 0,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }
+
+	command = arguments[0];
+
+	console.log('type of argument is ' + typeof arguments[2])
+
+	if((typeof arguments[1]) == 'object'){
+		options = arguments[1];
+		callback = arguments[2];
+	}
+
+	else if ((typeof arguments[1]) == 'function'){
+		options = _default;
+		callback = arguments[1];
+	}
+	
+	else
+		callback(new Error ('Give me some legit parameters...'));
+
+	exec(command,options, function(error, stdout, stderr){
 		callback(error, stdout, stderr);
 	});
 }

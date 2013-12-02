@@ -6,13 +6,22 @@ block jscripts
 	script(src="/javascripts/jquery-ui-1.10.3.js")
 	script.
 		// global variables
-		var hostname = '#{hostname}';
 		var wirelessmode = #{apmode};
-		var temperaturedisplay = '#{tempdisplay}';
-		var serverTime;
+		var temperaturedisplay;
+		var server_epoch_time;
+		var server_time_refresh;
+		var connectdivs = true;
 
 		// do stuff once document loads
 		$(window).load(function() {
+			jQuery.browser = {};
+			jQuery.browser.mozilla = /mozilla/.test(navigator.userAgent.toLowerCase()) && !/webkit/.test(navigator.userAgent.toLowerCase());
+			jQuery.browser.webkit = /webkit/.test(navigator.userAgent.toLowerCase());
+			jQuery.browser.opera = /opera/.test(navigator.userAgent.toLowerCase());
+			jQuery.browser.msie = /msie/.test(navigator.userAgent.toLowerCase());
+			
+			if ($.browser.mozilla == true)
+				connectdivs = false;
 			//$(document).ready(function() { 
 			//give a red border to all div elements
 			//$("div").css({"border-color": "#FF0000", "border-weight":"1px", "border-style":"solid"});
@@ -82,57 +91,61 @@ block jscripts
 					var link_pos_x = pos_x + ($(this).width()+27)*Math.cos(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
 					var link_pos_y = pos_y + ($(this).height()+27)*Math.sin(link_angle + angleoffset) + $(this).parent().parent().width()/2 - $(this).width()/2;
 					$(this).offset({"top": link_pos_y, "left": link_pos_x});
-					connectDivs($(this), $(this).parent().parent(), '#00B7FF', 1, $(this).parent());
+					if (connectdivs == true)
+						connectDivs($(this), $(this).parent().parent(), '#00B7FF', 1, $(this).parent());
 					link_index++;
 				});
-				connectDivs($(this), $(this).parent().children('#node'), '#000', 1, $(this).parent());
+				if (connectdivs == true)
+					connectDivs($(this), $(this).parent().children('#node'), '#000', 1, $(this).parent());
 				button_index++;
 			});
 
 			// connect all buttons to one another...
-			var $buttonarray = $('#main').children('div.buttonContainer');
-			for (var i=0; i<buttons; i++)
-			{
-				$buttonarray.eq(i).children('div.buttonIcon').data("title", $(this).attr("title")).removeAttr("title");
-				if (i == buttons - 1) {
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(0), '#000', 1, $buttonarray.eq(i).parent());
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(1), '#000', 1, $buttonarray.eq(i).parent());
-				}
-				else if (i == buttons - 2) {
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(i+1), '#000', 1, $buttonarray.eq(i).parent());
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(0), '#000', 1, $buttonarray.eq(i).parent());
-				}
-				else {
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(i+1), '#000', 1, $buttonarray.eq(i).parent());
-					connectDivs($buttonarray.eq(i), $buttonarray.eq(i+2), '#000', 1, $buttonarray.eq(i).parent());
-				}
-				// connect all links to one another and set data.title from html title attribute
-				var $linkarray = $buttonarray.eq(i).children('div.buttonLinks').children('div.linkIcon');
-				var links = $linkarray.size();
-				$('#data').append(' ' + links + ' ');
-				if (links >= 3)
+			if (connectdivs == true) {
+				var $buttonarray = $('#main').children('div.buttonContainer');
+				for (var i=0; i<buttons; i++)
 				{
-					for (var j=0; j<links; j++)
-					{
-						$linkarray.eq(j).data("title", $(this).attr("title")).removeAttr("title");
-						if (j == links - 1) {
-							connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-							connectDivs($linkarray.eq(j), $linkarray.eq(1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-						}
-						else if (j == links - 2) {
-							connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-							connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-						}
-						else {
-							connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-							connectDivs($linkarray.eq(j), $linkarray.eq(j+2), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
-						}
-						connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent());
+					$buttonarray.eq(i).children('div.buttonIcon').data("title", $(this).attr("title")).removeAttr("title");
+					if (i == buttons - 1) {
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(0), '#000', 1, $buttonarray.eq(i).parent());
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(1), '#000', 1, $buttonarray.eq(i).parent());
 					}
-				}
-				else {
-					for (j=0; j<links; j++)
-						connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent(), 2);
+					else if (i == buttons - 2) {
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(i+1), '#000', 1, $buttonarray.eq(i).parent());
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(0), '#000', 1, $buttonarray.eq(i).parent());
+					}
+					else {
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(i+1), '#000', 1, $buttonarray.eq(i).parent());
+						connectDivs($buttonarray.eq(i), $buttonarray.eq(i+2), '#000', 1, $buttonarray.eq(i).parent());
+					}
+					// connect all links to one another and set data.title from html title attribute
+					var $linkarray = $buttonarray.eq(i).children('div.buttonLinks').children('div.linkIcon');
+					var links = $linkarray.size();
+					$('#data').append(' ' + links + ' ');
+					if (links >= 3)
+					{
+						for (var j=0; j<links; j++)
+						{
+							$linkarray.eq(j).data("title", $(this).attr("title")).removeAttr("title");
+							if (j == links - 1) {
+								connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+								connectDivs($linkarray.eq(j), $linkarray.eq(1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							}
+							else if (j == links - 2) {
+								connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+								connectDivs($linkarray.eq(j), $linkarray.eq(0), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							}
+							else {
+								connectDivs($linkarray.eq(j), $linkarray.eq(j+1), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+								connectDivs($linkarray.eq(j), $linkarray.eq(j+2), '#00B7FF', 1, $linkarray.eq(j).parent(), 2);
+							}
+							connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent());
+						}
+					}
+					else {
+						for (j=0; j<links; j++)
+							connectDivs($linkarray.eq(j), $buttonarray.eq(i).parent().children('#node'), '#888', 1, $linkarray.eq(j).parent(), 2);
+					}
 				}
 			}
 
@@ -145,13 +158,16 @@ block jscripts
 
 			// get local time from server
 			nodeio.emit('get:time');
+			nodeio.emit('get:serverdata');
 
 			// popup dialog used for confirmations
 			$("#confirm").dialog({
 				autoOpen: false,
 				modal: true,
-				width: 600,
-				height: 300,
+				resizable: false,
+				width: 'auto',
+				height: 'auto',
+				dialogClass: "dlg-no-title",
 				buttons: {
 					"Ok": function() {
 						$(this).dialog("close");
@@ -170,14 +186,22 @@ block jscripts
 				width: 'auto',
 				height: 'auto',
 				dialogClass: "dlg-no-title",
-				buttons: {
-					"Save": function() {
-						if (check()) $(this).dialog("close");
+				buttons: [
+					{
+						id: 'popup_save_button',
+						text: 'Save',
+						click: function() {
+							if (check()) $(this).dialog('close');
+						}
 					},
-					"Close": function() {
-						$(this).dialog("close");
+					{
+						id: 'popup_close_button',
+						text: 'Close',
+						click: function() {
+							$(this).dialog("close");
+						}
 					}
-				}
+				]
 			});
 
 			$(".linkIcon").on('click', function(e) {
@@ -257,17 +281,23 @@ block jscripts
 		nodeio = io.connect();
 
 		nodeio.on('time', function(timefromserver) {
-			clearInterval(clock);
-			serverTime = timefromserver;
-			var clock = setInterval(function() {
+			clearInterval(server_time_refresh);
+			server_time_refresh = setInterval(function() {
 				timeupdate(timefromserver);
 				timefromserver += 1000;
 			}, 1000);
+			server_epoch_time = timefromserver;
 			console.info('got time: ' + timefromserver);
 		});
 
 		nodeio.on('error', function (reason) {
 			console.error('Unable to connect Socket.IO', reason);
+		});
+
+		nodeio.on('serverdata', function (servdata) {
+			$('#title').empty().append(servdata.hostname);
+			temperaturedisplay = servdata.tempdisp;
+			console.info('serverdata received...');
 		});
 
 		nodeio.on('connect', function () {
@@ -301,7 +331,7 @@ block content
 	div#loading.bigcirc
 
 	div#node.node
-		h1#title.node [#{hostname}]
+		h1#title.node
 		h5#date.date &nbsp;
 		h4#time.time &nbsp;
 
@@ -327,6 +357,8 @@ block content
 				img.linkImage(src='/images/icons/small_email.png')
 			div#time.linkIcon(title='time settings')
 				img.linkImage(src='/images/icons/small_clock.png')
+			div#editfavorites.linkIcon(title='edit favorites')
+				img.linkImage(src='/images/icons/small_star.png')
 
 	div#title_humidity.buttonTitle
 		<a>|</a> humidity <a>|</a>
@@ -393,8 +425,8 @@ block content
 				img.linkImage(src='/images/icons/dark_small_power.png')
 			div#run.linkIcon(title='run now')
 				img.linkImage(src='/images/icons/small_controls.png')
-			div#editfavorites.linkIcon(title='groups')
-				img.linkImage(src='/images/icons/small_star.png')
+			div#editfavorites.linkIcon(title='edit groups')
+				img.linkImage(src='/images/icons/small_groups.png')
 
 	div#title_favorites.buttonTitle
 		<a>|</a> favorites <a>|</a>

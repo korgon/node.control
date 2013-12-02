@@ -14,7 +14,7 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 	div#pop_dropzone(style='position: relative; width: 270px; height: 372px; float: left;')
 
 		div(style='position: relative; width: 270px; height: 100px;')
-			div#pop_start(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/start2.png"); background-repeat:no-repeat;	background-position:center;')
+			div#pop_start(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 90px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/start2.png"); background-repeat:no-repeat;	background-position:center;')
 
 		div(style='position: relative; width: 270px; height: 170px;')
 			div(style='position: relative; width: 50px; height: 170px; float: left;')
@@ -22,7 +22,7 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 				div#pop_runme(style='position: absolute; width: 140px; height: 140px; top: 5px; left: 10px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/controls.png"); background-repeat:no-repeat;	background-position:center;')
 
 		div(style='position: relative; width: 270px; height: 100px;')
-			div#pop_stop(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 92px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/stop5.png"); background-repeat:no-repeat;	background-position:center;')
+			div#pop_stop(style='position: absolute; width: 82px; height: 82px; top: 0px; left: 90px; border: 2px dashed #eaeaea; border-radius: 999px;	background-image: url("/images/icons/stop5.png"); background-repeat:no-repeat;	background-position:center;')
 
 
 
@@ -36,11 +36,35 @@ div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding
 			div#pop_sensors_slots(style='position: relative; width: 72px; height: 300px;')
 			div#pop_sensors_scrolldown(style='position: relative; width: 72px; height: 36px; background-image: url("/images/icons/dark_down.png"); background-repeat:no-repeat;	background-position:center; opacity: .1;')
 
+div#schedule_duration
+	hr
+	div
+		label.poplabel(style='width: 75px;' for='pop_duration') Duration
+		input#pop_duration.popinput(type='text' name='pop_duration' style='width: 72px;')
+		span(style='color: #333; font-size: 10px; margin: 9px;') (time in minutes)
+		span#pop_duration_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+	hr
+
+div#schedule_datetime
+	hr
+	div
+		label.poplabel(style='width: 75px;' for='pop_date') Date
+		input#pop_date.popinput(type='text' name='pop_date' style='width: 72px;')
+		span(style='color: #333; font-size: 10px; margin: 9px;') (mm/dd/yyyy)
+		span#pop_date_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+	div
+		label.poplabel(style='width: 75px;' for='pop_time') Time 
+		input#pop_time.popinput(type='text' name='pop_time' style='width: 72px;')
+		span(style='color: #333; font-size: 10px; margin: 9px;') (hh:mm:ss) 24hr
+		span#pop_time_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		input#pop_date_alt(type='hidden' name='pop_date' value='')
+		div#pop_time_error
+	hr
 
 script.
 	// arrays for holding sensors and actuators
 	var tab_slots = 4;
-	var sensor_array = [{'id': 'time/date'}];
+	var sensor_array = [{'id': 'time/date', 'icon' : '/images/icons/schedule.png'}];
 	var sensor_index = 0;
 	var actuator_array = [];
 	var actuator_index = 0;
@@ -53,6 +77,122 @@ script.
 	nodeio.emit('get:sensordata');
 	nodeio.emit('get:actuatordata');
 
+	// create dialogs for scheduling entry:
+	$("#schedule_duration").dialog({
+		autoOpen: false,
+		modal: true,
+		resizable: false,
+		width: 'auto',
+		height: 'auto',
+		dialogClass: "dlg-no-title",
+		buttons: {
+			"Ok": function() {
+				$(this).dialog("close");
+			},
+			"Cancel": function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+	$("#schedule_datetime").dialog({
+		autoOpen: false,
+		modal: true,
+		resizable: false,
+		width: 'auto',
+		height: 'auto',
+		dialogClass: "dlg-no-title",
+		buttons: {
+			"Ok": function() {
+				$(this).dialog("close");
+			},
+			"Cancel": function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+
+	// make datepicker object
+	$("#pop_date").data('picked', 0).datepicker( {
+		altField: '#pop_date_alt',
+		showOn: 'focus',
+		altFormat: '@',
+		onSelect: function() {$(this).data('picked', 1); $('#pop_time').focus();},
+		setDate: new Date()
+	});
+
+	// check input
+	$('#pop_duration').keyup(function(event) {
+		var value = $(this).val();
+		if(value.length >= 1) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+	});
+
+	$('#pop_time').keyup(function(event) {
+		var value = $(this).val();
+		if(value.length == 1) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 2) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			} else {
+				$(this).val(value + ':');
+			}
+		}
+		if(value.length == 3) {
+			var char = value.substring(value.length - 1);
+			if(char != ':') {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 4) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 5) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 6) {
+			var char = value.substring(value.length - 1);
+			if(char != ':') {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length > 6) {
+			var char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length > 8) {
+			var char = value.substring(value.length - 1);
+			var newval = value.substring(0, value.length - 1);
+			$(this).val(newval);
+		}
+	});
+
+	// create buttons...
 	function create_buttons(tabid) {
 		$this = $('#' + tabid);
 		if (tabid == 'pop_actuators') {
@@ -87,12 +227,13 @@ script.
 				newbutton = newbutton + " display: none;'>";
 			else
 				newbutton = newbutton + "'>";
-			newbutton = newbutton + "<img class='buttonImage' src='/images/icons/box.png'></div>";
+			newbutton = newbutton + "<img class='buttonImage' src='" + slot_array[button].icon + "'></div>";
 			$('#' + tabid + '_slots').append(newbutton);
+			$('#' + tabid + '_button' + button+1).data('arrayid', button);
 			top_offset = top_offset + 75;
 		}
 		$("div[id^='" + tabid + "_button']").hover(function () {
-			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+			$(this).css('box-shadow', '0px 0px 55px 1px #666 inset, 0px 0px 6px #000');
 		}, function () {
 			$(this).css('box-shadow', '');
 		});
@@ -140,7 +281,7 @@ script.
 	function enable_tab(tabid) {
 		$('#' + tabid).css('opacity', 1);
 		$("div[id^='" + tabid + "_button']").hover( function () {
-			$(this).css('box-shadow', '0px 0px 31px 1px #666 inset, 0px 0px 6px #000000');
+			$(this).css('box-shadow', '0px 0px 55px 1px #666 inset, 0px 0px 6px #000');
 		}, function () {
 			$(this).css('box-shadow', '');
 		});
@@ -164,9 +305,14 @@ script.
 		$("div[id^='" + tabid + "_button']").draggable( {
 			containment: '#pop_dragzone',
 			stack: "div[id^='" + tabid + "_button']",
-			cursor: 'move',
 			revert: true,
-			helper: 'clone'
+			helper: 'clone',
+			start: function(event, ui) {
+				ui.helper.css('z-index', 33);
+			},
+			stop: function(e, ui) {
+				ui.helper.css('z-index', 5);
+			}
 		});
 	}
 
@@ -186,27 +332,49 @@ script.
 	$('#pop_runme').droppable( {
 		accept: "div[id^='pop_actuators_button']",
 		hoverClass: 'dark',
-		drop: addRun
+		drop: function(event, ui) {
+			var $this = $(this);
+			$("#schedule_duration").dialog('option', 'buttons', {
+				"Ok": function() {
+					addRun($this, event, ui);
+					$(this).dialog("close");
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				}
+			});
+			ui.draggable.draggable('option', 'revert', false);
+			$("#schedule_duration").dialog('open');
+		}
 	});
 
+	$('#popup_save_button').button('disable');
+
 	function addStart(event, ui) {
-		$(this).droppable('disable');
+		$(this).addClass('dark').droppable('disable').removeClass('ui-state-disabled').addClass('shade');
+		$(this).css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
+		$(this).css('border', '');
 		ui.draggable.draggable('option', 'revert', false);
 		$('#data').append(' addedstart ');
 		$('#pop_stop').show();
+		$('#popup_save_button').button('enable');
 		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
 	}
 
 	function addStop(event, ui) {
-		$(this).droppable('disable');
+		$(this).addClass('dark').droppable('disable').removeClass('ui-state-disabled').addClass('shade');
+		$(this).css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
+		$(this).css('border', '');
 		ui.draggable.draggable('option', 'revert', false);
 		$('#data').append(' addedstop ');
 		setTimeout(function() {ui.draggable.draggable('option', 'revert', true);}, 100);
 		disable_tab('pop_sensors');
 	}
 	
-	function addRun(event, ui) {
-		$(this).droppable('disable');
+	function addRun($this, event, ui) {
+		$this.droppable('disable').removeClass('ui-state-disabled').addClass('shade');
+		$this.css('background-image', "url(" + ui.draggable.children('.buttonImage').attr('src') + ")");
+		$this.css('border', '');
 		ui.draggable.draggable('option', 'revert', false);
 		$('#data').append(' addedrun ');
 		disable_tab('pop_actuators');

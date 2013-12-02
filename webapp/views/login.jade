@@ -29,7 +29,7 @@ block content
 	.content
 		.logincirc
 			h1.login(style='margin-top: 50px;') [ login ]
-		form(method='post', action='/login', id='logon')
+		form(method='post', action='/login', id='logon' autocomplete = "off")
 			.login(style='position: relative; top: 0px;')
 				div
 					label.login(for='username') username
@@ -40,6 +40,6 @@ block content
 				if (message != "")
 					p.alert= message
 				else
-					p.alert *** please verify credentials ***
+					p.alert &nbsp;
 			.center(style='position: relative; top: 5px;')
 				input(id="login" type="button" value="enter")

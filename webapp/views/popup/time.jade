@@ -1,19 +1,85 @@
-h1.popup Clock Settings
-div.center
-	div#datepicker.center
+h1.popup Set Time Manually
+div
 	div
-		label.poplabel(style='width: auto;') Set Time
-		input#pop_time.popinput(type='text' name='pop_time' style='width: 50px;')
-		input#pop_date(type='hidden' name='pop_date')
+		label.poplabel(style='width: 75px;' for='pop_date') Date
+		input#pop_date.popinput(type='text' name='pop_date' style='width: 72px;')
+		span(style='color: #333; font-size: 10px; margin: 9px;') (mm/dd/yyyy)
+		span#pop_date_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+	div
+		label.poplabel(style='width: 75px;' for='pop_time') Time 
+		input#pop_time.popinput(type='text' name='pop_time' style='width: 72px;')
+		span(style='color: #333; font-size: 10px; margin: 9px;') (hh:mm:ss) 24hr
 		span#pop_time_alert(style='position: relative; top: 4px; width: 15px; foat: left; display: inline-block;')
+		input#pop_date_alt(type='hidden' name='pop_date' value='')
 		div#pop_time_error
 
 script.
+	$("#pop_date").data('picked', 0).datepicker( {
+		altField: '#pop_date_alt',
+		showOn: 'focus',
+		altFormat: '@',
+		onSelect: function() {$(this).data('picked', 1); $('#pop_time').focus();},
+		setDate: new Date()
+	});
 
-	$( "#datepicker" ).datepicker({
-			inline: true,
-			altField: '#pop_date',
-			altFormat: '@'
+	$('#pop_time').keyup(function(event) {
+		var value = $(this).val();
+		if(value.length == 1) {
+			char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 2) {
+			char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			} else {
+				$(this).val(value + ':');
+			}
+		}
+		if(value.length == 3) {
+			char = value.substring(value.length - 1);
+			if(char != ':') {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 4) {
+			char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 5) {
+			char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length == 6) {
+			char = value.substring(value.length - 1);
+			if(char != ':') {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length > 6) {
+			char = value.substring(value.length - 1);
+			if(isNaN(char)) {
+				var newval = value.substring(0, value.length - 1);
+				$(this).val(newval);
+			}
+		}
+		if(value.length > 8) {
+			char = value.substring(value.length - 1);
+			var newval = value.substring(0, value.length - 1);
+			$(this).val(newval);
+		}
 	});
 
 	function check() {
@@ -31,20 +97,53 @@ script.
 			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
 			$('#pop_time_alert').addClass('ui-icon ui-icon-alert');
 		}
-		if ($('#pop_date') == null)
+		else if ($('#pop_time').val().search(/^(([0-1][0-9]|2[0-3]|[0-9])|([0-1][0-9]|2[0-3]|[0-9])(:)[0-5]?[0-9]?(:?)[0-5]?[0-9]?)$/))
+		{
+			invalid_flag = 1;
+			message = '* time is invalid (hh:mm:ss)';
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");
+			$('#pop_time_alert').addClass('ui-icon ui-icon-alert');
+		}
+		if ($('#pop_date').data('picked') != 1)
 		{
 			invalid_flag = 1;
 			message = '* must pick a date';
-			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");			
+			$('#pop_time_error').append("<p class='inputerror'>" + message + "</p>");		
+			$('#pop_date_alert').addClass('ui-icon ui-icon-alert');	
 		}
 		if (invalid_flag != 1) {
-			newTimeDate = $('#pop_date').val()/1000;
+			// we've got a match! strip out times and calculate
+			var time_chunks = $('#pop_time').val().split(/:/g)
+			var time_offset = time_chunks[0]*3600000;
+			if (time_chunks[1] != null)
+				time_offset = time_offset + time_chunks[1]*60000;
+			if (time_chunks[2] != null)
+				time_offset = time_offset + time_chunks[2]*1000;
+
+			var newTimeDate = parseInt($('#pop_date_alt').val());
+			var timeobj = new Date(newTimeDate+time_offset);
 			data = {
-				timedate: newTimeDate
+				timedate: timeobj.getTime()
 			}
-			$("#datepicker").attr( 'readOnly' , 'true' );
-			//$('#pop_time_error').append(new Date(data.newTimeDate));
+			var year = timeobj.getFullYear();
+			var month = timeobj.getMonth();
+			var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+			var d = timeobj.getDate();
+			var day = timeobj.getDay();
+			var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+			h = timeobj.getHours();
+			if (h<10) h = "0"+h;
+			m = timeobj.getMinutes();
+			if (m<10) m = "0"+m;
+			s = timeobj.getSeconds();
+			if (s<10) s = "0"+s;
+
+			var textydate = days[day] + ' ' + months[month] + ' ' + d + ' ' + year + ' ' + h + ':' + m + ':' + s;
+			$('#pop_time_error').append('pop_date: ' + $('#pop_date_alt').val() + '<br>');			
+			$('#pop_time_error').append('fromdp: ' + newTimeDate + '<br>');
+			$('#pop_time_error').append('timeobj: ' + timeobj.getTime() + '<br>');
+			$('#pop_time_error').append('  ' + textydate);
 			nodeio.emit('put:time', data);
-			window.location.replace("/");
+			//return true;
 		}
 	}

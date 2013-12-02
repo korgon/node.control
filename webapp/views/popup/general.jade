@@ -65,12 +65,6 @@ script.
 				apmode: $("input:radio[name=pop_apmode]:checked").val()
 			}
 			nodeio.emit('put:general', data);
+			return true;
 		}
 	}
-
-	// change system variables based on user changes...
-	nodeio.on('doneupdating', function () {
-		console.info('updating system variables...');
-		$("#popup").dialog('close');
-		window.location.replace("/");
-	});

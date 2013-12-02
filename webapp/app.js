@@ -111,9 +111,10 @@ app.get('/popup/wifi', restricted_popup, routes.pop_settings_wifi);
 app.get('/popup/ethernet', restricted_popup, routes.pop_settings_ethernet);
 app.get('/popup/accesspoint', restricted_popup, routes.pop_settings_accesspoint);
 app.get('/popup/time', restricted_popup, routes.pop_settings_time);
+app.get('/popup/editfavorites', restricted_popup, routes.pop_settings_editfavorites);
+app.get('/popup/editgroups', restricted_popup, routes.pop_control_editgroups);
 app.get('/popup/power', restricted_popup, routes.pop_control_power);
 app.get('/popup/run', restricted_popup, routes.pop_control_run);
-app.get('/popup/editfavorites', restricted_popup, routes.pop_control_editfavorites);
 app.get('/popup/viewremotes', restricted_popup, routes.pop_remotes_view);
 
 // restricted routes
@@ -194,20 +195,32 @@ app.io.route('put', {
   general: function(req) {
 		controller.db.putSystemSettings(req.data.hostname, req.data.description, req.data.tempdisplay, req.data.apmode);
 		controller.updateSystemVariables();
-		req.io.emit('doneupdating')
 		console.log(Date() + ' (io) [update general] from ' + req.session.uname);
+		// broadcast changes
+		setTimeout(function() {
+			var servdata = {'hostname': controller.getHostname(), 'apmode': controller.getAPmode(), 'tempdisp': controller.getTempdisplay()};
+			app.io.broadcast('serverdata', servdata);
+			console.log(Date() + ' (io) [update general broadcast]');
+		}, 666);
   },
 	time: function(req) {
-		controller.setTimeDate(req.data.timedate);
+		controller.setTimeDate(req.data.timedate/1000);
+		app.io.broadcast('time', req.data.timedate);
+		console.log(Date() + ' (io) [time update boradacast] => ' + req.data.timedate);
 	}
 });
 
 // example of multi-request route.  Client usage ('get:sensors')
 app.io.route('get', {
   time: function(req) {
-		now = new Date();
+		var now = new Date();
 		req.io.emit('time', now.getTime());
 		console.log(Date() + ' (io) [time request] from ' + req.session.uname);
+  },
+  serverdata: function(req) {
+		var servdata = {'hostname': controller.getHostname(), 'apmode': controller.getAPmode(), 'tempdisp': controller.getTempdisplay()};
+		req.io.emit('serverdata', servdata);
+		console.log(Date() + ' (io) [serverdata request] from ' + req.session.uname);
   },
   actuatordata: function(req) {
 		controller.db.getActuators(function(actuators) {

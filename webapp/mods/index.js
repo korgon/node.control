@@ -57,13 +57,13 @@ controller.prototype.shutdown = function(timedate) {
 	});
 }
 
-controller.prototype.reboot = function(timedate) {
+controller.prototype.reboot = function() {
 	terminal_output('sudo /sbin/reboot' , function(error, stdout, stderr) {
 		if (error) throw error;
 	});
 }
 
-controller.prototype.setTimeDate = function() {
+controller.prototype.setTimeDate = function(timedate) {
 	terminal_output('sudo /bin/date -s @'+timedate, function(error, stdout, stderr) {
 		if (error) throw error;
 	});
