@@ -20,103 +20,50 @@ function wireless(_interface){
 	wireless_interface = _interface;
 }
 
-// function for executing command in *NIX terminal. Output is sent to callback
-function terminal_output(/*command,options,callback*/){
-
-	_default = { encoding: 'utf8', timeout: 0,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }
-
-	command = arguments[0];
-
-	console.log('type of argument is ' + typeof arguments[2])
-
-	if((typeof arguments[1]) == 'object'){
-		options = arguments[1];
-		callback = arguments[2];
-	}
-
-	else if ((typeof arguments[1]) == 'function'){
-		options = _default;
-		callback = arguments[1];
-	}
-	
-	else
-		callback(new Error ('Give me some legit parameters...'));
-
-	exec(command,options, function(error, stdout, stderr){
-		callback(error, stdout, stderr);
+//********* Wifi Scanning Functions *********
+wireless.prototype.getData = function(callback){
+	exec("sudo /sbin/iwlist wlan0 scanning | egrep 'Cell |Encryption|Quality|Last beacon|ESSID|(IE: WPA|WEP)|(Signal level)'", function(error, stdout, stderr){
+		callback(stdout);
 	});
 }
 
-//********* Wifi Scanning Functions *********
-function getData(callback, useEmp){	
-	terminal_output('pgrep wpa', function(error, stdout, stderr){
-		console.log(error, stdout, stderr);				
-		if((stdout == '') || (useEmp == 1)){
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/empty_wpa_supplicant.conf', function(error, stdout, stderr){
-				console.log(error, stdout, stderr);				
-				console.log('reinitializing wpa_supplicant');
-			});
-		}
-	});			
-	terminal_output('sudo /usr/sbin/wpa_cli scan ' + wireless_interface, function(info){
-		terminal_output('pwd', function(error,output,stderr){
-			console.log(output);
-		});
-		console.log('scanned');
-		terminal_output('sudo /usr/sbin/wpa_cli scan_results', function(error,output,stderr){
-			console.log('getting results');
-			callback(output);
-		});
-	});	
-}
+wireless.prototype.parseData = function(data, callback){
+	data = data.split(/Cell /g)
+	obj_arr = []
+	data.shift()
+	console.log(data);
+	var encryption = /(WEP|(WPA2?))/g
+	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g
+	var essid = /ESSID:"[<a-zA-Z0-9_\->\.]+"/g
+	var sig_level = /Signal level=[0-9]+/g
+	for (info in data){
+		data[info] = data[info].replace(/\n/g, '');
+		data_enc = (data[info].match(encryption))
+		if(data_enc == null)
+			data_enc = 'N/A';
+		if(data_enc.toString().match(/WPA/g))
+			data_enc = data_enc.toString().replace(/WPA(2)?/,'WPA').replace(/\,WPA2/,'');
+		data_enc = data_enc.toString()
+		data_bssid = data[info].match(bssid).toString();
+		data_ssid = (data[info].match(essid)).toString().replace(/ESSID:/g,'').replace(/"/g,'');
+		data_level = (data[info].match(sig_level)).toString().replace(/Signal level=/g,'');
+		obj_arr.push({'encryption':data_enc, 'bssid':data_bssid, 'ssid':data_ssid,'sig_level':data_level})
 
-function parseScan(data, callback){
-	//Creating the search parameters
-	var bssid = /[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}:[0-9a-zA-z]{1,2}/g;
-	var frequency = /\t[0-9]{4}\t/g;
-	var encryption = /\s+(\[[A-Z\-0-9\+]+\])+/g;
-	var siglevel = /\t[0-9]{1,3}\t/g;
-	var ssid = /\]\s+[\s<>\w\-\(\)]+(?=\s+)/g
-	
-	macAddress = data.match(bssid);
-	frequencyInt = data.match(frequency);
-	security = data.match(encryption);
-	sigLevelInt = data.match(siglevel);
-	SSID = data.match(ssid);
-
-	for (freq in frequencyInt){
-		frequencyInt[freq] = frequencyInt[freq].replace(/\t/g,'');
 	}
 	
-	for (siglev in sigLevelInt){
-		sigLevelInt[siglev] = sigLevelInt[siglev].replace(/\t/g,'');
-	}
+	console.log(obj_arr)
+	for (info in data)
 
-	for (id in SSID){
-		SSID[id] = SSID[id].replace(/]\t/g,'');
-	}
-
-	for (sec in security){
-		security[sec] = security[sec].replace(/\t/g, '');
-	}
-
-	callback(SSID, security, sigLevelInt, frequencyInt, macAddress);
+	console.log('processing data')
+	
+	callback(obj_arr)
 }
 
-function generateJSON(SSID, security, sigLevelInt, frequencyInt, macAddress, callback){
-	var jsonarr = [];
-	for (stuff in SSID){
-		jsonarr.push({"ssid": SSID[stuff], "security_type": security[stuff], "sig_strength": sigLevelInt[stuff], "frequency": frequencyInt[stuff], "mac_address": macAddress[stuff]});
-		}
-	callback({networks:jsonarr});
-	};
-
-wireless.prototype.scan = function(callback) {
-	getData(function(data) {
-		parseScan(data, function(SSID, security, sigLevelInt, frequencyInt, macAddress) {
-			generateJSON(SSID, security, sigLevelInt, frequencyInt, macAddress, function(isDone) {
-				callback(isDone);	
-			});
+wireless.prototype.scan = function(callback){
+	var thisref = this;
+	thisref.getData(function(data){
+		thisref.parseData(data, function(obj_array){
+				callback(obj_array);	
 		});
 	});
 }
@@ -138,13 +85,13 @@ wireless.prototype.getIP = function() {
 
 //********* Wifi Connect Function *********
 wireless.prototype.connect = function(connJSON, callback){
-	terminal_output('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
+	exec('sudo /usr/bin/killall wpa_supplicant', function(error, stdout, stderr){
 		console.log('wlan0 removed');
 	});
 	
 
 	if (connJSON.security.match(/WEP/)){
-		var stream = fs.createWriteStream("./mods/wpa_supplicant.conf");
+		var stream = fs.createWriteStream("./wpa_supplicant.conf");
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			
@@ -157,10 +104,10 @@ stream.write('ctrl_interface_group=0\n');
 			stream.write('\twep_key0='+connJSON.password+'\n');
 			stream.write('}')
 			stream.end();
-						terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/wpa_supplicant.conf',{ encoding: 'utf8',timeout: 40000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf',{timeout: 1000}, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
-				terminal_output('sudo /sbin/udhcpc -i wlan0' ,{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				exec('sudo /sbin/udhcpc -i wlan0' ,{timeout: 30000}, function(error, stdout, stderr){
 					console.log(error, stdout, stderr);
 					console.log('Please do not hang :3');
 				});
@@ -169,7 +116,7 @@ stream.write('ctrl_interface_group=0\n');
 	}
 
 	if (connJSON.security.match(/WPA/)){
-		var stream = fs.createWriteStream('./mods/wpa_supplicant.conf');
+		var stream = fs.createWriteStream('./wpa_supplicant.conf');
 		stream.once('open', function(close){
 			stream.write('ctrl_interface=/var/run/wpa_supplicant\n');
 			stream.write('ctrl_interface_group=0\n');
@@ -193,10 +140,10 @@ stream.write('ctrl_interface_group=0\n');
 			}
 			stream.write('}');
 			stream.end();
-			terminal_output('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./mods/wpa_supplicant.conf -B',{ encoding: 'utf8',timeout: 1000,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+			exec('sudo /usr/sbin/wpa_supplicant -Dwext -iwlan0 -c ./wpa_supplicant.conf -B',{timeout: 1000}, function(error, stdout, stderr){
 				console.log(error, stdout, stderr);
 				if(error | stderr) throw error;
-				terminal_output('sudo /sbin/udhcpc -t 3 -i wlan0' ,{ encoding: 'utf8',timeout: 20,maxBuffer: 200*1024,killSignal: 'SIGTERM',cwd: null,env: null }, function(error, stdout, stderr){
+				exec('sudo /sbin/udhcpc -t 3 -i wlan0' ,{timeout: 30000}, function(error, stdout, stderr){
 					console.log(error, stdout, stderr);
 					console.log('Please do not hang :3');
 				});
@@ -204,7 +151,6 @@ stream.write('ctrl_interface_group=0\n');
 		});
 	}
 }
-
 
 module.exports = wireless;
 /*

@@ -1,7 +1,6 @@
-//	node.control routes
-exports.test = function(req, res) {
-	res.render('test', { title: 'Testing.....' });
-};
+// Node HTTP Routes
+// =================================================
+
 
 // start popups
 exports.pop_schedule_new = function(req, res) {
@@ -72,46 +71,6 @@ exports.shutdown = function(req, res) {
   res.render('shutdown', { title: 'node.control: shutdown' });
 };
 
-exports.control = function(req, res) {
-  res.render('control', { title: 'Manual Control' });
-};
-
-exports.nodes = function(req, res) {
-  res.render('nodes', { title: 'Manage Nodes' });
-};
-
-exports.schedule = function(req, res) {
-  res.render('schedule', { title: 'Scheduling' });
-};
-
-// edit settings
-
-exports.settings = function(req, res) {
-	if (req.params.id == 'wlan0')
-  	res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == 'eth0')
-			res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == 'system')
-			res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == 'security')
-			res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == 'accesspoint')
-			res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == 'internet')
-			res.render('settings', { title: 'Controller Settings' });
-	else if (req.params.id == '' || req.params.id == null)
-			res.render('settings', { title: 'Controller Settings' });
-	else
-		res.render('404', { title: 'Page not found', error: req.url + ' does not exist...' });
-};
-
-exports.editsettings = function(req, res) {
-	// pull variables from form post
-	//var eth0_data = {mode: req.body.eth0_mode, ip: req.body.eth0_ip, subnet: req.body.eth0_subnet, gw: req.body.eth0_gw, dns1: req.body.eth0_dns1, dns2: req.body.eth0_dns2};
-	req.session.message = "Updated something..."
-	res.redirect('/settings');
-};
-
 // setup controller
 exports.setup = function(req, res) {
 	if (controller.getSetup() == 0) {
@@ -132,22 +91,13 @@ exports.setitup = function(req, res) {
 	controller.db.updateUser(req.body.username, req.body.password);
 	controller.db.updateEmail(req.body.email);
 	controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
+	console.log(wlan0_data);
 	controller.wifi.connect(wlan0_data, function() {
 		// successful connection!
 		controller.updateSystemVariables();
 		res.redirect('/');
 	});
 };
-
-exports.sensors = function(req, res) {
-	// create json object, then push it into jade or to client
-	controller.db.getSensors(function(senzors) {
-		res.format({
-			html: function() { res.render('sensors', { title: 'Sensors Data', senzors: senzors }); },
-			json: function() { res.json(senzors); }
-		});
-	});
-}
 
 exports.login = function(req, res) {
 	res.render('login', { title: 'Login...' });

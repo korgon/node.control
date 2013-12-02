@@ -37,17 +37,16 @@ function init_db() {
 		salt TEXT, email TEXT)');
 	console.log(" |---------   Table users added   ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS system (id INTEGER PRIMARY KEY, hostname TEXT, description TEXT, \
-		temp_mode TEXT, setup INTEGER, ap_mode INTEGER, eth0_data TEXT, wlan0_data TEXT, xbee_data TEXT)');
+		temp_mode TEXT, setup INTEGER, ap_mode INTEGER, eth0_data TEXT, wlan0_data TEXT)');
 	console.log(" |---------   Table system added  ---------|");
 	db.query('CREATE TABLE IF NOT EXISTS schedule (id INTEGER PRIMARY KEY, description TEXT, \
 		start_data TEXT, stop_data TEXT, interupt TEXT)');
 	console.log(" |--------- Table schedule added  ---------|");	
-	db.query('CREATE TABLE IF NOT EXISTS remotes (id INTEGER PRIMARY KEY, name TEXT, description TEXT, \
-		xbee_data TEXT)');
+	db.query('CREATE TABLE IF NOT EXISTS remotes (hex_id TEXT PRIMARY KEY, type TEXT, description TEXT, alias TEXT)');
 	console.log(" |---------  Table remotes added  ---------|");
-	db.query('CREATE TABLE IF NOT EXISTS sensors (name TEXT PRIMARY KEY, description TEXT, icon TEXT, location)');
+	db.query('CREATE TABLE IF NOT EXISTS sensors (id INTEGER PRIMARY KEY, name TEXT, description TEXT, icon TEXT, location TEXT, pin TEXT)');
 	console.log(" |---------  Table sensors added  ---------|");
-	db.query('CREATE TABLE IF NOT EXISTS actuators (name TEXT PRIMARY KEY, description TEXT, icon TEXT, location)');
+	db.query('CREATE TABLE IF NOT EXISTS actuators (id INTEGER PRIMARY KEY, name TEXT, description TEXT, icon TEXT, location TEXT, pin TEXT)');
 	console.log(" |--------- Table actuators added ---------|");
 
 	// insert default user admin, first create password ('') and salt
@@ -58,56 +57,79 @@ function init_db() {
 
 	// insert default controller module data into system table
 	// ***** MAKE MORE DYNAMIC LATERS ******
-	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+	db.query('INSERT INTO system VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
 		null, 'node', 'sprinkler controller', 'F', 0, 0, 
 		{mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
-		{ssid: '', bssid: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'},
-		{mode: 'coordinator', serial: '0013a20040790728', pan: 'green eggs and ham'}]);
+		{ssid: '', bssid: '', security_type: '', username: '', password: '', mode: 'dynamic', ip: '0.0.0.0', subnet: '0.0.0.0', gw:'0.0.0.0', dns1:'0.0.0.0', dns2:'0.0.0.0'}]);
 		console.log(" |---------    Defaults loaded    ---------|");
 
-	// remotes should be added by the user
+	// remotes should be added as discovered...
 
 	// if sensors/actuators exist add them to the sensor table and create separate table per input
 	// adding two sensors for temperature and humidity for testing
-	addSensor('temp0', 'onboard temperature sensor', '/images/icons/sensors/temperature.png', 'local');
-	addSensor('hum0', 'onboard humidity sensor', '/images/icons/sensors/humidity.png', 'local');
+	addSensor(null, 'temp0', 'onboard temperature sensor', '/images/icons/sensors/temperature.png', 'local', '');
+	addSensor(null, 'hum0', 'onboard humidity sensor', '/images/icons/sensors/humidity.png', 'local', '');
 	// adding zones...
-	addActuator('zone1', 'sprinkler solenoid', '/images/icons/actuators/zone1.png', 'gpiox');
-	addActuator('zone2', 'sprinkler solenoid', '/images/icons/actuators/zone2.png', 'gpiox');
-	addActuator('zone3', 'sprinkler solenoid', '/images/icons/actuators/zone3.png', 'gpiox');
-	addActuator('zone4', 'sprinkler solenoid', '/images/icons/actuators/zone4.png', 'gpiox');
-	addActuator('zone5', 'sprinkler solenoid', '/images/icons/actuators/zone5.png', 'gpiox');
-	addActuator('zone6', 'sprinkler solenoid', '/images/icons/actuators/zone6.png', 'gpiox');
-	addActuator('zone7', 'sprinkler solenoid', '/images/icons/actuators/zone7.png', 'gpiox');
-	addActuator('zone8', 'sprinkler solenoid', '/images/icons/actuators/zone8.png', 'gpiox');
-	addActuator('zone9', 'sprinkler solenoid', '/images/icons/actuators/zone9.png', 'gpiox');
-	addActuator('zone10', 'sprinkler solenoid', '/images/icons/actuators/zone10.png', 'gpiox');
-	addActuator('zone11', 'sprinkler solenoid', '/images/icons/actuators/zone11.png', 'gpiox');
-	addActuator('zone12', 'sprinkler solenoid', '/images/icons/actuators/zone12.png', 'gpiox');
-	addActuator('zone13', 'sprinkler solenoid', '/images/icons/actuators/zone13.png', 'gpiox');
-	addActuator('zone14', 'sprinkler solenoid', '/images/icons/actuators/zone14.png', 'gpiox');
-	addActuator('zone15', 'sprinkler solenoid', '/images/icons/actuators/zone15.png', 'gpiox');
-	addActuator('zone16', 'sprinkler solenoid', '/images/icons/actuators/zone16.png', 'gpiox');
+	addActuator(null, 'zone1', 'sprinkler solenoid', '/images/icons/actuators/zone1.png', 'local', 'gpiox');
+	addActuator(null, 'zone2', 'sprinkler solenoid', '/images/icons/actuators/zone2.png', 'local', 'gpiox');
+	addActuator(null, 'zone3', 'sprinkler solenoid', '/images/icons/actuators/zone3.png', 'local', 'gpiox');
+	addActuator(null, 'zone4', 'sprinkler solenoid', '/images/icons/actuators/zone4.png', 'local', 'gpiox');
+	addActuator(null, 'zone5', 'sprinkler solenoid', '/images/icons/actuators/zone5.png', 'local', 'gpiox');
+	addActuator(null, 'zone6', 'sprinkler solenoid', '/images/icons/actuators/zone6.png', 'local', 'gpiox');
+	addActuator(null, 'zone7', 'sprinkler solenoid', '/images/icons/actuators/zone7.png', 'local', 'gpiox');
+	addActuator(null, 'zone8', 'sprinkler solenoid', '/images/icons/actuators/zone8.png', 'local', 'gpiox');
+	addActuator(null, 'zone9', 'sprinkler solenoid', '/images/icons/actuators/zone9.png', 'local', 'gpiox');
+	addActuator(null, 'zone10', 'sprinkler solenoid', '/images/icons/actuators/zone10.png', 'local', 'gpiox');
+	addActuator(null, 'zone11', 'sprinkler solenoid', '/images/icons/actuators/zone11.png', 'local', 'gpiox');
+	addActuator(null, 'zone12', 'sprinkler solenoid', '/images/icons/actuators/zone12.png', 'local', 'gpiox');
+	addActuator(null, 'zone13', 'sprinkler solenoid', '/images/icons/actuators/zone13.png', 'local', 'gpiox');
+	addActuator(null, 'zone14', 'sprinkler solenoid', '/images/icons/actuators/zone14.png', 'local', 'gpiox');
+	addActuator(null, 'zone15', 'sprinkler solenoid', '/images/icons/actuators/zone15.png', 'local', 'gpiox');
+	addActuator(null, 'zone16', 'sprinkler solenoid', '/images/icons/actuators/zone16.png', 'local', 'gpiox');
 }
 
 //********* REMOTE METHODS *********
 
 // add a remote (xbee) sensor/actuator to database
-db_management.prototype.addRemote = function(rname, rserial, rinputs, routputs) {
-	// should call addSensor() / addActuator (if needed also)
+db_management.prototype.addRemote = function(rtype, rhex, rdesc, rinputs, routputs) {
+	db.query('INSERT into remotes VALUES (?, ?, ?, ?)', [rhex, rtype, rdesc, '']);
+	for (var output in routputs) {
+		addActuator('port' output, 'Output Port ' + output + ' | ' + rdesc, '/images/icons/actuators/box.png', rhex, routputs[output]);
+		console.log('adding remote actuator');
+	}
+	for (var input in rinputs) {
+		//addSensor(rtype + var, 'Input Port ' + var + ' | ' + rdesc, '/images/icons/actuators/box.png', rhex, routputs[var]);
+		console.log('adding remote sensor');
+	}
+	console.log('adding remote');
+}
+
+// retrieve a remote
+db_management.prototype.getRemote = function(hex, fn) {
+	var sql = "SELECT * FROM remotes where hex_id='" + hex + "'";
+	db.query(sql, {hex_id: String, type: String, desc: String, alias: String}, function(rows) {
+		fn(rows[0]);
+	});
+}
+
+// retrieve list of all remotes
+db_management.prototype.getRemotes = function(fn) {
+	db.query('SELECT * FROM remotes', {hex_id: String, type: String, desc: String, alias: String}, function(rows) {
+		fn(rows);
+	});
 }
 
 //********* ACTUATOR METHODS *********
 
 // add an output to actuator table for user interface
-function addActuator(aname, desc, icon, location) {
-	db.query('INSERT into actuators VALUES (?, ?, ?, ?)', [aname, desc, icon, location]);
+function addActuator(aname, desc, icon, location, pin) {
+	db.query('INSERT into actuators VALUES (?, ?, ?, ?, ?, ?)', [null, aname, desc, icon, location, pin]);
 	console.log(" |---------    Added actuator     ---------|");
 }
 
 // retrieve list of all actuators (outputs)
 db_management.prototype.getActuators = function(fn) {
-	db.query('SELECT * FROM actuators', {id: String, desc: String, icon: String, loc: String}, function(rows) {
+	db.query('SELECT * FROM actuators', {id: Number, name: String, desc: String, icon: String, loc: String, pin: String}, function(rows) {
 		fn(rows);
 	});
 }
@@ -115,15 +137,15 @@ db_management.prototype.getActuators = function(fn) {
 //********* SENSOR METHODS *********
 
 // add a sensor to sensor table, and create a table for sensor entries
-function addSensor(sid, desc, icon, location) {
-	db.query('INSERT into sensors VALUES (?, ?, ?, ?)', [sid, desc, icon, location]);
-	db.query('CREATE TABLE IF NOT EXISTS ' + sid + ' (time INTEGER PRIMARY KEY, value REAL)');
+function addSensor(sname, desc, icon, location, pin) {
+	db.query('INSERT into sensors VALUES (?, ?, ?, ?, ?, ?)', [null, sname, desc, icon, location, pin]);
+	db.query('CREATE TABLE IF NOT EXISTS ' + sname + ' (time INTEGER PRIMARY KEY, value REAL)');
 	console.log(" |---------      Added sensor     ---------|");
 }
 
 // retrieve list of all sensors
 db_management.prototype.getSensors = function(fn) {
-	db.query('SELECT * FROM sensors', {id: String, desc: String, icon: String, loc: String}, function(rows) {
+	db.query('SELECT * FROM sensors', {id: Number, name: String, desc: String, icon: String, loc: String, pin: String}, function(rows) {
 		fn(rows);
 	});
 }

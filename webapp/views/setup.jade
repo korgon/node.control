@@ -215,18 +215,19 @@ block jscripts
 			// empty the div so no duplication exists
 			$('#wifis').empty();
 
-			$.each(scanned_networks.networks, function(index, wifiobj){
+			$.each(scanned_networks, function(index, wifiobj){
+				var security_min = '';
 				// check if ssid is null
 				if (wifiobj.ssid == "<hidden>")
 					return true;
 
 				// determine security type
-				else if (wifiobj.security_type.match(/wpa/i))
-					security_min = "WPA"
-				else if (wifiobj.security_type.match(/wep/i))
-					security_min = "WEP"
+				else if (wifiobj.encryption.match(/wpa/i))
+					security_min = "WPA";
+				else if (wifiobj.encryption.match(/wep/i))
+					security_min = "WEP";
 				else
-					security_min = "NONE"
+					security_min = "N/A";
 
 				// build divs for access points
 				html = "<div class='selme' id='wdiv" + index + "'>";
@@ -246,7 +247,7 @@ block jscripts
 				$('#wifis').append(html);
 				// set data for use in form submission
 				$('#wlan0_' + index).data('bssid', wifiobj.bssid);
-				$('#wlan0_' + index).data('security_type', wifiobj.security_type);
+				$('#wlan0_' + index).data('security_type', wifiobj.encryption);
 			});
 			$("label.setupwifi").css('cursor', 'pointer');		// change cursor on hover
 
@@ -256,6 +257,7 @@ block jscripts
 				$('#password_entry').empty();
 				$('#password_entry').dialog('option', 'title', 'Credentials for ' + $(this).val());
 				dialog_html = "<br>";
+
 				if ($(this).data('security_type').match(/eap/i)) {
 					dialog_html = dialog_html + "<label class='setupnet' for='dialog_username'><h4 style='margin: 0px;'>Username</h4></label>";
 					dialog_html = dialog_html + "<input class='boxLong dark' type='text' name='dialog_username' id='dialog_username' value=''>";

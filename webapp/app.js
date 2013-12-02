@@ -12,6 +12,9 @@ var routes = require('./routes');
 ctrl = require('./mods');
 controller = new ctrl();
 
+// init xbee module
+controller.xbee.init();
+
 // io middleware extension
 require('express.io-middleware')(app);
 
@@ -93,9 +96,8 @@ app.io.use(function (req, next) {
   }
 });
 
-// routes
-app.get('/test', routes.test);
 
+//********* Routes *********
 // login / out
 app.get('/login', routes.login);
 app.post('/login', routes.loginto);
@@ -122,20 +124,11 @@ app.get('/', restricted, setup, routes.index);
 app.get('/reboot', restricted, routes.reboot);
 app.get('/shutdown', restricted, routes.shutdown);
 
-app.get('/schedule', restricted, routes.schedule);
-app.get('/control', restricted, routes.control);
-app.get('/nodes', restricted, routes.nodes);
-// settings
-app.post('/settings/edit', restricted, routes.editsettings);
-app.get('/settings', restricted, routes.settings);
-app.get('/settings/:id', restricted, routes.settings);
-// sensors
-app.get('/sensors', restricted, routes.sensors);
 // setup (also restricted)
 app.get('/setup', restricted, routes.setup);
 app.post('/setup', restricted, routes.setitup);
 
-// end routes
+//********* End Routes *********
 
 // start server
 app.listen(port);

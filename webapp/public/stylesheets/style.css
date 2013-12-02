@@ -317,6 +317,14 @@ p.alert {
 	color: #cb0000;
 }
 
+p.login {
+	text-align: center;
+	margin: 0px;
+	padding: 5px;
+	font-weight: bold;
+	color: #00709d;
+}
+
 fieldset {
 	background-color: #fff;
 	border: 1px solid black;
@@ -509,7 +517,7 @@ h1.node {
 h1.login {
 	color: #00B7FF;
 	padding: 0px;
-	font-size: 60px;
+	font-size: 120px;
 }
 
 h3.line {

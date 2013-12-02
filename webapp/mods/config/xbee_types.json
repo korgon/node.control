@@ -1,0 +1,24 @@
+{
+	"workers": [
+		{
+			"name": "12VDC Expansion (x5)",
+			"id": "node:12vdc_x5",
+			"outputs": {
+				"port1": "DIO0",
+				"port2": "DIO1",
+				"port3": "DIO2",
+				"port4": "DIO3",
+				"port5": "DIO4"
+			},
+			"inputs": {}
+		},
+		{
+			"name": "120VAC Expansion (x2)",
+			"id": "node:120vac_x2",
+			"outputs": {
+				"port1": "DIO0",
+				"port2": "DIO1"
+			},
+			"inputs": {}
+		}]
+}

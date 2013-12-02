@@ -28,18 +28,16 @@ block jscripts
 block content
 	.bigcirc(style='width: 420px; height: 420px;')
 		.logincirc
-			h1.login(style='margin-top: 90px;') [ login ]
-		form(method='post', action='/login', id='logon' autocomplete = "off")
-			.login(style='position: relative; top: -170px;')
-				div
-					label.login(for='username') username
-					input#username.popinput(type='text' name='username')
-				div
-					label.login(for='password') password
-					input.popinput(type='password' name='password')
-				if (message != "")
-					p.alert= message
-				else
-					p.alert &nbsp;
-			.center(style='position: relative; top: -160px;')
-				input(id="login" type="button" value="enter")
+			h1.login(style='margin-top: 100px;') (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)
+			form(method='post', action='/login', id='logon' autocomplete = "off")
+				.login(style='position: relative; top: -203px;')
+					div
+						input#username.popinput(type='text' name='username' style='text-align: center;')
+					div
+						input.popinput(type='password' name='password' style='text-align: center;')
+				.center(style='position: relative; top: -200px;')
+					input(id='login' type='button' value='' style='width: 155px; height: 25px; margin-left:3px;')
+					if (message != "")
+						p.alert= message
+					else
+						p.login please login
