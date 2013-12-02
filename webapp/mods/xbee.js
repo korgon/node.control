@@ -13,7 +13,6 @@ var util = require('util');
 var events = require('events');
 
 var xbeecoord;
-var refresh_time;
 
 function xbee_comm(_port){
 	events.EventEmitter.call(this);

@@ -12,9 +12,6 @@ var routes = require('./routes');
 ctrl = require('./mods');
 controller = new ctrl();
 
-// init xbee module
-controller.xbee.init();
-
 // io middleware extension
 require('express.io-middleware')(app);
 
@@ -138,6 +135,8 @@ setTimeout(function() {
 	console.log('');
 }, 3300);
 
+// init xbee module
+controller.xbee.init();
 
 // Begin socket.io routes....
 // =================================================

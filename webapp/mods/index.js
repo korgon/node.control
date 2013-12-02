@@ -52,21 +52,20 @@ function updateSystemVariables() {
 //********* XBee Configure on discovery *********
 
 xbee.on('newNode', function(newnode) {
-	var identified = 0;
-	for (var worker in xbeehive.workers) {
-		if (newnode.id == xbeehive.workers[worker].id) {
-			identified = 1;
-			db.getRemote(newnode.hex_identifier, function(results) {
-				if (results == null) {
+	db.getRemote(newnode.hex_identifier, function(results) {
+		if (results == null) {
+			var identified = 0;
+			for (var worker in xbeehive.workers) {
+				if (newnode.id == xbeehive.workers[worker].id) {
+					identified = 1;
 					console.log(Date() + ' (xbee) [discover] collecting a workerbee ' + worker + ': ' + newnode.id);
 					db.addRemote(xbeehive.workers[worker].id, newnode.hex_identifier, xbeehive.workers[worker].name, xbeehive.workers[worker].inputs, xbeehive.workers[worker].outputs);
 				}
-			});
+			}
+			if (identified == 0)
+				console.log(Date() + ' (xbee) [discover] found a rogue bee!');
 		}
-	}
-	if (identified == 0) {
-		console.log(Date() + ' (xbee) [discover] found a rogue bee! ' + newnode.id);
-	}
+	});
 });
 
 
