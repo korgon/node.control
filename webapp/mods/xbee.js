@@ -5,6 +5,10 @@ Code to communicate with the Xbee module
 xbees should be configured in AP mode (coordinator at least)
 and with a common PANID, encryption has been tested minimally
 
+For xbee.write(hex_id, pin, direction):
+pin is the pin that is desired to be manipulated ex 'DIO2'
+direction is either 0 or 1, this is then converted for svd-xbee
+
 */////////////////////////////////////////////////////////////
 
 var xbee = require('svd-xbee');
@@ -16,10 +20,11 @@ var xbeecoord;
 
 function xbee_comm(_port){
 	events.EventEmitter.call(this);
-	xbeecoord = new xbee.XBee({port: _port, baudrate: 9600, api_mode: 1}).init();
+	xbeecoord = new xbee.XBee({port: _port, baudrate: 9600, api_mode: 1});
 }
 
 xbee_comm.prototype.init = function(callback) {
+	xbeecoord.init();
 	var self = this;
 	xbeecoord.on('initialized', function(params) {
 		//console.log('initialized with params: ' + util.inspect(params));
@@ -49,6 +54,9 @@ xbee_comm.prototype.init = function(callback) {
 
 //********* XBee Functions *********
 xbee_comm.prototype.write = function(hex_ident, pin, direction) {
+	if (direction == 0) direction = 'DIGITAL_OUTPUT_LOW';
+	else if (direction == 1) direction = 'DIGITAL_OUTPUT_HIGH';
+
 	// convert from csv string to int array
 	var hex_id = hex_ident.split(',');
 	for (str in hex_id){

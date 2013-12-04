@@ -17,6 +17,7 @@ wpa_supplicant -B -Dwext -iwlan0 -c /etc/wpa_supplicant.conf;
 sleep 3;
 
 chown node /dev/ttyO[1-9]
+chown node /dev/i2c-[0-9]
 
 udhcpc -i wlan0
 wait;

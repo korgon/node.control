@@ -13,7 +13,7 @@ var si7k5;
 
 function si7005(_type) {
 	this.type = _type;
-	si7k5 = new i2c(si7005_address, {device: '/dev/i2c-1', debug: false});
+	si7k5 = new i2c(si7005_address, {device: '/dev/i2c-2', debug: false});
 }
 
 si7005.prototype.getValue = function(callback){

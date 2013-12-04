@@ -30,7 +30,7 @@ var exec = require('child_process').exec
 var file = require('fs');
 
 function shaunscript(){
-	console.log('Welcome to shaunscript :3');
+	//console.log('Welcome to shaunscript :3');
 }
 
 function readPin(pin, callback){

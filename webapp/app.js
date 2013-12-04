@@ -136,14 +136,16 @@ setTimeout(function() {
 }, 3300);
 
 // init xbee module
-controller.xbee.init();
+setTimeout(function() {
+	controller.xbee.init();
+},2500);
 
 // controller emitter handlers
 controller.on('zoneChange', function(zonesdata) {
 	console.log(Date() + ' (io) [zones update broadcast]');
+	console.log(zonesdata);
 	app.io.broadcast('zoneChange', zonesdata);
 });
-
 
 // Begin socket.io routes....
 // =================================================

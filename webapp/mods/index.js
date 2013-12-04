@@ -26,7 +26,7 @@ var wireless = require("./wifi.js");
 var wifi = new wireless("wlan0");
 // xbee management
 var bees = require("./xbee.js");
-var xbee = new bees("/dev/ttyO2");  //
+var xbee = new bees("/dev/ttyO2");  //UART2
 // si7005 temp/humidity
 var si7005 = require("./si7005.js");
 var temp0 = new si7005("temp");
@@ -61,13 +61,9 @@ function controller() {
 		{
 			zones[actuators[actuator].name] = actuators[actuator];
 		}
-		console.log('got ' + Object.keys(zones).length + ' zones...');
+		//console.log('got ' + Object.keys(zones).length + ' zones...');
 		initZones();
 	});
-
-	setTimeout(function() {
-		console.log(zones);
-	}, 6000);
 
 	updateSystemVariables();
 /*
@@ -118,7 +114,7 @@ function initZones() {
 
 controller.prototype.controlZone = function(azone, value) {
 	var self = this;
-	console.log('attempting to activate ' + zones[azone].name + '@' + zones[azone].pin + '=>' + value);
+	//console.log('attempting to activate ' + zones[azone].name + '@' + zones[azone].pin + '=>' + value);
 	gpio.digitalWrite(zones[azone].pin, value, function() {
 		gpio.digitalRead(zones[azone].pin, function(res) {
 			zones[azone].status = res;
