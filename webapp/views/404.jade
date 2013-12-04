@@ -1,9 +1,9 @@
 extends layout_minimal
 
 block content
-	.content
+	.bigcirc(style='width: 420px; height: 420px;')
 		.logincirc
-			h1.login(style='margin-top: 99px;') [ 404 ]
+			h1.bigblue(style='margin-top: 99px;') ( 404 )
 			p.alert(style='position: relative; top: -55px;') document not found
-		.login(style='position: relative; top: 50px; text-align: center; padding-bottom: 9px;')
-			p.error= error
+		.login(style='position: relative; top: -130px; text-align: center; padding-bottom: 9px; background-color: #111; border-radius: 33px;')
+			p.login= error

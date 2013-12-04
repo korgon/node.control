@@ -20,7 +20,7 @@ exports.pop_control_power = function(req, res) {
 };
 
 exports.pop_control_run = function(req, res) {
-	res.render('popup/run', { hostname: controller.getHostname() });
+	res.render('popup/run');
 };
 
 exports.pop_control_editgroups = function(req, res) {
@@ -92,10 +92,14 @@ exports.setitup = function(req, res) {
 	controller.db.updateEmail(req.body.email);
 	controller.db.setupDone(req.body.hostname, req.body.description, eth0_data, wlan0_data);
 	console.log(wlan0_data);
-	controller.wifi.connect(wlan0_data, function() {
-		// successful connection!
-		controller.updateSystemVariables();
-		res.redirect('/');
+	controller.wifi.connect(wlan0_data, function(err) {
+		if (err)
+			res.send('ERROR! ' + err);
+		else {
+			// successful connection!
+			controller.updateSystemVariables();
+			res.redirect('/');
+		}
 	});
 };
 

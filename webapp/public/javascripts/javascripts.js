@@ -28,7 +28,7 @@ function create_buttons(tabid) {
 	for (var button=0; button < buttons; button++) {
 		if (top_offset > 225) top_offset = 0;
 		var newbutton = "<div id='" + tabid + "_button" + button+1 + "' class='" + slot_class + "' title='";
-		newbutton = newbutton + slot_array[button].name + "' style='top: " + top_offset + "px;";
+		newbutton = newbutton + slot_array[button].alias + "' style='top: " + top_offset + "px;";
 		if (button > tab_slots-1)	// don't display anything beyond slot numbers
 			newbutton = newbutton + " display: none;'>";
 		else

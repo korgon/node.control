@@ -138,6 +138,13 @@ setTimeout(function() {
 // init xbee module
 controller.xbee.init();
 
+// controller emitter handlers
+controller.on('zoneChange', function(zonesdata) {
+	console.log(Date() + ' (io) [zones update broadcast]');
+	app.io.broadcast('zoneChange', zonesdata);
+});
+
+
 // Begin socket.io routes....
 // =================================================
 // routing similar to express, thanks to express.io
@@ -209,13 +216,24 @@ app.io.route('get', {
 		req.io.emit('time', now.getTime());
 		console.log(Date() + ' (io) [time request] from ' + req.session.uname);
   },
+  climate: function(req) {
+		var climate = {'temp': controller.getTemperature().toFixed(1), 'hum': controller.getHumidity().toFixed(1)};
+		req.io.emit('climate', climate);
+		console.log(Date() + ' (io) [climate request] from ' + req.session.uname);
+  },
   serverdata: function(req) {
 		var servdata = {'hostname': controller.getHostname(), 'apmode': controller.getAPmode(), 'tempdisp': controller.getTempdisplay()};
 		req.io.emit('serverdata', servdata);
 		console.log(Date() + ' (io) [serverdata request] from ' + req.session.uname);
   },
   actuatordata: function(req) {
-		controller.db.getActuators(function(actuators) {
+		controller.db.getActuators('all', function(actuators) {
+			req.io.emit('actuators', actuators);
+			console.log(Date() + ' (io) [actuatordata request] from ' + req.session.uname);
+		});
+  },
+  zones: function(req) {
+		controller.db.getActuators('all', function(actuators) {
 			req.io.emit('actuators', actuators);
 			console.log(Date() + ' (io) [actuatordata request] from ' + req.session.uname);
 		});

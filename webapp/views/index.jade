@@ -160,6 +160,11 @@ block jscripts
 			// get local time from server
 			nodeio.emit('get:time');
 			nodeio.emit('get:serverdata');
+			nodeio.emit('get:climate');
+
+			setInterval(function() {
+				nodeio.emit('get:climate');
+			}, 60000);
 
 			// popup dialog used for confirmations
 			$("#confirm").dialog({
@@ -326,6 +331,19 @@ block jscripts
 			disable_tab('pop_sensors');
 		});
 
+		// populate temp / humidity
+		nodeio.on('climate', function (sensordata) {
+			console.info('updating climate');
+			$('#humidity_value').empty();
+			$('#humidity_value').append(sensordata.hum + '%');
+			$('#temperature_value').empty();
+			$('#temperature_value').append(sensordata.temp);
+			if (temperaturedisplay == 'F')
+				$('#temperature_value').append('\u2109');
+			else
+				$('#temperature_value').append('\u2103');
+		});
+
 		//********* end socket.io event handlers *********
 
 block content
@@ -335,6 +353,7 @@ block content
 		h1#title.node
 		h5#date.date &nbsp;
 		h4#time.time &nbsp;
+
 
 	div#title_settings.buttonTitle
 		<a>|</a> settings <a>|</a>
@@ -361,24 +380,16 @@ block content
 			div#editfavorites.linkIcon(title='edit favorites')
 				img.linkImage(src='/images/icons/small_star.png')
 
+
 	div#title_humidity.buttonTitle
 		<a>|</a> humidity <a>|</a>
 	div#container_humidity.buttonContainer
-		div#button_humidity.buttonIcon(title='Sensor')
-			img.buttonImage(src='/images/icons/box.png')
+		div#button_humidity.buttonIcon(title='humidity')
+			div#humidity_value(style='position: relative; top: 20px; text-align: center; font-weight: bold; color: #eaeaea;')
 		div.buttonLinks
 			div.linkIcon(style='background-color: #A00000;')
 				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #A00000;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
+
 
 	div#title_remotes.buttonTitle
 		<a>|</a> remotes <a>|</a>
@@ -388,6 +399,7 @@ block content
 		div.buttonLinks
 			div#viewremotes.linkIcon(title='view remotes')
 				img.linkImage(src='/images/icons/small_view.png')
+
 
 	div#title_schedule.buttonTitle
 		<a>|</a> scheduling <a>|</a>
@@ -400,18 +412,13 @@ block content
 			div#newschedule.linkIcon(title='create new schedule' style='background-color: #036d00;')
 				img.linkImage(src='/images/icons/dark_small_add.png')
 
+
 	div#title_temperature.buttonTitle
 		<a>|</a> temperature <a>|</a>
 	div#container_temperature.buttonContainer
 		div#button_temperature.buttonIcon(title='temperature')
-			img.buttonImage(src='/images/icons/box.png')
+			div#temperature_value(style='position: relative; top: 20px; text-align: center; font-weight: bold; color: #eaeaea;')
 		div.buttonLinks
-			div.linkIcon(style='background-color: #00A2BF;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #00A2BF;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
-			div.linkIcon(style='background-color: #00A2BF;')
-				img.linkImage(src='/images/icons/dark_small_delete.png')
 			div.linkIcon(style='background-color: #00A2BF;')
 				img.linkImage(src='/images/icons/dark_small_delete.png')
 
@@ -428,6 +435,7 @@ block content
 				img.linkImage(src='/images/icons/small_controls.png')
 			div#editgroups.linkIcon(title='edit groups')
 				img.linkImage(src='/images/icons/small_groups.png')
+
 
 	div#title_favorites.buttonTitle
 		<a>|</a> favorites <a>|</a>

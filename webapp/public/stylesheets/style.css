@@ -520,6 +520,12 @@ h1.login {
 	font-size: 120px;
 }
 
+h1.bigblue {
+	color: #00B7FF;
+	padding: 0px;
+	font-size: 60px;
+}
+
 h3.line {
 	border-bottom: 1px solid #333333;
 }

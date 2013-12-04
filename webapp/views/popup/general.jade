@@ -67,6 +67,7 @@ script.
 				apmode: $("input:radio[name=pop_apmode]:checked").val()
 			}
 			nodeio.emit('put:general', data);
+			nodeio.emit('get:climate', data);
 			return true;
 		}
 	}

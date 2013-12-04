@@ -137,7 +137,7 @@ block jscripts
 			if ($('#email').val() == null || $('#email').val() == "")
 			{
 				invalid_flag = 1;
-				faults_html = faults_html + "<li>Must specify a hostname.</li>";
+				faults_html = faults_html + "<li>Must specify a email.</li>";
 			}
 			if (invalid_flag == 1) {
 				faults_html = faults_html + "</ul></p></div></div>";
@@ -237,11 +237,11 @@ block jscripts
 				html = html + "<span class='setupwifissid'>" + wifiobj.ssid + "</span>";
 				html = html + "<span class='setupwifisec'><img src='/images/locked.png'>&nbsp;" + security_min + "</span>";
 				html = html + "<span class='setupwifisig'>Signal&nbsp;";
-				if (wifiobj.sig_strength <= 33)
+				if (wifiobj.sig_level <= 33)
 					html = html + "<img src='/images/signal_low.png'>";
-				else if (wifiobj.sig_strength > 33 && wifiobj.sig_strength < 66)
+				else if (wifiobj.sig_level > 33 && wifiobj.sig_level < 66)
 					html = html + "<img src='/images/signal_med.png'>";
-				else if (wifiobj.sig_strength >= 66)
+				else if (wifiobj.sig_level >= 66)
 					html = html + "<img src='/images/signal_high.png'>";
 				html = html + "</span></label></div><br>";
 				$('#wifis').append(html);
@@ -260,11 +260,11 @@ block jscripts
 
 				if ($(this).data('security_type').match(/eap/i)) {
 					dialog_html = dialog_html + "<label class='setupnet' for='dialog_username'><h4 style='margin: 0px;'>Username</h4></label>";
-					dialog_html = dialog_html + "<input class='boxLong dark' type='text' name='dialog_username' id='dialog_username' value=''>";
+					dialog_html = dialog_html + "<input class='boxLong' type='text' name='dialog_username' id='dialog_username' value=''>";
 				}
 				dialog_html = dialog_html + "<label class='setupnet' for='dialog_password'><h4 style='margin: 0px;'>Password</h4></label>";
-				dialog_html = dialog_html + "<input class='boxLong dark' type='password' name='dialog_password' id='dialog_password'>";
-				dialog_html = dialog_html + "<input class='boxLong dark' type='text' name='dialog_password_text' id='dialog_password_text' ";
+				dialog_html = dialog_html + "<input class='boxLong' type='password' name='dialog_password' id='dialog_password'>";
+				dialog_html = dialog_html + "<input class='boxLong' type='text' name='dialog_password_text' id='dialog_password_text' ";
 				dialog_html = dialog_html + "style='display: none;'>";
 				dialog_html = dialog_html + "<label class='setupnet' for='show_password' style='display: block; float: right;'>Show ";
 				dialog_html = dialog_html + "<input type='checkbox' class='dark' name='show_password' id='show_password' style='position: relative; top: 3px;'></label>";
