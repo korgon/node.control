@@ -13,6 +13,11 @@ block jscripts
 		var server_time_refresh;
 		var connectdivs = true;
 
+		// arrays for server data
+		var sensor_array = [{'id': 'time/date', 'icon' : '/images/icons/schedule.png'}];
+		var actuator_array = [];
+		var zones = {};
+
 		// do stuff once document loads
 		$(window).load(function() {
 			jQuery.browser = {};
@@ -157,10 +162,7 @@ block jscripts
 			$('#loading').css('z-index', 0);
 			$('#node').css('z-index', 100);
 
-			// get local time from server
-			nodeio.emit('get:time');
-			nodeio.emit('get:serverdata');
-			nodeio.emit('get:climate');
+			requestData();
 
 			setInterval(function() {
 				nodeio.emit('get:climate');
@@ -223,6 +225,16 @@ block jscripts
 		});
 
 		// functions
+
+		function requestData() {
+			// socket.io stuff
+			nodeio.emit('get:time');
+			nodeio.emit('get:serverdata');
+			nodeio.emit('get:climate');
+			nodeio.emit('get:sensordata');
+			nodeio.emit('get:actuatordata');
+			nodeio.emit('get:zones');
+		}
 
 		function timeupdate(atime) {
 			var date = new Date(atime);
@@ -317,7 +329,6 @@ block jscripts
 				actuator_array.push(actuatordata[i]);
 			}
 			actuatordata.length = 0;
-			create_buttons('pop_actuators');
 		});
 
 		// fill sensor array on data
@@ -327,8 +338,6 @@ block jscripts
 				sensor_array.push(sensordata[i]);
 			}
 			sensordata.length = 0;
-			create_buttons('pop_sensors');
-			disable_tab('pop_sensors');
 		});
 
 		// populate temp / humidity
@@ -342,6 +351,12 @@ block jscripts
 				$('#temperature_value').append('\u2109');
 			else
 				$('#temperature_value').append('\u2103');
+		});
+
+		nodeio.on('zones', function(zonedata) {
+			zones = zonedata;
+			$('#data').append(' zonechange ');
+			//$('#data').append(JSON.stringify(zones));
 		});
 
 		//********* end socket.io event handlers *********

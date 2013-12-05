@@ -138,13 +138,13 @@ setTimeout(function() {
 // init xbee module
 setTimeout(function() {
 	controller.xbee.init();
-},2500);
+},3300);
 
 // controller emitter handlers
 controller.on('zoneChange', function(zonesdata) {
 	console.log(Date() + ' (io) [zones update broadcast]');
 	console.log(zonesdata);
-	app.io.broadcast('zoneChange', zonesdata);
+	app.io.broadcast('zones', zonesdata);
 });
 
 // Begin socket.io routes....
@@ -155,6 +155,8 @@ controller.on('zoneChange', function(zonesdata) {
 app.io.route('wifiscan', function(req) {
 	console.log(Date() + ' (io) [wifiscan request] from ' + req.session.uname);
 	controller.wifi.scan(function(json_output){
+		console.log('outtie ' + json_output );
+		console.log(JSON.stringify(json_output));
 		req.io.emit('scanned', json_output);
 	});
 });
@@ -169,6 +171,17 @@ app.io.route('reboot', function(req) {
 app.io.route('shutdown', function(req) {
 	console.log(Date() + ' (io) [shutdown request] from ' + req.session.uname);
 	controller.shutdown();
+});
+
+// multi-request route for io control (and xbees)
+app.io.route('control', {
+  zone: function(req) {
+		controller.controlZone(req.data.zone, req.data.value);
+		console.log(Date() + ' (io) [control zone] ' + req.data.zone + ' => ' + req.data.value);
+  },
+  xbee: function(req) {
+		console.log(Date() + ' (io) [control] new email for ' + req.data.uname + ': ' + req.data.email);
+  }
 });
 
 // multi-request route to handle all user modifications
@@ -235,10 +248,8 @@ app.io.route('get', {
 		});
   },
   zones: function(req) {
-		controller.db.getActuators('all', function(actuators) {
-			req.io.emit('actuators', actuators);
-			console.log(Date() + ' (io) [actuatordata request] from ' + req.session.uname);
-		});
+		req.io.emit('zones', controller.getZones());
+		console.log(Date() + ' (io) [zonedata request] from ' + req.session.uname);
   },
   sensordata: function(req) {
 		controller.db.getSensors(function(sensors) {

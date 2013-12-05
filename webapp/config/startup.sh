@@ -11,17 +11,9 @@ echo sprinkler-system > /sys/devices/bone_capemgr.8/slots
 # wifi startup
 sleep 6;  # wait for usb drivers...
 ifconfig wlan0 up;
-rm /var/run/wpa_supplicant/wlan0
-
-wpa_supplicant -B -Dwext -iwlan0 -c /etc/wpa_supplicant.conf;
-sleep 3;
 
 chown node /dev/ttyO[1-9]
 chown node /dev/i2c-[0-9]
-
-udhcpc -i wlan0
-wait;
-
 
 # Disable annoying flashies
 echo none > /sys/class/leds/beaglebone:green:usr0/trigger

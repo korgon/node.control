@@ -25,8 +25,8 @@ var gpio = new shaunscript();
 var wireless = require("./wifi.js");
 var wifi = new wireless("wlan0");
 // xbee management
-var bees = require("./xbee.js");
-var xbee = new bees("/dev/ttyO2");  //UART2
+var bee_com = require("./xbee.js");
+var xbee = new bee_com("/dev/ttyO2");  //UART2
 // si7005 temp/humidity
 var si7005 = require("./si7005.js");
 var temp0 = new si7005("temp");
@@ -39,6 +39,7 @@ var xbeehive = require('../config/xbee_types.json');
 
 // actuator array for control
 var zones = {};
+var bees = {};
 
 // controller variables
 var sys_hostname;
@@ -123,8 +124,11 @@ controller.prototype.controlZone = function(azone, value) {
 	});
 }
 
-//********* XBee Configure on discovery *********
+//********* XBee Control and Status *********
 
+
+
+// XBee Configure on discovery
 xbee.on('newNode', function(newnode) {
 	db.getRemote(newnode.hex_identifier, function(results) {
 		if (results == null) {

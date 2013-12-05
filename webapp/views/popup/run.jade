@@ -1,11 +1,63 @@
 h1.popup Activate Devices
-hr(style='margin-bottom: 20px;')
+hr(style='margin-bottom: 0px;')
+div#pop_zones(style='position: relative; width: 300px; height: 255px; padding: 20px;')
 
 
-
-div(style='padding-top: 20px; margin-bottom: -12px;')
+div(style='padding-top: 30px; margin-bottom: -12px;')
 	hr
 script.
-	function check() {
 
+	nodeio.emit('get:actuatordata');
+	$('#popup').dialog('option', 'buttons', { 'Close': function() {check();} }); 
+	// populate zones div with zones
+
+
+	for (var zone in zones) {
+		var newbutton = "<div id='pop_actuate_" + zones[zone].name + "' class='buttonActuate' title='";
+		newbutton = newbutton + zones[zone].alias + "'>";
+		newbutton = newbutton + "<img class='buttonImage' src='" + zones[zone].icon + "'></div>";
+		$('#pop_zones').append(newbutton);
+		$('#pop_actuate_' + zones[zone].name).data('on', zones[zone].status);
+		if (zones[zone].status == 1) {
+			$('#pop_actuate_' + zones[zone].name).addClass('actuated');
+			$('#pop_actuate_' + zones[zone].name).children('.buttonImage').css('opacity', .2);
+		}
+	}
+
+	$("div[id^='pop_actuate']").click(function() {
+		if($(this).data('on') == 0) {
+			$(this).addClass('actuated');
+			$(this).children('.buttonImage').css('opacity', .2);
+			$(this).data('on', 1);
+			runZone($(this).attr('id').split('actuate_')[1], 1);
+		}
+		else if($(this).data('on') == 1) {
+			$(this).removeClass('actuated');
+			$(this).children('.buttonImage').css('opacity', .2);
+			$(this).data('on', 0);
+			runZone($(this).attr('id').split('actuate_')[1], 0);
+		}
+	});
+
+	$("div[id^='pop_actuate']").hover(function () {
+		$(this).css('box-shadow', '0px 0px 31px 1px #252525 inset');
+	}, function () {
+		$(this).css('box-shadow', '');
+	});
+
+	function runZone(zone, value) {
+		nodeio.emit('control:zone', {zone: zone, value: value});
+	}
+
+	function check() {
+		$('#popup').dialog('option', 'buttons', 
+		{
+			"Save": function() {
+				if (check()) $(this).dialog("close");
+			},
+			"Close": function() {
+				$(this).dialog("close");
+			}
+		});
+		$('#popup').dialog("close");
 	}

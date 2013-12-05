@@ -27,12 +27,9 @@ div#pop_dragzone(style='position: relative; width: 475px; height: 372px; padding
 script.
 	// arrays for holding sensors and actuators
 	var tab_slots = 4;
-	var actuator_array = [];
 	var actuator_index = 0;
 
-	// socket.io stuff
-	// get actuators from server
-	nodeio.emit('get:actuatordata');
+	create_buttons('pop_actuators');
 
 	// position slots around center star and give data
 	var slots = $("div[id^='pop_slot']").size();

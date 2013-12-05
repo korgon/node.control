@@ -1,6 +1,6 @@
 h1.popup Create Schedule
 hr(style='margin-bottom: 20px;')
-div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding: 20px; background-color: #000;')
+div#pop_dragzone(style='position: relative; width: 420px; height: 372px; padding: 20px;')
 	div(style='position: relative; width: 75px; height: 370px; float: left;')
 
 		div#pop_actuators.tab(style='position: absolute; width: 72px; height: 372px; top: 0px; border-radius: 9px;')
@@ -66,18 +66,16 @@ div(style='padding-top: 20px; margin-bottom: -12px;')
 script.
 	// arrays for holding sensors and actuators
 	var tab_slots = 4;
-	var sensor_array = [{'id': 'time/date', 'icon' : '/images/icons/schedule.png'}];
 	var sensor_index = 0;
-	var actuator_array = [];
 	var actuator_index = 0;
+
+	// do stuff
+	create_buttons('pop_actuators');
+	create_buttons('pop_sensors');
+	disable_tab('pop_sensors');
 
 	$('#pop_start').hide();
 	$('#pop_stop').hide();
-
-	// socket.io stuff
-	// get actuators/sensors from server
-	nodeio.emit('get:sensordata');
-	nodeio.emit('get:actuatordata');
 
 	// create dialogs for scheduling entry:
 	$("#schedule_duration").dialog({
